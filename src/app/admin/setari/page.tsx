@@ -41,8 +41,7 @@ const GDPR_REQUESTS = [
 
 const ADMIN_USERS_LIST = [
   { id: 1, name: "Sabina Blendea", email: "sabina@inauntru.ro", role: "Super Admin", avatar: "SB" },
-  { id: 2, name: "Mihai Pop", email: "mihai@inauntru.ro", role: "Admin Conținut", avatar: "MP" },
-  { id: 3, name: "Elena Stan", email: "elena@inauntru.ro", role: "Admin Sesiuni", avatar: "ES" },
+  { id: 2, name: "Tudor Ionescu", email: "tudor.i@gmail.com", role: "Moderator", avatar: "TI" },
 ];
 
 function SaveBar({ onSave }: { onSave: () => void }) {
@@ -417,7 +416,7 @@ function GdprTab() {
 function AdminsTab() {
   const [showInvite, setShowInvite] = useState(false);
 
-  const ROLES = ["Super Admin", "Admin Conținut", "Admin Sesiuni", "Cititor"];
+  const ROLES = ["Super Admin", "Editor", "Moderator"];
 
   return (
     <div className="space-y-6">
@@ -480,18 +479,19 @@ function AdminsTab() {
               <tr>
                 <th className="text-left font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 pr-6">Permisiune</th>
                 {ROLES.map((r) => (
-                  <th key={r} className="font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 px-4 text-center">{r.replace("Admin ", "")}</th>
+                  <th key={r} className="font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 px-4 text-center">{r}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {[
-                { label: "Gestionare utilizatori", perms: [true, false, false, false] },
-                { label: "Adăugare conținut", perms: [true, true, false, false] },
-                { label: "Gestionare sesiuni LIVE", perms: [true, false, true, false] },
-                { label: "Vizualizare statistici", perms: [true, true, true, true] },
-                { label: "Editare setări", perms: [true, false, false, false] },
-                { label: "Gestionare abonamente", perms: [true, false, false, false] },
+                { label: "Gestionare utilizatori & roluri", perms: [true, false, false] },
+                { label: "Adăugare / editare conținut", perms: [true, true, false] },
+                { label: "Gestionare sesiuni LIVE", perms: [true, true, false] },
+                { label: "Vizualizare statistici", perms: [true, true, true] },
+                { label: "Gestionare abonamente", perms: [true, false, false] },
+                { label: "Editare setări platformă", perms: [true, false, false] },
+                { label: "Gestionare admini", perms: [true, false, false] },
               ].map((row) => (
                 <tr key={row.label} className="border-t border-sage-border/40">
                   <td className="py-2 pr-6 font-body text-body-sm text-on-surface">{row.label}</td>

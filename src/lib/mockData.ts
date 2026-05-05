@@ -584,15 +584,53 @@ export const INTENT_CARDS = [
   },
 ];
 
-export const ADMIN_USERS = [
-  { id: 1, name: "Maria Dumitrescu", email: "maria.d@gmail.com", plan: "Premium+", joinDate: "2026-01-15", lastActive: "2026-04-30", checkIns: 47, avatar: "MD" },
-  { id: 2, name: "Andrei Toma", email: "andrei.t@gmail.com", plan: "Premium", joinDate: "2026-02-03", lastActive: "2026-04-29", checkIns: 31, avatar: "AT" },
-  { id: 3, name: "Elena Radu", email: "elena.r@yahoo.ro", plan: "Gratuit", joinDate: "2026-03-20", lastActive: "2026-04-28", checkIns: 12, avatar: "ER" },
-  { id: 4, name: "Cristina Mihai", email: "cristina.m@gmail.com", plan: "Premium", joinDate: "2026-01-28", lastActive: "2026-04-30", checkIns: 63, avatar: "CM" },
-  { id: 5, name: "Radu Popescu", email: "radu.p@gmail.com", plan: "Premium+", joinDate: "2025-12-10", lastActive: "2026-04-30", checkIns: 89, avatar: "RP" },
-  { id: 6, name: "Ioana Vasile", email: "ioana.v@gmail.com", plan: "Gratuit", joinDate: "2026-04-01", lastActive: "2026-04-25", checkIns: 8, avatar: "IV" },
-  { id: 7, name: "Tudor Ionescu", email: "tudor.i@gmail.com", plan: "Premium", joinDate: "2026-02-14", lastActive: "2026-04-30", checkIns: 44, avatar: "TI" },
-  { id: 8, name: "Ana Constantin", email: "ana.c@yahoo.ro", plan: "Premium+", joinDate: "2026-01-05", lastActive: "2026-04-29", checkIns: 102, avatar: "AC" },
+export type UserRole = "user" | "facilitator" | "moderator" | "editor" | "super_admin";
+
+export type AdminUser = {
+  id: number;
+  name: string;
+  email: string;
+  plan: string;
+  joinDate: string;
+  lastActive: string;
+  checkIns: number;
+  avatar: string;
+  role: UserRole;
+  facilitatorProfile?: {
+    title: string;
+    bio: string;
+    specialties: string[];
+    photo: string;
+  };
+};
+
+export const ADMIN_USERS: AdminUser[] = [
+  { id: 1, name: "Maria Dumitrescu", email: "maria.d@gmail.com", plan: "Premium+", joinDate: "2026-01-15", lastActive: "2026-04-30", checkIns: 47, avatar: "MD", role: "user" },
+  { id: 2, name: "Andrei Toma", email: "andrei.t@gmail.com", plan: "Premium", joinDate: "2026-02-03", lastActive: "2026-04-29", checkIns: 31, avatar: "AT", role: "user" },
+  {
+    id: 3, name: "Elena Radu", email: "elena.r@yahoo.ro", plan: "Gratuit", joinDate: "2026-03-20", lastActive: "2026-04-28", checkIns: 12, avatar: "ER",
+    role: "facilitator",
+    facilitatorProfile: {
+      title: "Terapeut Somatic Certificat",
+      bio: "Specialist în reglarea sistemului nervos cu 7 ani experiență în terapia somatică și mindfulness.",
+      specialties: ["Anxietate", "Reglare", "Corp"],
+      photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
+    },
+  },
+  { id: 4, name: "Cristina Mihai", email: "cristina.m@gmail.com", plan: "Premium", joinDate: "2026-01-28", lastActive: "2026-04-30", checkIns: 63, avatar: "CM", role: "user" },
+  { id: 5, name: "Radu Popescu", email: "radu.p@gmail.com", plan: "Premium+", joinDate: "2025-12-10", lastActive: "2026-04-30", checkIns: 89, avatar: "RP", role: "user" },
+  { id: 6, name: "Ioana Vasile", email: "ioana.v@gmail.com", plan: "Gratuit", joinDate: "2026-04-01", lastActive: "2026-04-25", checkIns: 8, avatar: "IV", role: "user" },
+  { id: 7, name: "Tudor Ionescu", email: "tudor.i@gmail.com", plan: "Premium", joinDate: "2026-02-14", lastActive: "2026-04-30", checkIns: 44, avatar: "TI", role: "moderator" },
+  {
+    id: 8, name: "Ana Constantin", email: "ana.c@yahoo.ro", plan: "Premium+", joinDate: "2026-01-05", lastActive: "2026-04-29", checkIns: 102, avatar: "AC",
+    role: "facilitator",
+    facilitatorProfile: {
+      title: "Psihoterapeut & Coach Somatic",
+      bio: "Psihoterapeut integrativ cu specializare în terapia somatică, burnout și relații. 10 ani experiență.",
+      specialties: ["Burnout", "Relații", "Traumă"],
+      photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
+    },
+  },
 ];
 
 export const ADMIN_CONTENT = [
