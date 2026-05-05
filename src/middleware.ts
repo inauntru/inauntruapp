@@ -6,8 +6,9 @@ export function middleware(req: NextRequest) {
   if (pathname.startsWith("/admin/login")) return NextResponse.next();
 
   if (pathname.startsWith("/admin")) {
+    const secret = process.env.ADMIN_SECRET;
     const token = req.cookies.get("admin_token")?.value;
-    if (token !== process.env.ADMIN_SECRET) {
+    if (!secret || !token || token !== secret) {
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
   }
