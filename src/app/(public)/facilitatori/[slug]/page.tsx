@@ -1,4 +1,6 @@
-﻿import Link from "next/link";
+"use client";
+
+import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -7,25 +9,20 @@ import {
   Certificate,
   ArrowRight,
   Play,
-} from "@phosphor-icons/react/dist/ssr";
+} from "@phosphor-icons/react";
 import { FACILITATORS, PRACTICES } from "@/lib/mockData";
 import { getFacilitators } from "@/lib/getFacilitators";
-
-const ALL_FACILITATORS = [
-  ...FACILITATORS,
-  ...getFacilitators().map((f) => ({
-    ...f,
-    practiceDuration: f.practiceDuration,
-    certifications: f.certifications,
-  })),
-];
-
-export function generateStaticParams() {
-  return ALL_FACILITATORS.map((f) => ({ slug: f.slug }));
-}
+import { useUsers } from "@/contexts/UsersContext";
 
 export default function FacilitatorPage({ params }: { params: { slug: string } }) {
-  const facilitator = ALL_FACILITATORS.find((f) => f.slug === params.slug) || ALL_FACILITATORS[0];
+  const { users } = useUsers();
+  const adminFacilitators = getFacilitators(users);
+
+  const facilitator =
+    FACILITATORS.find((f) => f.slug === params.slug) ||
+    adminFacilitators.find((f) => f.slug === params.slug) ||
+    FACILITATORS[0];
+
   const practices = PRACTICES.filter((p) => p.facilitator === facilitator.name);
 
   return (
@@ -114,20 +111,22 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
             </div>
 
             {/* Certifications */}
-            <div className="card p-6">
-              <h3 className="font-heading text-h3 text-deep-green mb-4 flex items-center gap-2">
-                <Certificate size={20} weight="regular" className="text-forest-green" />
-                Certificări
-              </h3>
-              <ul className="space-y-2">
-                {facilitator.certifications.map((cert) => (
-                  <li key={cert} className="flex items-start gap-2 font-body text-body-sm text-secondary-text">
-                    <div className="w-1.5 h-1.5 rounded-full bg-forest-green mt-2 flex-shrink-0" />
-                    {cert}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {facilitator.certifications.length > 0 && (
+              <div className="card p-6">
+                <h3 className="font-heading text-h3 text-deep-green mb-4 flex items-center gap-2">
+                  <Certificate size={20} weight="regular" className="text-forest-green" />
+                  Certificări
+                </h3>
+                <ul className="space-y-2">
+                  {facilitator.certifications.map((cert) => (
+                    <li key={cert} className="flex items-start gap-2 font-body text-body-sm text-secondary-text">
+                      <div className="w-1.5 h-1.5 rounded-full bg-forest-green mt-2 flex-shrink-0" />
+                      {cert}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </section>

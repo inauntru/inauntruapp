@@ -1,6 +1,6 @@
-import { ADMIN_USERS } from "./mockData";
+import { type AdminUser } from "./mockData";
 
-function toSlug(name: string) {
+export function toSlug(name: string) {
   return name
     .toLowerCase()
     .replace(/ă/g, "a").replace(/â/g, "a").replace(/î/g, "i")
@@ -9,8 +9,8 @@ function toSlug(name: string) {
     .replace(/[^a-z0-9-]/g, "");
 }
 
-export function getFacilitators() {
-  return ADMIN_USERS
+export function getFacilitators(users: AdminUser[]) {
+  return users
     .filter((u) => u.role === "facilitator" && u.facilitatorProfile)
     .map((u) => {
       const fp = u.facilitatorProfile!;

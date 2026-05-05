@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { fontVariables } from "@/lib/fonts";
+import Providers from "@/components/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="ro" className={`scroll-smooth ${fontVariables}`}>
       <body className="font-body antialiased bg-background text-on-background">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

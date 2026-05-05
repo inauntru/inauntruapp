@@ -7,7 +7,8 @@ import {
   DotsThreeVertical, Lock, Plus, X, Check, ShieldCheck,
   Plant, UserCircle, CaretDown,
 } from "@phosphor-icons/react";
-import { ADMIN_USERS, type AdminUser, type UserRole } from "@/lib/mockData";
+import { type AdminUser, type UserRole } from "@/lib/mockData";
+import { useUsers } from "@/contexts/UsersContext";
 
 // ── constants ──────────────────────────────────────────────────────────────
 
@@ -685,16 +686,12 @@ function UserDetailView({ user, onBack, onUpdate }: DetailViewProps) {
 // ── main page ──────────────────────────────────────────────────────────────
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<AdminUser[]>(ADMIN_USERS);
+  const { users, addUser, updateUser } = useUsers();
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  function handleAddUser(user: AdminUser) {
-    setUsers((prev) => [user, ...prev]);
-  }
-
   function handleUpdateUser(id: number, updates: Partial<AdminUser>) {
-    setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...updates } : u)));
+    updateUser(id, updates);
     if (selectedUser?.id === id) {
       setSelectedUser((prev) => prev ? { ...prev, ...updates } : prev);
     }
@@ -710,6 +707,7 @@ export default function AdminUsersPage() {
             onSelect={setSelectedUser}
             onAdd={() => setShowAddModal(true)}
           />
+
         ) : (
           <UserDetailView
             key="detail"
@@ -724,7 +722,7 @@ export default function AdminUsersPage() {
         {showAddModal && (
           <AddUserModal
             onClose={() => setShowAddModal(false)}
-            onAdd={handleAddUser}
+            onAdd={addUser}
           />
         )}
       </AnimatePresence>

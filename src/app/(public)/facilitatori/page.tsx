@@ -8,14 +8,16 @@ import { Star, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
 import { getFacilitators } from "@/lib/getFacilitators";
+import { useUsers } from "@/contexts/UsersContext";
 
 const ALL_SPECIALTIES = ["Toți", "Traumă", "Anxietate", "Burnout", "Somn", "Energie", "Mișcare", "Respirație", "Relații", "Meditație", "Reglare", "Corp", "Stres", "Claritate"];
 
 export default function FacilitatoriPage() {
+  const { users } = useUsers();
   const [specialty, setSpecialty] = useState("Toți");
   const [search, setSearch] = useState("");
 
-  const allFacilitators = [...FACILITATORS_DATA, ...getFacilitators()];
+  const allFacilitators = [...FACILITATORS_DATA, ...getFacilitators(users)];
 
   const filtered = allFacilitators.filter((f) => {
     if (specialty !== "Toți" && !f.tags.includes(specialty)) return false;
