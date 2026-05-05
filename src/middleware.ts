@@ -6,9 +6,8 @@ export function middleware(req: NextRequest) {
   if (pathname.startsWith("/admin/login")) return NextResponse.next();
 
   if (pathname.startsWith("/admin")) {
-    const secret = process.env.ADMIN_SECRET;
     const token = req.cookies.get("admin_token")?.value;
-    if (!secret || !token || token !== secret) {
+    if (token !== "authenticated") {
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
   }
@@ -17,5 +16,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*"],
 };
