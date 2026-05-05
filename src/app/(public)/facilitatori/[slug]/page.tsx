@@ -9,13 +9,23 @@ import {
   Play,
 } from "@phosphor-icons/react/dist/ssr";
 import { FACILITATORS, PRACTICES } from "@/lib/mockData";
+import { getFacilitators } from "@/lib/getFacilitators";
+
+const ALL_FACILITATORS = [
+  ...FACILITATORS,
+  ...getFacilitators().map((f) => ({
+    ...f,
+    practiceDuration: f.practiceDuration,
+    certifications: f.certifications,
+  })),
+];
 
 export function generateStaticParams() {
-  return FACILITATORS.map((f) => ({ slug: f.slug }));
+  return ALL_FACILITATORS.map((f) => ({ slug: f.slug }));
 }
 
 export default function FacilitatorPage({ params }: { params: { slug: string } }) {
-  const facilitator = FACILITATORS.find((f) => f.slug === params.slug) || FACILITATORS[0];
+  const facilitator = ALL_FACILITATORS.find((f) => f.slug === params.slug) || ALL_FACILITATORS[0];
   const practices = PRACTICES.filter((p) => p.facilitator === facilitator.name);
 
   return (
