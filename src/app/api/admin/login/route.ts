@@ -13,9 +13,10 @@ export async function POST(req: NextRequest) {
   const res = NextResponse.json({ ok: true });
   res.cookies.set("admin_token", process.env.ADMIN_SECRET!, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 8, // 8 ore
+    maxAge: 60 * 60 * 8,
   });
   return res;
 }
