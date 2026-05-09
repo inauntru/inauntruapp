@@ -47,7 +47,7 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="bg-white rounded-2xl p-8 shadow-card border border-sage-border/60"
+            className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-sage-border/60"
           >
             <h2 className="font-heading text-2xl text-deep-green mb-1">Conectare</h2>
             <p className="font-body text-body-sm text-secondary-text mb-7">Reintoarce-te în spațiul tău de liniște.</p>
@@ -150,13 +150,13 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="bg-white rounded-2xl p-8 shadow-card border border-sage-border/60"
+            className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-sage-border/60"
           >
             <h2 className="font-heading text-2xl text-deep-green mb-1">Înregistrare</h2>
             <p className="font-body text-body-sm text-secondary-text mb-7">Începe călătoria ta către reglarea sistemului nervos.</p>
 
             <form onSubmit={handleRegister} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">Prenume</label>
                   <div className="relative">

@@ -274,7 +274,7 @@ export default function BibliotecaPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.06, duration: 0.4 }}
                   >
-                    <Link href={`/biblioteca/${practice.id}`} className="block group card card-lift overflow-hidden h-full">
+                    <Link href={`/practici/${practice.id}`} className="block group card card-lift overflow-hidden h-full">
                       {/* Thumbnail */}
                       <div className="relative aspect-video overflow-hidden">
                         <Image

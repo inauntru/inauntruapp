@@ -150,7 +150,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
-                className="flex flex-wrap gap-4"
+                className="flex flex-col sm:flex-row gap-4"
               >
                 <Link
                   href="/register"
@@ -244,7 +244,7 @@ export default function HomePage() {
                   onClick={() => setSelectedIntent(isSelected ? null : card.id)}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className={`flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border transition-colors duration-200 min-h-[110px] ${
+                  className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-2xl border transition-colors duration-200 min-h-[90px] sm:min-h-[110px] ${
                     isSelected
                       ? "bg-forest-green border-forest-green"
                       : "bg-white border-sage-border hover:border-forest-green hover:bg-light-green/30"
@@ -275,7 +275,7 @@ export default function HomePage() {
       {/* ── PROBLEM ── */}
       <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <AnimateIn once={false} from="left">
               <p className="font-ui text-label-sm text-indigo uppercase tracking-widest mb-3">Corpul tău îți vorbește</p>
               <h2 className="font-heading text-h2 text-deep-green mb-4 leading-tight">
@@ -312,7 +312,7 @@ export default function HomePage() {
         <div className="absolute top-0 right-0 w-80 h-80 bg-forest-green/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <div className="text-center max-w-2xl mx-auto mb-14">
+            <div className="text-center max-w-2xl mx-auto mb-8 lg:mb-14">
               <p className="section-label">De ce practici somatice</p>
               <h2 className="section-title">Vindecarea prin corp</h2>
               <p className="font-body text-body-lg text-secondary-text">
@@ -324,7 +324,7 @@ export default function HomePage() {
             {SOLUTION_CARDS.map((card) => {
               const Icon = card.icon;
               return (
-                <div key={card.title} className="bg-white/70 backdrop-blur-sm p-8 rounded-2xl border border-white card-lift">
+                <div key={card.title} className="bg-white/70 backdrop-blur-sm p-5 sm:p-8 rounded-2xl border border-white card-lift">
                   <div className="w-12 h-12 bg-forest-green rounded-xl flex items-center justify-center text-white mb-6">
                     <Icon size={24} weight="regular" />
                   </div>
@@ -341,22 +341,24 @@ export default function HomePage() {
       <section id="cum-functioneaza" className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green text-center mb-16">
+            <h2 className="font-heading text-h2 text-deep-green text-center mb-10 lg:mb-16">
               Călătoria ta spre interior
             </h2>
           </AnimateIn>
           <div className="relative">
             <div className="hidden lg:block absolute top-8 left-[calc(16.67%)] right-[calc(16.67%)] h-0.5 bg-indigo-light" />
-            <StaggerChildren once={false} className="grid grid-cols-1 lg:grid-cols-3 gap-12" staggerDelay={0.2}>
+            <StaggerChildren once={false} className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12" staggerDelay={0.2}>
               {HOW_IT_WORKS.map((step) => (
-                <div key={step.step} className="flex flex-col items-center text-center">
-                  <div className="relative mb-8">
-                    <div className="w-16 h-16 bg-indigo text-white rounded-full flex items-center justify-center font-heading text-2xl font-bold shadow-button ring-8 ring-indigo-bg">
+                <div key={step.step} className="flex flex-row lg:flex-col items-start lg:items-center gap-5 lg:gap-0 text-left lg:text-center">
+                  <div className="relative mb-0 lg:mb-8 flex-shrink-0">
+                    <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo text-white rounded-full flex items-center justify-center font-heading text-xl lg:text-2xl font-bold shadow-button ring-8 ring-indigo-bg">
                       {step.step}
                     </div>
                   </div>
-                  <h3 className="font-heading text-h3 text-deep-green mb-3">{step.title}</h3>
-                  <p className="font-body text-body-md text-secondary-text max-w-sm">{step.desc}</p>
+                  <div>
+                    <h3 className="font-heading text-h3 text-deep-green mb-2 lg:mb-3">{step.title}</h3>
+                    <p className="font-body text-body-md text-secondary-text max-w-sm">{step.desc}</p>
+                  </div>
                 </div>
               ))}
             </StaggerChildren>
@@ -368,7 +370,7 @@ export default function HomePage() {
       <section className="py-16 lg:py-24 overflow-hidden" style={{ backgroundColor: "#2B8C5C" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-8 lg:mb-14 gap-6">
               <div className="max-w-xl">
                 <h2 className="font-heading text-h2 text-white mb-3">
                   Tot ce ai nevoie într-un singur loc
@@ -413,7 +415,7 @@ export default function HomePage() {
       <section className="py-16 lg:py-24 bg-indigo-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green text-center mb-14">
+            <h2 className="font-heading text-h2 text-deep-green text-center mb-8 lg:mb-14">
               Povești de transformare
             </h2>
           </AnimateIn>
@@ -467,7 +469,7 @@ export default function HomePage() {
       <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <div className="text-center mb-14">
+            <div className="text-center mb-8 lg:mb-14">
               <p className="section-label">Ghizi experți</p>
               <h2 className="section-title">Ghidat de experți în somatizare</h2>
               <p className="font-body text-body-lg text-secondary-text max-w-xl mx-auto">
@@ -507,17 +509,17 @@ export default function HomePage() {
       <section className="py-16 lg:py-24 bg-indigo-bg">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green text-center mb-14">
+            <h2 className="font-heading text-h2 text-deep-green text-center mb-8 lg:mb-14">
               De ce să alegi INAUNTRU?
             </h2>
           </AnimateIn>
-          <div className="overflow-hidden border border-sage-border rounded-2xl shadow-card">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto rounded-2xl border border-sage-border shadow-card">
+            <table className="w-full text-left border-collapse min-w-[420px]">
               <thead className="bg-surface-container-low">
                 <tr>
-                  <th className="p-6 font-body text-label-sm text-secondary-text">Funcționalitate</th>
-                  <th className="p-6 font-heading font-bold text-forest-green text-body-md text-center">INAUNTRU</th>
-                  <th className="p-6 font-body text-body-sm text-secondary-text text-center">Terapie Tradițională</th>
+                  <th className="p-3 sm:p-6 font-body text-label-sm text-secondary-text">Funcționalitate</th>
+                  <th className="p-3 sm:p-6 font-heading font-bold text-forest-green text-body-md text-center">INAUNTRU</th>
+                  <th className="p-3 sm:p-6 font-body text-body-sm text-secondary-text text-center">Terapie Tradițională</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-sage-border/50">
@@ -530,13 +532,13 @@ export default function HomePage() {
                     transition={{ delay: i * 0.06 }}
                     className={i % 2 === 0 ? "bg-white" : "bg-bg-main/50"}
                   >
-                    <td className="py-4 px-6 font-body text-body-sm text-deep-green">{row.feature}</td>
-                    <td className="py-4 px-6 text-center">
+                    <td className="py-3 px-3 sm:py-4 sm:px-6 font-body text-body-sm text-deep-green">{row.feature}</td>
+                    <td className="py-3 px-3 sm:py-4 sm:px-6 text-center">
                       {row.inauntru
                         ? <Check size={18} weight="bold" className="text-forest-green mx-auto" />
                         : <X size={18} weight="regular" className="text-terracotta/50 mx-auto" />}
                     </td>
-                    <td className="py-4 px-6 text-center">
+                    <td className="py-3 px-3 sm:py-4 sm:px-6 text-center">
                       {row.clasic
                         ? <Check size={18} weight="bold" className="text-secondary-text mx-auto" />
                         : <X size={18} weight="regular" className="text-terracotta/50 mx-auto" />}
@@ -581,9 +583,9 @@ export default function HomePage() {
             {PRICING_PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl border p-8 flex flex-col transition-all duration-200 ${
+                className={`relative rounded-2xl border p-5 sm:p-8 flex flex-col transition-all duration-200 ${
                   plan.isPopular
-                    ? "bg-forest-green border-forest-green text-white shadow-[0_20px_60px_rgba(61,122,92,0.25)] scale-105"
+                    ? "bg-forest-green border-forest-green text-white shadow-[0_20px_60px_rgba(61,122,92,0.25)] md:scale-105"
                     : "bg-white border-sage-border shadow-card hover:shadow-card-hover"
                 }`}
               >
@@ -677,7 +679,7 @@ export default function HomePage() {
       <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green text-center mb-14">
+            <h2 className="font-heading text-h2 text-deep-green text-center mb-8 lg:mb-14">
               Întrebări frecvente
             </h2>
           </AnimateIn>
@@ -720,7 +722,7 @@ export default function HomePage() {
       {/* ── FINAL CTA ── */}
       <section className="py-16 lg:py-24 relative overflow-hidden" style={{ backgroundColor: "#2B8C5C" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col md:flex-row items-center gap-14 lg:gap-20">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-14 lg:gap-20">
             <AnimateIn once={false} from="left" className="md:w-1/2 space-y-7">
               <h2 className="font-heading text-4xl lg:text-5xl text-white leading-tight font-bold">
                 Gata să te simți din nou bine în corpul tău?
@@ -730,7 +732,7 @@ export default function HomePage() {
               </p>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-white text-forest-green font-body font-semibold text-body-lg hover:bg-white/90 transition-colors shadow-lg"
+                className="inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 rounded-full bg-white text-forest-green font-body font-semibold text-body-md sm:text-body-lg hover:bg-white/90 transition-colors shadow-lg"
               >
                 Începe acum <ArrowRight size={20} weight="bold" />
               </Link>

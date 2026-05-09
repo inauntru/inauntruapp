@@ -89,7 +89,7 @@ export default function PreturiPage() {
           {PRICING_PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`relative rounded-card border p-8 flex flex-col transition-all duration-200 ${
+              className={`relative rounded-card border p-5 sm:p-8 flex flex-col transition-all duration-200 ${
                 plan.isPopular
                   ? "bg-forest-green border-forest-green text-white shadow-button md:scale-105"
                   : "card card-lift bg-white"

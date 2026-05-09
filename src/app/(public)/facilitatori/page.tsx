@@ -56,7 +56,7 @@ export default function FacilitatoriPage() {
                 placeholder="Caută facilitator..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-4 py-2 rounded-full border border-sage-border text-body-sm font-body bg-white focus:outline-none focus:border-forest-green w-48"
+                className="pl-9 pr-4 py-2 rounded-full border border-sage-border text-body-sm font-body bg-white focus:outline-none focus:border-forest-green w-full md:w-48"
               />
             </div>
             {/* Specialty pills */}
