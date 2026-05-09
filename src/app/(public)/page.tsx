@@ -519,9 +519,8 @@ export default function HomePage() {
                 <tr>
                   <th className="py-3 px-3 sm:p-6 font-body text-xs sm:text-label-sm text-secondary-text w-1/2">Funcționalitate</th>
                   <th className="py-3 px-2 sm:p-6 font-heading font-bold text-forest-green text-xs sm:text-body-md text-center w-1/4">INAUNTRU</th>
-                  <th className="py-3 px-2 sm:p-6 font-body text-xs sm:text-body-sm text-secondary-text text-center w-1/4">
-                    <span className="sm:hidden">Trad.</span>
-                    <span className="hidden sm:inline">Terapie Tradițională</span>
+                  <th className="py-3 px-2 sm:p-6 font-body text-xs sm:text-body-sm text-secondary-text text-center w-1/4 leading-snug">
+                    Terapie Tradițională
                   </th>
                 </tr>
               </thead>
