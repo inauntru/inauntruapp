@@ -513,13 +513,16 @@ export default function HomePage() {
               De ce să alegi INAUNTRU?
             </h2>
           </AnimateIn>
-          <div className="overflow-x-auto rounded-2xl border border-sage-border shadow-card">
-            <table className="w-full text-left border-collapse min-w-[420px]">
+          <div className="overflow-hidden border border-sage-border rounded-2xl shadow-card">
+            <table className="w-full text-left border-collapse">
               <thead className="bg-surface-container-low">
                 <tr>
-                  <th className="p-3 sm:p-6 font-body text-label-sm text-secondary-text">Funcționalitate</th>
-                  <th className="p-3 sm:p-6 font-heading font-bold text-forest-green text-body-md text-center">INAUNTRU</th>
-                  <th className="p-3 sm:p-6 font-body text-body-sm text-secondary-text text-center">Terapie Tradițională</th>
+                  <th className="py-3 px-3 sm:p-6 font-body text-xs sm:text-label-sm text-secondary-text w-1/2">Funcționalitate</th>
+                  <th className="py-3 px-2 sm:p-6 font-heading font-bold text-forest-green text-xs sm:text-body-md text-center w-1/4">INAUNTRU</th>
+                  <th className="py-3 px-2 sm:p-6 font-body text-xs sm:text-body-sm text-secondary-text text-center w-1/4">
+                    <span className="sm:hidden">Trad.</span>
+                    <span className="hidden sm:inline">Terapie Tradițională</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-sage-border/50">
@@ -532,16 +535,16 @@ export default function HomePage() {
                     transition={{ delay: i * 0.06 }}
                     className={i % 2 === 0 ? "bg-white" : "bg-bg-main/50"}
                   >
-                    <td className="py-3 px-3 sm:py-4 sm:px-6 font-body text-body-sm text-deep-green">{row.feature}</td>
-                    <td className="py-3 px-3 sm:py-4 sm:px-6 text-center">
+                    <td className="py-3 px-3 sm:py-4 sm:px-6 font-body text-xs sm:text-body-sm text-deep-green">{row.feature}</td>
+                    <td className="py-3 px-2 sm:py-4 sm:px-6 text-center">
                       {row.inauntru
-                        ? <Check size={18} weight="bold" className="text-forest-green mx-auto" />
-                        : <X size={18} weight="regular" className="text-terracotta/50 mx-auto" />}
+                        ? <Check size={16} weight="bold" className="text-forest-green mx-auto" />
+                        : <X size={16} weight="regular" className="text-terracotta/50 mx-auto" />}
                     </td>
-                    <td className="py-3 px-3 sm:py-4 sm:px-6 text-center">
+                    <td className="py-3 px-2 sm:py-4 sm:px-6 text-center">
                       {row.clasic
-                        ? <Check size={18} weight="bold" className="text-secondary-text mx-auto" />
-                        : <X size={18} weight="regular" className="text-terracotta/50 mx-auto" />}
+                        ? <Check size={16} weight="bold" className="text-secondary-text mx-auto" />
+                        : <X size={16} weight="regular" className="text-terracotta/50 mx-auto" />}
                     </td>
                   </motion.tr>
                 ))}
