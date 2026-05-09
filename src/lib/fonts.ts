@@ -1,4 +1,4 @@
-import { Tenor_Sans, Karla, Jost } from "next/font/google";
+import { Tenor_Sans, DM_Sans } from "next/font/google";
 
 export const tenorSans = Tenor_Sans({
   subsets: ["latin"],
@@ -7,18 +7,11 @@ export const tenorSans = Tenor_Sans({
   display: "swap",
 });
 
-export const karla = Karla({
+export const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-body",
   display: "swap",
 });
 
-export const jost = Jost({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-ui",
-  display: "swap",
-});
-
-export const fontVariables = `${tenorSans.variable} ${karla.variable} ${jost.variable}`;
+export const fontVariables = `${tenorSans.variable} ${dmSans.variable}`;

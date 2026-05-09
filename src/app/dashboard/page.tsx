@@ -30,7 +30,7 @@ function formatDate() {
 }
 
 const QUICK_ACCESS = [
-  { icon: BookOpen, label: "Bibliotecă", href: "/biblioteca", color: "bg-light-green text-forest-green" },
+  { icon: BookOpen, label: "Bibliotecă", href: "/practici", color: "bg-light-green text-forest-green" },
   { icon: Notebook, label: "Jurnal", href: "/dashboard/jurnal", color: "bg-rose-powder/30 text-terracotta" },
   { icon: ChartLine, label: "Progresul meu", href: "/dashboard/progres", color: "bg-sage-border text-forest-green" },
   { icon: VideoCamera, label: "Sesiuni live", href: "/sesiuni-live", color: "bg-secondary-container text-on-secondary-container" },
@@ -81,7 +81,7 @@ export default function DashboardPage() {
           <nav className="flex-1 px-3 space-y-1">
             {[
               { icon: ChartLine, label: "Dashboard", href: "/dashboard", active: true },
-              { icon: BookOpen, label: "Bibliotecă", href: "/biblioteca" },
+              { icon: BookOpen, label: "Bibliotecă", href: "/practici" },
               { icon: VideoCamera, label: "Sesiuni Live", href: "/sesiuni-live" },
               { icon: Notebook, label: "Jurnal", href: "/dashboard/jurnal" },
               { icon: ChartLine, label: "Progresul meu", href: "/dashboard/progres" },
@@ -213,7 +213,7 @@ export default function DashboardPage() {
                   <div>
                     <p className="font-body text-body-sm text-secondary-text">Bazat pe check-in-ul tău</p>
                   </div>
-                  <Link href="/biblioteca" className="btn btn-primary btn-sm">
+                  <Link href="/practici" className="btn btn-primary btn-sm">
                     <Play size={14} weight="fill" />
                     Începe acum
                   </Link>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-heading text-h3 text-deep-green">Continuă de unde ai rămas</h2>
-                  <Link href="/biblioteca" className="font-body text-label-xs text-forest-green hover:underline">
+                  <Link href="/practici" className="font-body text-label-xs text-forest-green hover:underline">
                     Toate <ArrowRight size={12} weight="bold" className="inline" />
                   </Link>
                 </div>

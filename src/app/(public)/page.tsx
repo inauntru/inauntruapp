@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -101,7 +101,7 @@ export default function HomePage() {
       <CheckInModal isOpen={checkInOpen} onClose={() => setCheckInOpen(false)} canSkip={false} />
 
       {/* ── HERO ── */}
-      <section className="relative min-h-[700px] lg:min-h-[820px] flex items-center overflow-hidden" style={{ backgroundColor: "#3D7A5C" }}>
+      <section className="relative min-h-[700px] lg:min-h-[820px] flex items-center overflow-hidden" style={{ backgroundColor: "#2B8C5C" }}>
         {/* Breathing circles */}
         <div
           className="absolute -top-20 -left-20 w-[500px] h-[500px] rounded-full pointer-events-none"
@@ -123,7 +123,7 @@ export default function HomePage() {
                 transition={{ delay: 0.1, duration: 0.5 }}
               >
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/25 text-label-sm font-body text-white">
-                  Prima platformă somatică din România 🌿
+                  Aici gândurile se așază 🌿
                 </span>
               </motion.div>
 
@@ -133,7 +133,7 @@ export default function HomePage() {
                 transition={{ delay: 0.2, duration: 0.7, ease: "easeOut" }}
                 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight"
               >
-                Vindecarea începe<br className="hidden sm:block" /> din interior.
+                Întoarce-te<br className="hidden sm:block" /> la tine.
               </motion.h1>
 
               <motion.p
@@ -143,7 +143,7 @@ export default function HomePage() {
                 className="font-body text-body-lg max-w-lg"
                 style={{ color: "rgba(200, 235, 211, 0.9)" }}
               >
-                Reconectează-te cu înțelepciunea corpului tău prin terapie somatică ghidată. Un spațiu sigur unde știința întâlnește liniștea interioară.
+                Un spațiu sigur creat pentru liniștea ta. Un mod simplu de a-ți liniști mintea și de a reveni în corp, chiar și atunci când gândurile nu se opresc.
               </motion.p>
 
               <motion.div
@@ -156,7 +156,7 @@ export default function HomePage() {
                   href="/register"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-body font-semibold text-body-sm bg-white text-forest-green hover:bg-white/90 transition-colors shadow-md"
                 >
-                  Începe gratuit 14 zile
+                  Vreau mai multă liniște
                   <ArrowRight size={16} weight="bold" />
                 </Link>
                 <Link
@@ -224,7 +224,7 @@ export default function HomePage() {
       </section>
 
       {/* ── INTENT SELECTOR ── */}
-      <section className="py-16 lg:py-20 bg-surface-container-low">
+      <section className="py-16 lg:py-20 bg-indigo-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-10">
@@ -264,7 +264,7 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               className="mt-8 text-center"
             >
-              <Link href={`/biblioteca?intent=${selectedIntent}`} className="btn btn-primary">
+              <Link href={`/practici?intent=${selectedIntent}`} className="btn btn-primary">
                 Arată practici pentru tine <ArrowRight size={18} weight="bold" />
               </Link>
             </motion.div>
@@ -273,14 +273,14 @@ export default function HomePage() {
       </section>
 
       {/* ── PROBLEM ── */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <AnimateIn once={false} from="left">
-              <p className="section-label">Corpul tău îți vorbește</p>
+              <p className="font-ui text-label-sm text-indigo uppercase tracking-widest mb-3">Corpul tău îți vorbește</p>
               <h2 className="font-heading text-h2 text-deep-green mb-4 leading-tight">
                 Simți că stresul a devenit<br />
-                <span className="text-forest-green">modul tău implicit?</span>
+                <span className="text-indigo">modul tău implicit?</span>
               </h2>
               <p className="font-body text-body-lg text-secondary-text mb-8 leading-relaxed">
                 Multe dintre problemele noastre moderne nu sunt „doar în capul nostru". Ele sunt stocate în corp ca tensiune cronică, respirație superficială și oboseală persistentă.
@@ -293,9 +293,9 @@ export default function HomePage() {
               {PROBLEM_CARDS.map((card) => {
                 const Icon = card.icon;
                 return (
-                  <div key={card.title} className="p-6 bg-bg-main border border-sage-border rounded-2xl flex flex-col h-full card-lift">
-                    <div className="w-10 h-10 rounded-xl bg-light-green flex items-center justify-center mb-3 flex-shrink-0">
-                      <Icon size={22} weight="regular" className="text-forest-green" />
+                  <div key={card.title} className="p-6 bg-white border border-indigo-light rounded-2xl flex flex-col h-full card-lift">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-light flex items-center justify-center mb-3 flex-shrink-0">
+                      <Icon size={22} weight="regular" className="text-indigo" />
                     </div>
                     <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">{card.title}</h3>
                     <p className="font-body text-body-sm text-secondary-text flex-1">{card.desc}</p>
@@ -308,7 +308,7 @@ export default function HomePage() {
       </section>
 
       {/* ── SOLUTION (why somatic) ── */}
-      <section className="py-16 lg:py-24 bg-surface-container-low relative overflow-hidden">
+      <section className="py-16 lg:py-24 bg-indigo-bg relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-forest-green/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
@@ -338,7 +338,7 @@ export default function HomePage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="cum-functioneaza" className="py-16 lg:py-24 bg-white">
+      <section id="cum-functioneaza" className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-16">
@@ -346,12 +346,12 @@ export default function HomePage() {
             </h2>
           </AnimateIn>
           <div className="relative">
-            <div className="hidden lg:block absolute top-8 left-[calc(16.67%)] right-[calc(16.67%)] h-0.5 bg-sage-border" />
+            <div className="hidden lg:block absolute top-8 left-[calc(16.67%)] right-[calc(16.67%)] h-0.5 bg-indigo-light" />
             <StaggerChildren once={false} className="grid grid-cols-1 lg:grid-cols-3 gap-12" staggerDelay={0.2}>
               {HOW_IT_WORKS.map((step) => (
                 <div key={step.step} className="flex flex-col items-center text-center">
                   <div className="relative mb-8">
-                    <div className="w-16 h-16 bg-forest-green text-white rounded-full flex items-center justify-center font-heading text-2xl font-bold shadow-button ring-8 ring-white">
+                    <div className="w-16 h-16 bg-indigo text-white rounded-full flex items-center justify-center font-heading text-2xl font-bold shadow-button ring-8 ring-indigo-bg">
                       {step.step}
                     </div>
                   </div>
@@ -365,7 +365,7 @@ export default function HomePage() {
       </section>
 
       {/* ── PLATFORM FEATURES (dark green) ── */}
-      <section className="py-16 lg:py-24 overflow-hidden" style={{ backgroundColor: "#3D7A5C" }}>
+      <section className="py-16 lg:py-24 overflow-hidden" style={{ backgroundColor: "#2B8C5C" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
@@ -378,7 +378,7 @@ export default function HomePage() {
                 </p>
               </div>
               <Link
-                href="/biblioteca"
+                href="/practici"
                 className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-white text-forest-green rounded-full font-body font-semibold text-body-sm hover:bg-white/90 transition-colors"
               >
                 Explorează biblioteca <ArrowRight size={16} weight="bold" />
@@ -410,7 +410,7 @@ export default function HomePage() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-indigo-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-14">
@@ -434,7 +434,7 @@ export default function HomePage() {
                   &ldquo;{t.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-light-green flex items-center justify-center font-bold text-forest-green font-body flex-shrink-0">
+                  <div className="w-11 h-11 rounded-full bg-indigo-light flex items-center justify-center font-bold text-indigo font-body flex-shrink-0">
                     {t.name.split(" ").map((n: string) => n[0]).join("")}
                   </div>
                   <div>
@@ -464,7 +464,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FACILITATORS ── */}
-      <section className="py-16 lg:py-24 bg-bg-main">
+      <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <div className="text-center mb-14">
@@ -504,7 +504,7 @@ export default function HomePage() {
       </section>
 
       {/* ── COMPARISON ── */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-indigo-bg">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-14">
@@ -657,7 +657,7 @@ export default function HomePage() {
       </section>
 
       {/* ── GUARANTEE ── */}
-      <section className="py-16 lg:py-20" style={{ backgroundColor: "#E8C4B8" }}>
+      <section className="py-16 lg:py-20" style={{ backgroundColor: "#EAEBFF" }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimateIn once={false} from="scale">
             <div className="flex items-center justify-center mb-4">
@@ -674,7 +674,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-14">
@@ -718,7 +718,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section className="py-16 lg:py-24 relative overflow-hidden" style={{ backgroundColor: "#3D7A5C" }}>
+      <section className="py-16 lg:py-24 relative overflow-hidden" style={{ backgroundColor: "#2B8C5C" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-14 lg:gap-20">
             <AnimateIn once={false} from="left" className="md:w-1/2 space-y-7">

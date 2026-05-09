@@ -12,7 +12,7 @@ import {
 
 const FOOTER_LINKS = {
   Platformă: [
-    { href: "/biblioteca", label: "Bibliotecă practici" },
+    { href: "/practici", label: "Practici" },
     { href: "/sesiuni-live", label: "Sesiuni Live" },
     { href: "/facilitatori", label: "Facilitatori" },
     { href: "/preturi", label: "Prețuri" },

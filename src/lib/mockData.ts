@@ -1,4 +1,4 @@
-// ─── Mock Data for all pages ───────────────────────────────────────────────
+﻿// ─── Mock Data for all pages ───────────────────────────────────────────────
 
 export const TESTIMONIALS = [
   {
@@ -120,7 +120,7 @@ export const PRACTICES = [
   {
     id: 1,
     title: "Respirație 4-7-8 pentru anxietate",
-    category: "Respirație",
+    category: "Suflu",
     facilitator: "Dr. Ana Ionescu",
     facilitatorSlug: "ana-ionescu",
     duration: 10,
@@ -136,7 +136,7 @@ export const PRACTICES = [
   {
     id: 2,
     title: "Scanarea corpului — eliberare tensiune",
-    category: "Corp",
+    category: "Prezență",
     facilitator: "Elena Stan",
     facilitatorSlug: "elena-stan",
     duration: 20,
@@ -152,7 +152,7 @@ export const PRACTICES = [
   {
     id: 3,
     title: "Shaking — descărcare somatică",
-    category: "Mișcare",
+    category: "Fluiditate",
     facilitator: "Mihai Pop",
     facilitatorSlug: "mihai-pop",
     duration: 15,
@@ -168,7 +168,7 @@ export const PRACTICES = [
   {
     id: 4,
     title: "Ritual de adormire — glanda pineală",
-    category: "Somn",
+    category: "Odihnă",
     facilitator: "Mihai Pop",
     facilitatorSlug: "mihai-pop",
     duration: 20,
@@ -184,7 +184,7 @@ export const PRACTICES = [
   {
     id: 5,
     title: "Activare dimineață — energie vitală",
-    category: "Energie",
+    category: "Vitalitate",
     facilitator: "Cristian Dima",
     facilitatorSlug: "cristian-dima",
     duration: 10,
@@ -200,7 +200,7 @@ export const PRACTICES = [
   {
     id: 6,
     title: "Vocalizare somatică — vocea corpului",
-    category: "Voce",
+    category: "Expresie",
     facilitator: "Cristian Dima",
     facilitatorSlug: "cristian-dima",
     duration: 25,
@@ -216,7 +216,7 @@ export const PRACTICES = [
   {
     id: 7,
     title: "Ancorare în prezent — tehnica 5-4-3-2-1",
-    category: "Respirație",
+    category: "Suflu",
     facilitator: "Dr. Ana Ionescu",
     facilitatorSlug: "ana-ionescu",
     duration: 5,
@@ -232,7 +232,7 @@ export const PRACTICES = [
   {
     id: 8,
     title: "Mișcare expresivă — fluxul liber",
-    category: "Mișcare",
+    category: "Fluiditate",
     facilitator: "Elena Stan",
     facilitatorSlug: "elena-stan",
     duration: 30,
@@ -248,7 +248,7 @@ export const PRACTICES = [
   {
     id: 9,
     title: "NSDR — repaus profund non-somn",
-    category: "Somn",
+    category: "Odihnă",
     facilitator: "Mihai Pop",
     facilitatorSlug: "mihai-pop",
     duration: 20,
@@ -426,7 +426,7 @@ export const BLOG_POSTS = [
     id: 6,
     slug: "somn-si-sistemul-nervos",
     title: "De ce somnul este terapie somatică",
-    category: "Somn",
+    category: "Odihnă",
     author: "Mihai Pop",
     authorRole: "Practician Somatic",
     date: "2026-03-25",
@@ -445,7 +445,7 @@ export const PRICING_PLANS = [
     price: 0,
     priceAnnual: 0,
     description: "Începe călătoria ta somatică",
-    color: "#6B8F78",
+    color: "#3A6850",
     features: [
       "5 practici gratuite pe lună",
       "1 sesiune live pe lună",
@@ -468,7 +468,7 @@ export const PRICING_PLANS = [
     price: 59,
     priceAnnual: 39,
     description: "Experiența completă",
-    color: "#3D7A5C",
+    color: "#2B8C5C",
     features: [
       "Acces nelimitat la toate practicile",
       "Sesiuni live nelimitate",
@@ -488,7 +488,7 @@ export const PRICING_PLANS = [
     price: 89,
     priceAnnual: 59,
     description: "Transformare profundă",
-    color: "#1C3A2A",
+    color: "#0F2E1A",
     features: [
       "Tot ce include Premium",
       "1 sesiune 1:1 pe lună cu facilitatorul",
@@ -616,14 +616,14 @@ export const ADMIN_USERS: AdminUser[] = [
 ];
 
 export const ADMIN_CONTENT = [
-  { id: 1, title: "Respirație 4-7-8 pentru anxietate", category: "Respirație", facilitator: "Dr. Ana Ionescu", status: "active", views: 1247, rating: 4.9 },
-  { id: 2, title: "Scanarea corpului — eliberare tensiune", category: "Corp", facilitator: "Elena Stan", status: "active", views: 983, rating: 4.8 },
-  { id: 3, title: "Shaking — descărcare somatică", category: "Mișcare", facilitator: "Mihai Pop", status: "active", views: 756, rating: 4.7 },
-  { id: 4, title: "Ritual de adormire — glanda pineală", category: "Somn", facilitator: "Mihai Pop", status: "active", views: 1104, rating: 4.9 },
-  { id: 5, title: "Activare dimineață — energie vitală", category: "Energie", facilitator: "Cristian Dima", status: "active", views: 892, rating: 4.6 },
-  { id: 6, title: "Vocalizare somatică — vocea corpului", category: "Voce", facilitator: "Cristian Dima", status: "draft", views: 0, rating: 0 },
-  { id: 7, title: "Ancorare în prezent — 5-4-3-2-1", category: "Respirație", facilitator: "Dr. Ana Ionescu", status: "active", views: 2134, rating: 4.9 },
-  { id: 8, title: "Mișcare expresivă — fluxul liber", category: "Mișcare", facilitator: "Elena Stan", status: "draft", views: 0, rating: 0 },
+  { id: 1, title: "Respirație 4-7-8 pentru anxietate", category: "Suflu", facilitator: "Dr. Ana Ionescu", status: "active", views: 1247, rating: 4.9 },
+  { id: 2, title: "Scanarea corpului — eliberare tensiune", category: "Prezență", facilitator: "Elena Stan", status: "active", views: 983, rating: 4.8 },
+  { id: 3, title: "Shaking — descărcare somatică", category: "Fluiditate", facilitator: "Mihai Pop", status: "active", views: 756, rating: 4.7 },
+  { id: 4, title: "Ritual de adormire — glanda pineală", category: "Odihnă", facilitator: "Mihai Pop", status: "active", views: 1104, rating: 4.9 },
+  { id: 5, title: "Activare dimineață — energie vitală", category: "Vitalitate", facilitator: "Cristian Dima", status: "active", views: 892, rating: 4.6 },
+  { id: 6, title: "Vocalizare somatică — vocea corpului", category: "Expresie", facilitator: "Cristian Dima", status: "draft", views: 0, rating: 0 },
+  { id: 7, title: "Ancorare în prezent — 5-4-3-2-1", category: "Suflu", facilitator: "Dr. Ana Ionescu", status: "active", views: 2134, rating: 4.9 },
+  { id: 8, title: "Mișcare expresivă — fluxul liber", category: "Fluiditate", facilitator: "Elena Stan", status: "draft", views: 0, rating: 0 },
 ];
 
 export const REVENUE_DATA = [

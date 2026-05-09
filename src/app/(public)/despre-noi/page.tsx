@@ -93,21 +93,6 @@ export default function DespreNoiPage() {
         </div>
       </section>
 
-      {/* Mission statement */}
-      <section className="py-16 lg:py-20 bg-surface-container-low">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <AnimateIn from="bottom">
-            <p className="section-label justify-center">Misiunea noastră</p>
-            <blockquote className="font-heading text-3xl lg:text-4xl text-deep-green font-bold leading-snug italic mb-8">
-              "Democratizăm accesul la bunăstare somatică în România și dincolo de ea — o practică la rând."
-            </blockquote>
-            <p className="font-body text-body-lg text-secondary-text">
-              Platforme ca INAUNTRU nu înlocuiesc terapeuții — ci le extind impactul și ajung la oamenii care altfel n-ar fi ajuns niciodată la un cabinet.
-            </p>
-          </AnimateIn>
-        </div>
-      </section>
-
       {/* Values */}
       <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -159,45 +144,6 @@ export default function DespreNoiPage() {
                   ))}
                 </div>
               </Link>
-            ))}
-          </StaggerChildren>
-        </div>
-      </section>
-
-      {/* Vision timeline */}
-      <section className="py-16 lg:py-24 bg-deep-green relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full" style={{ background: "radial-gradient(circle at 20% 50%, rgba(61,122,92,0.8) 0%, transparent 50%)" }} />
-        </div>
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimateIn from="bottom">
-            <div className="text-center mb-14">
-              <p className="font-body text-label-sm text-primary-fixed-dim uppercase tracking-widest mb-3">Viziune</p>
-              <h2 className="font-heading text-h2 text-white">Unde mergem</h2>
-            </div>
-          </AnimateIn>
-
-          <StaggerChildren className="space-y-0 relative" staggerDelay={0.2}>
-            {TIMELINE.map((item, i) => (
-              <div key={item.year} className="flex gap-8 items-start">
-                {/* Timeline dot + line */}
-                <div className="flex flex-col items-center flex-shrink-0 w-14">
-                  <div className="w-10 h-10 rounded-full bg-forest-green flex items-center justify-center shadow-button">
-                    <MapPin size={16} weight="fill" className="text-white" />
-                  </div>
-                  {i < TIMELINE.length - 1 && (
-                    <div className="w-0.5 bg-forest-green/30 flex-1 min-h-[48px] mt-2" />
-                  )}
-                </div>
-                {/* Content */}
-                <div className="pb-12">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="font-heading text-3xl font-bold text-primary-fixed-dim">{item.year}</span>
-                    <span className="font-body text-label-sm text-white/60 uppercase tracking-wider">{item.location}</span>
-                  </div>
-                  <p className="font-body text-body-md text-white/60 max-w-lg">{item.desc}</p>
-                </div>
-              </div>
             ))}
           </StaggerChildren>
         </div>

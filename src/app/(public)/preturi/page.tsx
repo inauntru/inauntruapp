@@ -167,59 +167,8 @@ export default function PreturiPage() {
         </div>
       </div>
 
-      {/* Competitor comparison */}
-      <section className="py-16 bg-surface-container-low">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimateIn from="bottom">
-            <div className="text-center mb-10">
-              <p className="section-label">Comparație</p>
-              <h2 className="section-title">De ce INAUNTRU?</h2>
-            </div>
-          </AnimateIn>
-
-          <div className="overflow-x-auto rounded-card border border-sage-border shadow-card">
-            <table className="w-full min-w-[700px]">
-              <thead>
-                <tr className="bg-light-green border-b border-sage-border">
-                  <th className="text-left py-4 px-6 font-body text-label-sm text-secondary-text w-1/3">Caracteristică</th>
-                  <th className="py-4 px-3 text-center">
-                    <span className="font-heading font-bold text-forest-green text-body-md">INAUNTRU</span>
-                  </th>
-                  <th className="py-4 px-3 text-center font-body text-label-sm text-secondary-text">Somaway</th>
-                  <th className="py-4 px-3 text-center font-body text-label-sm text-secondary-text">Hedepy</th>
-                  <th className="py-4 px-3 text-center font-body text-label-sm text-secondary-text">Headspace</th>
-                  <th className="py-4 px-3 text-center font-body text-label-sm text-secondary-text">Hilio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {COMPARISON_COMPETITORS.map((row, i) => (
-                  <motion.tr
-                    key={row.feature}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.06 }}
-                    className={i % 2 === 0 ? "bg-white" : "bg-bg-main/50"}
-                  >
-                    <td className="py-3 px-6 font-body text-body-sm text-on-surface">{row.feature}</td>
-                    {[row.inauntru, row.somaway, row.hedepy, row.headspace, row.hilio].map((val, j) => (
-                      <td key={j} className="py-3 px-3 text-center">
-                        {val
-                          ? <Check size={18} weight="bold" className={j === 0 ? "text-forest-green mx-auto" : "text-secondary-text/60 mx-auto"} />
-                          : <X size={18} weight="regular" className="text-terracotta/40 mx-auto" />
-                        }
-                      </td>
-                    ))}
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* B2B / Corporate */}
-      <section className="py-16 bg-deep-green">
+      {/* B2B / Corporate — dezactivat temporar până la lansare, reactivează când suntem pregătiți */}
+      {/* <section className="py-16 bg-deep-green">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn from="bottom">
             <div className="grid lg:grid-cols-2 gap-10 items-center">
@@ -259,7 +208,7 @@ export default function PreturiPage() {
             </div>
           </AnimateIn>
         </div>
-      </section>
+      </section> */}
 
       {/* Billing FAQ */}
       <section className="py-16 bg-bg-main">

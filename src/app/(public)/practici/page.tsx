@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,26 +18,93 @@ import {
   Clock,
   SlidersHorizontal,
   X,
+  CaretDown,
+  Check,
 } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { PRACTICES } from "@/lib/mockData";
 
-const CATEGORIES = ["Toate", "Respirație", "Corp", "Mișcare", "Somn", "Energie", "Voce"];
-const DURATIONS = ["Orice", "5 min", "10 min", "20 min+"];
+function FilterDropdown({
+  value,
+  options,
+  onChange,
+  isActive,
+}: {
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+  isActive: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className={`filter-pill flex items-center gap-1.5 ${isActive ? "active" : ""}`}
+      >
+        {value}
+        <CaretDown
+          size={12}
+          weight="bold"
+          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute top-full mt-2 left-0 z-50 bg-white border border-sage-border rounded-xl shadow-modal overflow-hidden min-w-[140px]"
+          >
+            {options.map((opt) => (
+              <button
+                key={opt}
+                onClick={() => { onChange(opt); setOpen(false); }}
+                className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 text-body-sm font-body transition-colors text-left ${
+                  opt === value
+                    ? "bg-light-green text-forest-green font-semibold"
+                    : "text-on-surface hover:bg-light-green/50"
+                }`}
+              >
+                {opt}
+                {opt === value && <Check size={13} weight="bold" className="text-forest-green flex-shrink-0" />}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+const CATEGORIES = ["Toate", "Suflu", "Prezență", "Fluiditate", "Odihnă", "Vitalitate", "Expresie"];
+const DURATIONS = ["Durată", "5 min", "10 min", "20 min+"];
 const LEVELS = ["Toate nivelurile", "Începător", "Intermediar", "Avansat"];
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
-  Respirație: Wind,
-  Corp: Star,
-  Mișcare: PersonSimpleWalk,
-  Somn: Moon,
-  Energie: Lightning,
-  Voce: Microphone,
+  Suflu: Wind,
+  Prezență: Star,
+  Fluiditate: PersonSimpleWalk,
+  Odihnă: Moon,
+  Vitalitate: Lightning,
+  Expresie: Microphone,
 };
 
 export default function BibliotecaPage() {
   const [category, setCategory] = useState("Toate");
-  const [duration, setDuration] = useState("Orice");
+  const [duration, setDuration] = useState("Durată");
   const [level, setLevel] = useState("Toate nivelurile");
   const [search, setSearch] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -56,14 +123,14 @@ export default function BibliotecaPage() {
 
   const activeFiltersCount = [
     category !== "Toate",
-    duration !== "Orice",
+    duration !== "Durată",
     level !== "Toate nivelurile",
     search !== "",
   ].filter(Boolean).length;
 
   const clearFilters = () => {
     setCategory("Toate");
-    setDuration("Orice");
+    setDuration("Durată");
     setLevel("Toate nivelurile");
     setSearch("");
   };
@@ -99,7 +166,7 @@ export default function BibliotecaPage() {
               <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-text" />
               <input
                 type="search"
-                placeholder="Caută practici..."
+                placeholder="De ce ai nevoie acum?"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 rounded-full border border-sage-border text-body-sm font-body bg-white focus:outline-none focus:border-forest-green text-on-surface placeholder-secondary-text"
@@ -121,24 +188,18 @@ export default function BibliotecaPage() {
 
             {/* Duration + Level */}
             <div className="flex gap-2 flex-shrink-0">
-              <select
+              <FilterDropdown
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                className="filter-pill pr-7 bg-white appearance-none cursor-pointer"
-              >
-                {DURATIONS.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
-              <select
+                options={DURATIONS}
+                onChange={setDuration}
+                isActive={duration !== "Durată"}
+              />
+              <FilterDropdown
                 value={level}
-                onChange={(e) => setLevel(e.target.value)}
-                className="filter-pill pr-7 bg-white appearance-none cursor-pointer"
-              >
-                {LEVELS.map((l) => (
-                  <option key={l}>{l}</option>
-                ))}
-              </select>
+                options={LEVELS}
+                onChange={setLevel}
+                isActive={level !== "Toate nivelurile"}
+              />
             </div>
 
             {activeFiltersCount > 0 && (
@@ -155,7 +216,7 @@ export default function BibliotecaPage() {
               <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-text" />
               <input
                 type="search"
-                placeholder="Caută practici..."
+                placeholder="De ce ai nevoie acum?"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-4 py-2.5 rounded-full border border-sage-border text-body-sm font-body bg-white focus:outline-none focus:border-forest-green"

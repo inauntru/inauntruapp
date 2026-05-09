@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFDF9] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#F2F2FF] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">

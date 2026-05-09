@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, SpeakerHigh, SpeakerLow, SpeakerNone, Headphones, VideoCamera } from "@phosphor-icons/react";
@@ -40,7 +40,7 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
   const VolumeIcon = volume === 0 ? SpeakerNone : volume < 50 ? SpeakerLow : SpeakerHigh;
 
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #1C3A2A 0%, #2D5240 50%, #1C3A2A 100%)" }}>
+    <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0F2E1A 0%, #2D5240 50%, #0F2E1A 100%)" }}>
       {/* Top bar */}
       <div className="flex items-center gap-2 px-6 pt-5 pb-2">
         <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">

@@ -20,7 +20,7 @@ import {
 import { REVENUE_DATA, HOURLY_VIEWS, ADMIN_CONTENT, LIVE_SESSIONS } from "@/lib/mockData";
 
 // Simple sparkline using SVG
-function Sparkline({ data, color = "#3D7A5C" }: { data: number[]; color?: string }) {
+function Sparkline({ data, color = "#2B8C5C" }: { data: number[]; color?: string }) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -71,12 +71,12 @@ function AreaChart({ data }: { data: typeof REVENUE_DATA }) {
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-32" preserveAspectRatio="none">
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3D7A5C" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#3D7A5C" stopOpacity="0.02" />
+            <stop offset="0%" stopColor="#2B8C5C" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#2B8C5C" stopOpacity="0.02" />
           </linearGradient>
         </defs>
         <path d={areaPath} fill="url(#areaGrad)" />
-        <polyline points={pts} stroke="#3D7A5C" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={pts} stroke="#2B8C5C" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <div className="flex justify-between mt-1">
         {data.map((d) => (
@@ -91,9 +91,9 @@ function AreaChart({ data }: { data: typeof REVENUE_DATA }) {
 function DonutChart() {
   // Gratuit 52%, Premium 29%, Premium+ 19%
   const segments = [
-    { label: "Gratuit", value: 52, color: "#EAF5EE", stroke: "#6B8F78" },
-    { label: "Premium", value: 29, color: "#3D7A5C", stroke: "#3D7A5C" },
-    { label: "Premium+", value: 19, color: "#1C3A2A", stroke: "#1C3A2A" },
+    { label: "Gratuit", value: 52, color: "#E6F5ED", stroke: "#3A6850" },
+    { label: "Premium", value: 29, color: "#2B8C5C", stroke: "#2B8C5C" },
+    { label: "Premium+", value: 19, color: "#0F2E1A", stroke: "#0F2E1A" },
   ];
   const r = 40;
   const cx = 60;
@@ -124,7 +124,7 @@ function DonutChart() {
           return el;
         })}
         <text x={cx} y={cy - 4} textAnchor="middle" className="fill-deep-green font-bold" fontSize="14" fontFamily="Playfair Display">312</text>
-        <text x={cx} y={cy + 10} textAnchor="middle" fill="#6B8F78" fontSize="8" fontFamily="DM Sans">abonați</text>
+        <text x={cx} y={cy + 10} textAnchor="middle" fill="#3A6850" fontSize="8" fontFamily="DM Sans">abonați</text>
       </svg>
       <div className="space-y-1.5">
         {segments.map((seg) => (
@@ -209,7 +209,7 @@ export default function AdminDashboardPage() {
           <p className="font-heading text-3xl font-bold text-deep-green">234</p>
           <p className="font-body text-label-xs text-secondary-text mt-1">Peak azi: 134 la 20:00</p>
           <div className="mt-3">
-            <Sparkline data={[45, 67, 89, 112, 134, 98, 234]} color="#C4826A" />
+            <Sparkline data={[45, 67, 89, 112, 134, 98, 234]} color="#3D3FAA" />
           </div>
         </div>
 

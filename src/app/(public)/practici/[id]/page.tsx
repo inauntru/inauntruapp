@@ -50,11 +50,11 @@ export default function PracticeDetailPage({ params }: { params: { id: string } 
         {/* Back button */}
         <div className="absolute top-6 left-4 lg:left-8">
           <Link
-            href="/biblioteca"
+            href="/practici"
             className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors font-ui text-body-sm bg-black/25 backdrop-blur-sm px-4 py-2 rounded-full"
           >
             <ArrowLeft size={15} weight="bold" />
-            Bibliotecă
+            Practici
           </Link>
         </div>
 
@@ -195,13 +195,13 @@ export default function PracticeDetailPage({ params }: { params: { id: string } 
               <h2 className="font-heading text-h2 text-deep-green">
                 {related.length > 0 ? "Mai multe din " + practice.category : "Practici recomandate"}
               </h2>
-              <Link href="/biblioteca" className="font-ui text-body-sm text-forest-green hover:text-deep-green transition-colors flex items-center gap-1">
+              <Link href="/practici" className="font-ui text-body-sm text-forest-green hover:text-deep-green transition-colors flex items-center gap-1">
                 Vezi toate <ArrowRight size={13} weight="bold" />
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {fallbackRelated.map((p) => (
-                <Link key={p.id} href={`/biblioteca/${p.id}`} className="block group card card-lift overflow-hidden">
+                <Link key={p.id} href={`/practici/${p.id}`} className="block group card card-lift overflow-hidden">
                   <div className="relative aspect-video overflow-hidden">
                     <Image
                       src={`${p.image}?w=600&q=80`}

@@ -17,11 +17,11 @@ import {
 } from "@phosphor-icons/react";
 
 const NAV_LINKS = [
-  { href: "/biblioteca", label: "Bibliotecă", icon: BookOpen },
+  { href: "/practici", label: "Practici", icon: BookOpen },
   { href: "/sesiuni-live", label: "Sesiuni Live", icon: Video },
   { href: "/facilitatori", label: "Facilitatori", icon: Users },
   { href: "/preturi", label: "Prețuri", icon: CurrencyCircleDollar },
-  { href: "/blog", label: "Blog", icon: Newspaper },
+  { href: "/blog", label: "Inspirație", icon: Newspaper },
   { href: "/despre-noi", label: "Despre noi", icon: Info },
 ];
 
@@ -50,7 +50,7 @@ export default function Navbar() {
         initial={{ y: -60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-sage-border shadow-nav"
+        className="fixed top-0 left-0 right-0 z-50 bg-nav-bg border-b border-nav-border shadow-nav"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -94,10 +94,10 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               <Link href="/login" className="btn btn-ghost btn-sm">
                 <User size={16} weight="regular" />
-                Contul meu
+                Spațiul meu
               </Link>
-              <Link href="/register" className="btn btn-primary btn-sm">
-                Începe gratuit
+              <Link href="/register" className="btn btn-indigo btn-sm">
+                Începe călătoria
               </Link>
             </div>
 
@@ -178,10 +178,10 @@ export default function Navbar() {
               <div className="p-4 border-t border-sage-border space-y-3">
                 <Link href="/login" className="btn btn-ghost w-full">
                   <User size={18} weight="regular" />
-                  Contul meu
+                  Spațiul meu
                 </Link>
-                <Link href="/register" className="btn btn-primary w-full">
-                  Începe gratuit
+                <Link href="/register" className="btn btn-indigo w-full">
+                  Începe călătoria
                 </Link>
               </div>
             </motion.div>

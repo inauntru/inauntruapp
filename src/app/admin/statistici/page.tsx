@@ -36,17 +36,17 @@ const REGIONS = [
 ];
 
 const TRAFFIC_SOURCES = [
-  { source: "Organic Search", sessions: 3241, pct: 41, color: "#3D7A5C" },
-  { source: "Social Media", sessions: 1987, pct: 25, color: "#E8C4B8" },
-  { source: "Direct", sessions: 1243, pct: 16, color: "#6B8F78" },
-  { source: "Referral", sessions: 872, pct: 11, color: "#C4826A" },
-  { source: "Paid", sessions: 567, pct: 7, color: "#1C3A2A" },
+  { source: "Organic Search", sessions: 3241, pct: 41, color: "#2B8C5C" },
+  { source: "Social Media", sessions: 1987, pct: 25, color: "#EAEBFF" },
+  { source: "Direct", sessions: 1243, pct: 16, color: "#3A6850" },
+  { source: "Referral", sessions: 872, pct: 11, color: "#3D3FAA" },
+  { source: "Paid", sessions: 567, pct: 7, color: "#0F2E1A" },
 ];
 
 const DEVICES = [
-  { label: "Mobile", pct: 67, color: "#3D7A5C" },
-  { label: "Desktop", pct: 26, color: "#6B8F78" },
-  { label: "Tablet", pct: 7, color: "#E8C4B8" },
+  { label: "Mobile", pct: 67, color: "#2B8C5C" },
+  { label: "Desktop", pct: 26, color: "#3A6850" },
+  { label: "Tablet", pct: 7, color: "#EAEBFF" },
 ];
 
 function RevenueChart({ data }: { data: typeof REVENUE_DATA }) {
@@ -76,27 +76,27 @@ function RevenueChart({ data }: { data: typeof REVENUE_DATA }) {
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-44">
       <defs>
         <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3D7A5C" stopOpacity="0.2" />
-          <stop offset="100%" stopColor="#3D7A5C" stopOpacity="0" />
+          <stop offset="0%" stopColor="#2B8C5C" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#2B8C5C" stopOpacity="0" />
         </linearGradient>
       </defs>
       {ticks.map((t, i) => {
         const y = padT + chartH - (t / max) * chartH;
         return (
           <g key={i}>
-            <line x1={padL} x2={width - padR} y1={y} y2={y} stroke="#D4E8DC" strokeWidth="1" strokeDasharray="4 4" />
-            <text x={padL - 6} y={y + 4} textAnchor="end" fontSize="9" fill="#6B8F78">
+            <line x1={padL} x2={width - padR} y1={y} y2={y} stroke="#A8DFC0" strokeWidth="1" strokeDasharray="4 4" />
+            <text x={padL - 6} y={y + 4} textAnchor="end" fontSize="9" fill="#3A6850">
               {t >= 1000 ? `${(t / 1000).toFixed(0)}k` : t}
             </text>
           </g>
         );
       })}
       <path d={areaD} fill="url(#revGrad)" />
-      <path d={pathD} fill="none" stroke="#3D7A5C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={pathD} fill="none" stroke="#2B8C5C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {points.map((p, i) => (
         <g key={i}>
-          <circle cx={p.x} cy={p.y} r="4" fill="white" stroke="#3D7A5C" strokeWidth="2" />
-          <text x={p.x} y={height - 6} textAnchor="middle" fontSize="9" fill="#6B8F78">{p.label}</text>
+          <circle cx={p.x} cy={p.y} r="4" fill="white" stroke="#2B8C5C" strokeWidth="2" />
+          <text x={p.x} y={height - 6} textAnchor="middle" fontSize="9" fill="#3A6850">{p.label}</text>
         </g>
       ))}
     </svg>
@@ -119,9 +119,9 @@ function AcquisitionChart({ data }: { data: typeof ACQUISITION_DATA }) {
         const newH = (d.new / maxVal) * chartH;
         return (
           <g key={i}>
-            <rect x={x} y={chartH - returningH} width={barW} height={returningH} fill="#EAF5EE" rx="4" />
-            <rect x={x + barW} y={chartH - newH} width={barW} height={newH} fill="#3D7A5C" rx="4" />
-            <text x={x + barW} y={chartH + padB - 4} textAnchor="middle" fontSize="9" fill="#6B8F78">{d.day}</text>
+            <rect x={x} y={chartH - returningH} width={barW} height={returningH} fill="#E6F5ED" rx="4" />
+            <rect x={x + barW} y={chartH - newH} width={barW} height={newH} fill="#2B8C5C" rx="4" />
+            <text x={x + barW} y={chartH + padB - 4} textAnchor="middle" fontSize="9" fill="#3A6850">{d.day}</text>
           </g>
         );
       })}
