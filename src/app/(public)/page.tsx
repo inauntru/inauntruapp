@@ -505,8 +505,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── COMPARISON ── */}
-      <section className="py-16 lg:py-24 bg-indigo-bg">
+
+      {/* ── COMPARISON — dezactivat temporar, reactivează dacă e nevoie ── */}
+      {/* <section className="py-16 lg:py-24 bg-indigo-bg">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-8 lg:mb-14">
@@ -551,7 +552,7 @@ export default function HomePage() {
             </table>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ── PRICING ── */}
       <section className="py-16 lg:py-24 bg-surface-container-low">
