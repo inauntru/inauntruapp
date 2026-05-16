@@ -731,7 +731,7 @@ export default function HomePage() {
                 Alege să te simți mai bine acum.
               </h2>
               <p className="font-body text-body-lg" style={{ color: "rgba(200, 235, 211, 0.9)" }}>
-                Începe azi primele tale 14 zile gratuit. Fără card, fără obligații.
+                Începe să te simți mai bine imediat. Anulezi oricând, fără bătăi de cap.
               </p>
               <Link
                 href="/register"

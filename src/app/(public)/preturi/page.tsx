@@ -55,12 +55,12 @@ export default function PreturiPage() {
       <section className="py-16 lg:py-24 bg-bg-main">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimateIn from="bottom">
-            <p className="section-label justify-center">Investește în tine</p>
+            <p className="section-label justify-center">Alege claritatea.</p>
             <h1 className="font-heading text-h1 text-deep-green mb-4">
-              Alege planul potrivit
+              Planuri pentru echilibru zilnic.
             </h1>
             <p className="font-body text-body-lg text-secondary-text max-w-xl mx-auto mb-10">
-              Începe-ți călătoria somatică. Alege pachetul care rezonează cu ritmul tău de creștere.
+              Redescoperă-ți starea de bine. Alege varianta care ți se potrivește. E mai simplu decât crezi să te simți din nou tu.
             </p>
 
             {/* Toggle */}
@@ -163,7 +163,7 @@ export default function PreturiPage() {
         {/* Guarantee */}
         <div className="mt-8 flex items-center justify-center gap-3 text-secondary-text font-body text-body-sm">
           <ShieldCheck size={20} weight="fill" className="text-forest-green" />
-          <span>14 zile gratuit cu acces Premium · Fără card · Anulare oricând</span>
+          <span>Încearcă gratuit timp de 14 zile. Fără obligații, doar timp câștigat pentru tine.</span>
         </div>
       </div>
 

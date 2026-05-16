@@ -130,7 +130,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
     thumbnail: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
     description: "O tehnică clasică de respirație care activează sistemul nervos parasimpatic în câteva minute.",
-    longDescription: "Tehnica 4-7-8 este una dintre cele mai studiate metode de respirație pentru calmarea sistemului nervos autonom. Inspiră lent pe nas timp de 4 secunde, reții aerul 7 secunde, expiri complet pe gură în 8 secunde — ciclul repetă semnalul de siguranță direct spre amigdală. Practicată zilnic, această tehnică reduce nivelul de cortizol, îmbunătățește calitatea somnului și crește toleranța la stres în mod sustenabil.",
+    longDescription: "Descriere în curând.",
     tags: ["Anxietate", "Relaxare", "Respirație"],
   },
   {
@@ -146,7 +146,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1545389336-cf090694435e",
     thumbnail: "https://images.unsplash.com/photo-1545389336-cf090694435e",
     description: "Călătorie ghidată prin fiecare parte a corpului pentru a identifica și elibera tensiunile acumulate.",
-    longDescription: "Scanarea corpului este o practică fundamentală în terapia somatică, care readuce atenția în interior și reconectează mintea cu senzațiile fizice. Ghidat pas cu pas de Elena Stan, vei parcurge fiecare regiune a corpului — de la picioare până la creștet — identificând zonele de tensiune, amorțeală sau disconfort. Prin simpla observare fără judecată și cu respirație conștientă, tensiunile musculare și emoționale se eliberează natural, lăsând în urmă o stare de calmare profundă.",
+    longDescription: "Descriere în curând.",
     tags: ["Corp", "Relaxare", "Tensiune"],
   },
   {
@@ -162,7 +162,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
     thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
     description: "Practică TRE (Tension & Trauma Releasing Exercises) pentru descărcarea tensiunilor profunde din corp.",
-    longDescription: "TRE (Tension & Trauma Releasing Exercises) este un protocol dezvoltat de Dr. David Berceli, folosit în prezent la nivel global pentru descărcarea stresului cronic și a traumei stocate în corp. Corpul intră într-o tremuratură naturală și controlată, similar mecanismului pe care animalele îl folosesc spontan după un episod de frică sau pericol. Sub ghidarea lui Mihai Pop, vei fi condus pas cu pas prin seria de exerciții care activează reflexul tremurătoric natural al corpului — o practică sigură, profundă și profund eliberatoare.",
+    longDescription: "Descriere în curând.",
     tags: ["Mișcare", "Traumă", "Descărcare"],
   },
   {
@@ -178,7 +178,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c",
     thumbnail: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c",
     description: "Secvență de relaxare progresivă și vizualizare pentru a intra ușor în somn profund.",
-    longDescription: "Ritualul de adormire combină tehnici de respirație lentă, relaxare musculară progresivă și vizualizare ghidată pentru a pregăti corpul și mintea pentru somnul profund. Activarea conștientă a glandei pineale prin imagini direcționate stimulează producția naturală de melatonină și facilitează intrarea în undele delta specifice somnului regenerativ. Ideal de practicat cu 20 de minute înainte de culcare, în întuneric sau cu lumină caldă slabă, ca parte dintr-un ritual de seară consistent.",
+    longDescription: "Descriere în curând.",
     tags: ["Somn", "Relaxare", "Vizualizare"],
   },
   {
@@ -194,7 +194,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1508672019048-805c876b67e2",
     thumbnail: "https://images.unsplash.com/photo-1508672019048-805c876b67e2",
     description: "Combinație de respirație energizantă și mișcări ușoare pentru a porni ziua cu claritate.",
-    longDescription: "Dimineața reprezintă fereastra neurologică optimă pentru a seta tonul întregii zile. Această practică combină tehnica de respirație Kapalabhati (respirația focului) cu mișcări ușoare de activare corporală pentru a trezi energia Qi, a curăța ceața mentală și a activa cortexul prefrontal. Vei simți primele efecte în mai puțin de 3 minute — claritate, prezență și un val natural de energie fără cofeină sau stimulente externe.",
+    longDescription: "Descriere în curând.",
     tags: ["Energie", "Dimineață", "Claritate"],
   },
   {
@@ -210,7 +210,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
     thumbnail: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
     description: "Explorare ghidată a rezonanțelor vocale pentru eliberarea emoțională și reconectare.",
-    longDescription: "Vocea este unul dintre cele mai directe și mai puternice instrumente de reglare a sistemului nervos vagal. Vocalizarea ghidată prin sunete specifice — hum-uri, vocale prelungite și vibrații toracice — stimulează nervul vag, reduce inflamația cronică și creează rezonanță vindecătoare în cavitățile corpului. Cristian Dima te ghidează printr-o explorare progresivă a propriei voci, accesibilă oricui indiferent de experiența muzicală sau vocală anterioară.",
+    longDescription: "Descriere în curând.",
     tags: ["Voce", "Emoții", "Eliberare"],
   },
   {
@@ -226,7 +226,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
     thumbnail: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
     description: "Tehnică rapidă de grounding senzorial pentru momentele de anxietate sau disociere.",
-    longDescription: "Tehnica 5-4-3-2-1 este un protocol de grounding senzorial utilizat extensiv în terapia traumei, CBT și intervențiile de urgență psihologică. Prin identificarea conștientă a 5 lucruri vizibile, 4 sunete, 3 senzații tactile, 2 mirosuri și 1 gust, sistemul nervos este anchorat rapid în momentul prezent, întrerupând ciclul de anxietate sau disociere. Cu o durată de doar 5 minute, această practică poate fi utilizată oriunde și oricând simți că pierzi contactul cu prezentul.",
+    longDescription: "Descriere în curând.",
     tags: ["Anxietate", "Grounding", "Prezent"],
   },
   {
@@ -242,7 +242,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1518611012118-696072aa579a",
     thumbnail: "https://images.unsplash.com/photo-1518611012118-696072aa579a",
     description: "Practică de mișcare autentică pentru eliberarea emoțiilor blocate și reconectare cu bucuria.",
-    longDescription: "Mișcarea expresivă liberă este o practică avansată de eliberare somatică care invită corpul să se miște fără coregrafie, fără reguli și fără judecată. Bazată pe principii din Authentic Movement, Somatic Dance și terapia prin dans-mișcare, această practică de 30 de minute accesează straturi emoționale profunde prin limbajul nativ și ancestral al corpului. Elena Stan creează un container sigur în care poți explora bucuria, tristețea, furia sau orice altă emoție prin mișcare liberă și autentică.",
+    longDescription: "Descriere în curând.",
     tags: ["Mișcare", "Emoții", "Bucurie"],
   },
   {
@@ -258,7 +258,7 @@ export const PRACTICES = [
     image: "https://images.unsplash.com/photo-1440716659370-f09c5ee55753",
     thumbnail: "https://images.unsplash.com/photo-1440716659370-f09c5ee55753",
     description: "Protocol de recuperare rapidă care restaurează energia mentală în 20 de minute.",
-    longDescription: "Non-Sleep Deep Rest (NSDR) este un protocol de recuperare neurală dezvoltat și popularizat de Dr. Andrew Huberman la Stanford University, bazat pe tehnica tradițională yoga nidra. În 20 de minute, creierul intră în starea theta — aceeași prezentă în somnul REM — restaurând rezervele de dopamină, reducând cortizolul și consolidând memoria de lucru. Studiile clinice arată că o sesiune de 20 minute NSDR poate echivala efectele regenerative ale 1-2 ore de somn, fără a induce somnolență post-sesiune.",
+    longDescription: "Descriere în curând.",
     tags: ["Somn", "Recuperare", "NSDR"],
   },
 ];
@@ -444,14 +444,14 @@ export const PRICING_PLANS = [
     name: "Gratuit",
     price: 0,
     priceAnnual: 0,
-    description: "Începe călătoria ta somatică",
+    description: "Recalibrare rapidă",
     color: "#3A6850",
     features: [
       "5 practici gratuite pe lună",
       "1 sesiune live pe lună",
       "Check-in zilnic",
       "Acces la blog și resurse",
-      "Jurnal somatic de bază",
+      "Monitorizarea progresului",
     ],
     notIncluded: [
       "Bibliotecă completă (70+ practici)",
@@ -464,17 +464,17 @@ export const PRICING_PLANS = [
   },
   {
     id: "premium",
-    name: "Premium",
+    name: "Standard",
     price: 59,
     priceAnnual: 39,
-    description: "Experiența completă",
+    description: "Claritate și echilibru",
     color: "#2B8C5C",
     features: [
       "Acces nelimitat la toate practicile",
       "Sesiuni live nelimitate",
       "Check-in zilnic + harta corpului",
       "Progres personalizat",
-      "Jurnal somatic complet",
+      "Monitorizarea progresului",
       "Recomandări bazate pe check-in",
       "Suport email 48h",
     ],
@@ -484,7 +484,7 @@ export const PRICING_PLANS = [
   },
   {
     id: "premium-plus",
-    name: "Premium+",
+    name: "Premium",
     price: 89,
     priceAnnual: 59,
     description: "Transformare profundă",

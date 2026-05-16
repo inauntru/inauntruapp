@@ -150,9 +150,9 @@ export default function FacilitatoriPage() {
       <section className="py-16 bg-surface-container-low">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimateIn from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green mb-3">Ești practician somatic?</h2>
+            <h2 className="font-heading text-h2 text-deep-green mb-3">Ești facilitator?</h2>
             <p className="font-body text-body-lg text-secondary-text mb-8">
-              Alătură-te echipei INAUNTRU și ajunge la mii de persoane care caută ghidare somatică de calitate.
+              Fii parte din echipa noastră și oferă îndrumare celor care vor să se simtă din nou bine în corpul lor.
             </p>
             <Link href="/contact" className="btn btn-primary">
               Aplică ca facilitator <ArrowRight size={16} weight="bold" />

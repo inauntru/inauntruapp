@@ -11,6 +11,12 @@ import {
   Play,
 } from "@phosphor-icons/react";
 import { FACILITATORS, PRACTICES } from "@/lib/mockData";
+
+function genitiveName(fullName: string): string {
+  const first = fullName.split(" ")[0];
+  if (first.endsWith("a")) return first.slice(0, -1) + "ei";
+  return `lui ${first}`;
+}
 import { getFacilitators } from "@/lib/getFacilitators";
 import { useUsers } from "@/contexts/UsersContext";
 
@@ -137,7 +143,7 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="font-heading text-h2 text-deep-green mb-8 flex items-center gap-2">
               <BookOpen size={24} weight="regular" className="text-forest-green" />
-              Practicile lui {facilitator.name.split(" ")[0]}
+              Practicile {genitiveName(facilitator.name)}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {practices.map((p) => (
