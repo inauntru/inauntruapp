@@ -58,7 +58,7 @@ const SOLUTION_CARDS = [
 ];
 
 const HOW_IT_WORKS = [
-  { step: "1", title: "Evaluare Somatică", desc: "Identificăm unde este blocată energia în corpul tău printr-un chestionar de autodescoperire ghidat.", icon: Heartbeat },
+  { step: "1", title: "Evaluare Inițială", desc: "Identificăm unde este blocată energia în corpul tău printr-un chestionar de autodescoperire ghidat.", icon: Heartbeat },
   { step: "2", title: "Practică Zilnică", desc: "Primești un program personalizat de 10–20 minute cu exerciții de respirație, mișcare și conștientizare.", icon: Play },
   { step: "3", title: "Monitorizare Progres", desc: "Urmărești cum se schimbă starea ta de bine prin jurnalul de senzații și check-in-uri zilnice.", icon: ChartLine },
 ];
@@ -67,7 +67,7 @@ const PLATFORM_FEATURES = [
   { icon: BookOpen, title: "Biblioteca", desc: "70+ sesiuni audio și video de la facilitatori certificați, disponibile oricând." },
   { icon: VideoCamera, title: "Sesiuni LIVE", desc: "Cercuri de vindecare și workshop-uri interactive săptămânale cu facilitatorii noștri." },
   { icon: Heartbeat, title: "Check-in Zilnic", desc: "Sistem inteligent care îți recomandă practica potrivită stării tale de azi." },
-  { icon: NotePencil, title: "Jurnal Somatic", desc: "Spațiu privat pentru a reflecta asupra senzațiilor și progresului tău în timp." },
+  { icon: NotePencil, title: "Monitorizarea progresului", desc: "Notează cum te simți și urmărește-ți evoluția pas cu pas." },
 ];
 
 const COMPARISON_ROWS = [
@@ -143,7 +143,7 @@ export default function HomePage() {
                 className="font-body text-body-lg max-w-lg"
                 style={{ color: "rgba(200, 235, 211, 0.9)" }}
               >
-                Un spațiu sigur creat pentru liniștea ta. Un mod simplu de a-ți liniști mintea și de a reveni în corp, chiar și atunci când gândurile nu se opresc.
+                Resetare rapidă în mai puțin de 2 minute. Metode simple pentru momentele când te simți blocat și ai nevoie de un nou început.
               </motion.p>
 
               <motion.div
@@ -228,7 +228,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-10">
-              Ce fel de spațiu interior cauți azi?
+              De ce ai nevoie în acest moment?
             </h2>
           </AnimateIn>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -279,8 +279,8 @@ export default function HomePage() {
             <AnimateIn once={false} from="left">
               <p className="font-ui text-label-sm text-indigo uppercase tracking-widest mb-3">Corpul tău îți vorbește</p>
               <h2 className="font-heading text-h2 text-deep-green mb-4 leading-tight">
-                Simți că stresul a devenit<br />
-                <span className="text-indigo">modul tău implicit?</span>
+                Te simți copleșit de gânduri?<br />
+                <span className="text-indigo">Recuperează-ți timpul pierdut în analiză și revino la ce contează pentru tine.</span>
               </h2>
               <p className="font-body text-body-lg text-secondary-text mb-8 leading-relaxed">
                 Multe dintre problemele noastre moderne nu sunt „doar în capul nostru". Ele sunt stocate în corp ca tensiune cronică, respirație superficială și oboseală persistentă.
@@ -307,8 +307,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── SOLUTION (why somatic) ── */}
-      <section className="py-16 lg:py-24 bg-indigo-bg relative overflow-hidden">
+      {/* ── SOLUTION (why somatic) — dezactivat temporar ── */}
+      {/* <section className="py-16 lg:py-24 bg-indigo-bg relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-forest-green/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
@@ -335,7 +335,7 @@ export default function HomePage() {
             })}
           </StaggerChildren>
         </div>
-      </section>
+      </section> */}
 
       {/* ── HOW IT WORKS ── */}
       <section id="cum-functioneaza" className="py-16 lg:py-24 bg-surface-container-low">
@@ -669,10 +669,10 @@ export default function HomePage() {
               <ShieldCheck size={48} weight="fill" className="text-deep-green" />
             </div>
             <h2 className="font-heading text-h2 text-deep-green mb-3">
-              14 zile gratuit — testează Premium
+              Testează gratuit timp de 14 zile.
             </h2>
             <p className="font-body text-body-lg text-deep-green/70 max-w-xl mx-auto">
-              Primele 14 zile sunt complet gratuite cu acces la planul Premium. Planul Premium Plus nu este inclus în perioada de probă. Fără card, fără surprize.
+              Primești acces la toate metodele noastre de recalibrare.
             </p>
           </AnimateIn>
         </div>
@@ -728,7 +728,7 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-14 lg:gap-20">
             <AnimateIn once={false} from="left" className="md:w-1/2 space-y-7">
               <h2 className="font-heading text-4xl lg:text-5xl text-white leading-tight font-bold">
-                Gata să te simți din nou bine în corpul tău?
+                Alege să te simți mai bine acum.
               </h2>
               <p className="font-body text-body-lg" style={{ color: "rgba(200, 235, 211, 0.9)" }}>
                 Începe azi primele tale 14 zile gratuit. Fără card, fără obligații.

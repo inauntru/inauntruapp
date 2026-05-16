@@ -64,6 +64,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
   const [step, setStep] = useState(1);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
+  const [noTension, setNoTension] = useState(false);
   const [selectedIntensity, setSelectedIntensity] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [completed, setCompleted] = useState(false);
@@ -73,6 +74,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
       setStep(1);
       setSelectedMood(null);
       setSelectedZones([]);
+      setNoTension(false);
       setSelectedIntensity(null);
       setNote("");
       setCompleted(false);
@@ -80,6 +82,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
   }, [isOpen]);
 
   const toggleZone = (zone: string) => {
+    setNoTension(false);
     setSelectedZones((prev) =>
       prev.includes(zone) ? prev.filter((z) => z !== zone) : [...prev, zone]
     );
@@ -101,6 +104,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
   };
 
   const canProceedStep1 = selectedMood !== null;
+  const canProceedStep2 = selectedZones.length > 0 || noTension;
   const canProceedStep3 = selectedIntensity !== null;
 
   return (
@@ -245,7 +249,10 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
                                 </motion.button>
                               ))}
                             </div>
-                            <button onClick={() => setSelectedZones([])} className="mt-3 font-body text-label-xs text-secondary-text hover:text-forest-green transition-colors underline">
+                            <button
+                              onClick={() => { setNoTension(true); setSelectedZones([]); setTimeout(goNext, 200); }}
+                              className="mt-3 px-3 py-1.5 rounded-full text-body-sm font-body font-medium border border-sage-border bg-white text-secondary-text hover:border-forest-green transition-all duration-200"
+                            >
                               Nu simt tensiune nicăieri
                             </button>
                           </div>
@@ -311,8 +318,8 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
                       {step < 3 ? (
                         <button
                           onClick={goNext}
-                          disabled={step === 1 && !canProceedStep1}
-                          className={`btn btn-primary btn-sm ${step === 1 && !canProceedStep1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                          disabled={(step === 1 && !canProceedStep1) || (step === 2 && !canProceedStep2)}
+                          className={`btn btn-primary btn-sm ${(step === 1 && !canProceedStep1) || (step === 2 && !canProceedStep2) ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
                           Continuă <ArrowRight size={16} weight="bold" />
                         </button>
