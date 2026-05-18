@@ -91,7 +91,23 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
   const goNext = () => setStep((s) => s + 1);
   const goBack = () => setStep((s) => s - 1);
 
-  const handleComplete = () => setCompleted(true);
+  const handleComplete = async () => {
+    setCompleted(true);
+    try {
+      await fetch("/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mood: selectedMood,
+          body_zones: selectedZones,
+          intensity: selectedIntensity,
+          note: note || null,
+        }),
+      });
+    } catch {
+      // Silently ignore — completion screen already shown
+    }
+  };
 
   const recommendations = PRACTICES.filter((p) =>
     (MOOD_PRACTICES[selectedMood ?? "ok"] ?? [1, 2, 5]).includes(p.id)

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,10 +17,18 @@ const BLOG_IMAGES = [
 const CATEGORIES = ["Toate", "Educație", "Practici", "Știință", "Resurse", "Somn"];
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState(BLOG_POSTS);
   const [category, setCategory] = useState("Toate");
 
-  const featured = BLOG_POSTS.find((p) => p.isFeatured)!;
-  const filtered = BLOG_POSTS.filter((p) => !p.isFeatured && (category === "Toate" || p.category === category));
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setPosts(data); })
+      .catch(() => {});
+  }, []);
+
+  const featured = posts.find((p) => p.isFeatured) ?? posts[0];
+  const filtered = posts.filter((p) => p !== featured && (category === "Toate" || p.category === category));
 
   return (
     <div className="min-h-screen bg-bg-main">

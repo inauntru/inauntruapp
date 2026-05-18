@@ -24,6 +24,8 @@ import {
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { PRACTICES } from "@/lib/mockData";
 
+type Practice = typeof PRACTICES[0];
+
 function FilterDropdown({
   value,
   options,
@@ -103,14 +105,22 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 };
 
 export default function BibliotecaPage() {
+  const [practices, setPractices] = useState<Practice[]>(PRACTICES);
   const [category, setCategory] = useState("Toate");
   const [duration, setDuration] = useState("Durată");
   const [level, setLevel] = useState("Toate nivelurile");
   const [search, setSearch] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  useEffect(() => {
+    fetch("/api/practices")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setPractices(data); })
+      .catch(() => {});
+  }, []);
+
   const filtered = useMemo(() => {
-    return PRACTICES.filter((p) => {
+    return practices.filter((p) => {
       if (category !== "Toate" && p.category !== category) return false;
       if (level !== "Toate nivelurile" && p.level !== level) return false;
       if (duration === "5 min" && p.duration > 5) return false;
@@ -119,7 +129,7 @@ export default function BibliotecaPage() {
       if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.category.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [category, duration, level, search]);
+  }, [practices, category, duration, level, search]);
 
   const activeFiltersCount = [
     category !== "Toate",

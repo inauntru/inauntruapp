@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User } from "@phosphor-icons/react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
+  const { signIn, signUp } = useAuth();
+  const router = useRouter();
   const [view, setView] = useState<"login" | "register">("login");
 
   // Login state
@@ -13,6 +17,7 @@ export default function LoginPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   // Register state
   const [firstName, setFirstName] = useState("");
@@ -22,19 +27,34 @@ export default function LoginPage() {
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [regLoading, setRegLoading] = useState(false);
+  const [regError, setRegError] = useState<string | null>(null);
+  const [regSuccess, setRegSuccess] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoginLoading(false);
+    setLoginError(null);
+    const { error } = await signIn(loginEmail, loginPassword);
+    if (error) {
+      setLoginError("Email sau parolă incorectă.");
+      setLoginLoading(false);
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setRegLoading(false);
+    setRegError(null);
+    const { error } = await signUp(regEmail, regPassword, firstName, lastName);
+    if (error) {
+      setRegError("A apărut o eroare. Încearcă din nou.");
+      setRegLoading(false);
+    } else {
+      setRegSuccess(true);
+      setRegLoading(false);
+    }
   };
 
   return (
@@ -95,6 +115,9 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              {loginError && (
+                <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-2 font-body">{loginError}</p>
+              )}
               <button
                 type="submit"
                 disabled={loginLoading || !loginEmail || !loginPassword}
@@ -237,6 +260,10 @@ export default function LoginPage() {
                 </span>
               </label>
 
+              {regError && (
+                <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-2 font-body">{regError}</p>
+              )}
+
               <button
                 type="submit"
                 disabled={regLoading || !firstName || !lastName || !regEmail || !regPassword || !agreed}
@@ -249,6 +276,12 @@ export default function LoginPage() {
                 )}
               </button>
             </form>
+
+            {regSuccess && (
+              <div className="mt-4 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-center">
+                <p className="font-body text-body-sm text-green-700">Contul a fost creat! Verifică emailul pentru a-l confirma.</p>
+              </div>
+            )}
 
             <p className="text-center font-body text-body-sm text-secondary-text/70 mt-5 italic">
               "Fiecare respirație este un nou început."

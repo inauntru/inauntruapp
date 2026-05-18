@@ -1,25 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
-import { getFacilitators } from "@/lib/getFacilitators";
-import { useUsers } from "@/contexts/UsersContext";
 
 const ALL_SPECIALTIES = ["Toți", "Traumă", "Anxietate", "Burnout", "Somn", "Energie", "Mișcare", "Respirație", "Relații", "Meditație", "Reglare", "Corp", "Stres", "Claritate"];
 
+type Facilitator = typeof FACILITATORS_DATA[0];
+
 export default function FacilitatoriPage() {
-  const { users } = useUsers();
+  const [facilitators, setFacilitators] = useState<Facilitator[]>(FACILITATORS_DATA);
   const [specialty, setSpecialty] = useState("Toți");
   const [search, setSearch] = useState("");
 
-  const allFacilitators = [...FACILITATORS_DATA, ...getFacilitators(users)];
+  useEffect(() => {
+    fetch("/api/facilitators")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          // Normalize API shape to match FACILITATORS_DATA shape
+          setFacilitators(data.map((f) => ({
+            id: f.id,
+            slug: f.slug,
+            name: f.name,
+            specialty: f.title ?? f.specialty ?? "",
+            bio: f.bio ?? "",
+            image: f.photo ?? f.image ?? "",
+            rating: f.rating ?? 5.0,
+            sessions: f.reviews ?? f.sessions ?? 0,
+            tags: f.tags ?? [],
+          })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
-  const filtered = allFacilitators.filter((f) => {
+  const filtered = facilitators.filter((f) => {
     if (specialty !== "Toți" && !f.tags.includes(specialty)) return false;
     if (search && !f.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;

@@ -15,6 +15,7 @@ import {
   List,
   X,
   Leaf,
+  EnvelopeSimple,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { icon: Users, label: "Utilizatori", href: "/admin/utilizatori" },
   { icon: CalendarBlank, label: "Sesiuni LIVE", href: "/admin/sesiuni" },
   { icon: CreditCard, label: "Abonamente", href: "/admin/abonamente" },
+  { icon: EnvelopeSimple, label: "Emailuri", href: "/admin/emailuri" },
   { icon: ChartLine, label: "Statistici", href: "/admin/statistici" },
   { icon: GearSix, label: "Setări", href: "/admin/setari" },
 ];

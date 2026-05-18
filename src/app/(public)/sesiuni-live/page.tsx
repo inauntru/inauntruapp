@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,10 +32,18 @@ function formatTime(dateStr: string) {
 }
 
 export default function SesiuniLivePage() {
+  const [sessions, setSessions] = useState(LIVE_SESSIONS);
   const [selectedDay, setSelectedDay] = useState(0);
 
-  const featured = LIVE_SESSIONS[0];
-  const upcoming = LIVE_SESSIONS.slice(1);
+  useEffect(() => {
+    fetch("/api/sessions")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setSessions(data); })
+      .catch(() => {});
+  }, []);
+
+  const featured = sessions[0];
+  const upcoming = sessions.slice(1);
 
   const spotsPercent = (s: typeof featured) =>
     Math.round(((s.spotsTotal - s.spotsLeft) / s.spotsTotal) * 100);

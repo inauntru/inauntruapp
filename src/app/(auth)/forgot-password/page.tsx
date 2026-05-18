@@ -4,18 +4,27 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Envelope, ArrowRight, ArrowLeft, Check } from "@phosphor-icons/react";
+import { supabase } from "@/lib/supabase";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    setError("");
+    const { error: authError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
     setLoading(false);
-    setSent(true);
+    if (authError) {
+      setError(authError.message);
+    } else {
+      setSent(true);
+    }
   };
 
   return (
@@ -54,6 +63,10 @@ export default function ForgotPasswordPage() {
                     />
                   </div>
                 </div>
+
+                {error && (
+                  <p className="font-body text-body-sm text-red-600 bg-red-50 rounded-lg px-4 py-2">{error}</p>
+                )}
 
                 <button type="submit" disabled={loading || !email} className="btn btn-primary w-full disabled:opacity-50">
                   {loading ? (

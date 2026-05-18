@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
+import { useAuth } from "@/contexts/AuthContext";
 import { LIVE_SESSIONS, PRACTICES } from "@/lib/mockData";
 
 function formatDate() {
@@ -40,8 +41,23 @@ const RECENT_PRACTICES = PRACTICES.slice(0, 3);
 const UPCOMING_SESSION = LIVE_SESSIONS[0];
 
 export default function DashboardPage() {
+  const { profile } = useAuth();
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [checkInDone, setCheckInDone] = useState(false);
+  const [stats, setStats] = useState({ streak: 0, minutesPracticed: 0, checkInsCount: 0 });
+
+  const firstName = profile?.first_name || "acolo";
+  const lastName = profile?.last_name || "";
+  const initials = [profile?.first_name?.[0], profile?.last_name?.[0]].filter(Boolean).join("").toUpperCase() || "U";
+  const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Utilizator";
+  const planLabel = profile?.plan === "premium" ? "Premium" : profile?.plan === "standard" ? "Standard" : "Gratuit";
+
+  useEffect(() => {
+    fetch("/api/dashboard/stats")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data) setStats(data); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const done = localStorage.getItem("checkin-today") === new Date().toDateString();
@@ -108,11 +124,11 @@ export default function DashboardPage() {
           <div className="px-3 pt-6 border-t border-white/10">
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors cursor-pointer">
               <div className="w-8 h-8 rounded-full bg-forest-green flex items-center justify-center">
-                <span className="text-white text-xs font-bold">ED</span>
+                <span className="text-white text-xs font-bold">{initials}</span>
               </div>
               <div>
-                <p className="font-body text-body-sm font-semibold text-white">Elena Dima</p>
-                <p className="font-body text-label-xs text-white/40">Premium</p>
+                <p className="font-body text-body-sm font-semibold text-white">{fullName}</p>
+                <p className="font-body text-label-xs text-white/40">{planLabel}</p>
               </div>
             </div>
           </div>
@@ -130,7 +146,7 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h1 className="font-heading text-h1 text-deep-green">
-                  Bună, Elena 🌿
+                  Bună, {firstName} 🌿
                 </h1>
                 <p className="font-body text-body-md text-secondary-text capitalize">{formatDate()}</p>
               </div>
@@ -156,9 +172,9 @@ export default function DashboardPage() {
           {/* Stats row */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             {[
-              { icon: Flame, label: "Zile consecutive", value: 7, suffix: "" },
-              { icon: Clock, label: "Minute practicate", value: 340, suffix: "" },
-              { icon: VideoCamera, label: "Sesiuni live", value: 4, suffix: "" },
+              { icon: Flame, label: "Zile consecutive", value: stats.streak },
+              { icon: Clock, label: "Minute practicate", value: stats.minutesPracticed },
+              { icon: VideoCamera, label: "Check-in-uri", value: stats.checkInsCount },
             ].map((stat, i) => {
               const Icon = stat.icon;
               return (
@@ -173,7 +189,7 @@ export default function DashboardPage() {
                     <Icon size={18} weight="fill" className="text-forest-green" />
                   </div>
                   <p className="font-heading text-2xl font-bold text-deep-green">
-                    <CountUp to={stat.value} suffix={stat.suffix} />
+                    <CountUp to={stat.value} />
                   </p>
                   <p className="font-body text-label-xs text-secondary-text">{stat.label}</p>
                 </motion.div>

@@ -1,19 +1,117 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, CalendarBlank, Clock, Users, VideoCamera, X, PencilSimple, Trash, CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { LIVE_SESSIONS } from "@/lib/mockData";
+import { Plus, CalendarBlank, Clock, Users, VideoCamera, X, PencilSimple, Trash } from "@phosphor-icons/react";
 
-const TABS = ["Viitoare", "Trecute", "Anulate"];
+interface LiveSession {
+  id: number;
+  title: string;
+  facilitator_name: string | null;
+  scheduled_at: string;
+  duration: number;
+  spots_total: number;
+  spots_left: number;
+  is_premium: boolean;
+  meeting_url: string | null;
+  status: string;
+}
 
-const MONTHS = ["Aprilie 2026", "Mai 2026", "Iunie 2026"];
+const EMPTY_FORM = {
+  title: "",
+  facilitator_name: "",
+  date: "",
+  time: "",
+  duration: 60,
+  spots_total: 25,
+  is_premium: false,
+  meeting_url: "",
+};
 
 export default function AdminSessionsPage() {
-  const [tab, setTab] = useState("Viitoare");
-  const [view, setView] = useState<"list" | "calendar">("list");
+  const [sessions, setSessions] = useState<LiveSession[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(1);
+  const [editTarget, setEditTarget] = useState<LiveSession | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  async function fetchSessions() {
+    setLoading(true);
+    const res = await fetch("/api/admin/sessions");
+    if (res.ok) setSessions(await res.json());
+    setLoading(false);
+  }
+
+  useEffect(() => { fetchSessions(); }, []);
+
+  function openAdd() {
+    setEditTarget(null);
+    setForm(EMPTY_FORM);
+    setError("");
+    setShowModal(true);
+  }
+
+  function openEdit(s: LiveSession) {
+    setEditTarget(s);
+    const dt = new Date(s.scheduled_at);
+    setForm({
+      title: s.title,
+      facilitator_name: s.facilitator_name ?? "",
+      date: dt.toISOString().split("T")[0],
+      time: dt.toTimeString().slice(0, 5),
+      duration: s.duration,
+      spots_total: s.spots_total,
+      is_premium: s.is_premium,
+      meeting_url: s.meeting_url ?? "",
+    });
+    setError("");
+    setShowModal(true);
+  }
+
+  async function handleSave() {
+    if (!form.title.trim() || !form.date || !form.time) {
+      setError("Titlul, data și ora sunt obligatorii");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    const scheduled_at = new Date(`${form.date}T${form.time}:00`).toISOString();
+    const payload = {
+      title: form.title,
+      facilitator_name: form.facilitator_name || null,
+      scheduled_at,
+      duration: Number(form.duration),
+      spots_total: Number(form.spots_total),
+      spots_left: editTarget ? editTarget.spots_left : Number(form.spots_total),
+      is_premium: form.is_premium,
+      meeting_url: form.meeting_url || null,
+    };
+
+    const url = editTarget ? `/api/admin/sessions/${editTarget.id}` : "/api/admin/sessions";
+    const method = editTarget ? "PUT" : "POST";
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      setShowModal(false);
+      fetchSessions();
+    } else {
+      const data = await res.json();
+      setError(data.error ?? "Eroare la salvare");
+    }
+    setSaving(false);
+  }
+
+  async function handleDelete(id: number) {
+    await fetch(`/api/admin/sessions/${id}`, { method: "DELETE" });
+    setSessions((prev) => prev.filter((s) => s.id !== id));
+    setDeleteTarget(null);
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -21,181 +119,215 @@ export default function AdminSessionsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-heading text-h2 text-deep-green">Sesiuni LIVE</h1>
-          <p className="font-body text-body-sm text-secondary-text">{LIVE_SESSIONS.length} sesiuni programate</p>
+          <p className="font-body text-body-sm text-secondary-text">
+            {loading ? "Se încarcă..." : `${sessions.length} sesiuni programate`}
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex border border-sage-border rounded-full overflow-hidden">
-            {["list", "calendar"].map((v) => (
-              <button
-                key={v}
-                onClick={() => setView(v as "list" | "calendar")}
-                className={`px-4 py-2 font-body text-label-xs transition-all ${view === v ? "bg-forest-green text-white" : "text-secondary-text hover:bg-light-green"}`}
-              >
-                {v === "list" ? "Listă" : "Calendar"}
-              </button>
-            ))}
-          </div>
-          <button onClick={() => setShowModal(true)} className="btn btn-primary btn-sm">
-            <Plus size={16} weight="bold" /> Adaugă sesiune
-          </button>
-        </div>
-      </div>
-
-      {/* Calendar view */}
-      {view === "calendar" && (
-        <div className="card bg-white p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <button onClick={() => setCurrentMonth((m) => Math.max(0, m - 1))} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green">
-              <CaretLeft size={16} />
-            </button>
-            <h3 className="font-heading text-h3 text-deep-green">{MONTHS[currentMonth]}</h3>
-            <button onClick={() => setCurrentMonth((m) => Math.min(2, m + 1))} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green">
-              <CaretRight size={16} />
-            </button>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"].map((d) => (
-              <div key={d} className="py-2 font-body text-label-xs text-secondary-text uppercase tracking-wider">{d}</div>
-            ))}
-            {Array.from({ length: 35 }).map((_, i) => {
-              const day = i - 2;
-              const isSession = [5, 11, 18, 25].includes(day);
-              return (
-                <div
-                  key={i}
-                  className={`py-2.5 rounded-xl font-body text-body-sm cursor-pointer transition-colors relative ${
-                    day < 1 || day > 31 ? "text-secondary-text/30" :
-                    isSession ? "bg-light-green text-forest-green font-semibold hover:bg-forest-green hover:text-white" :
-                    "hover:bg-light-green/50 text-on-surface"
-                  }`}
-                >
-                  {day > 0 && day <= 31 ? day : ""}
-                  {isSession && day > 0 && (
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-forest-green" />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-sage-border mb-4">
-        {TABS.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-3 font-body text-body-sm font-medium border-b-2 -mb-px transition-all ${
-              tab === t ? "border-forest-green text-forest-green" : "border-transparent text-secondary-text hover:text-deep-green"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
+        <button onClick={openAdd} className="btn btn-primary btn-sm">
+          <Plus size={16} weight="bold" /> Adaugă sesiune
+        </button>
       </div>
 
       {/* Sessions list */}
-      <div className="space-y-4">
-        {tab === "Viitoare" ? LIVE_SESSIONS.map((s) => (
-          <div key={s.id} className="card bg-white p-5 flex flex-col md:flex-row gap-4 md:items-center">
-            <div className="w-12 h-12 bg-light-green rounded-xl flex items-center justify-center flex-shrink-0">
-              <VideoCamera size={20} weight="regular" className="text-forest-green" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-body font-semibold text-body-md text-deep-green">{s.title}</h3>
-                {s.isPremium && <span className="tag tag-green">Premium</span>}
-                <span className="tag tag-outline">{s.type}</span>
-              </div>
-              <p className="font-body text-label-xs text-secondary-text mb-2">{s.facilitator}</p>
-              <div className="flex flex-wrap gap-4 text-label-xs text-secondary-text font-body">
-                <span className="flex items-center gap-1"><CalendarBlank size={12} />{new Date(s.date).toLocaleDateString("ro-RO", { weekday: "short", day: "numeric", month: "short" })}</span>
-                <span className="flex items-center gap-1"><Clock size={12} />{new Date(s.date).toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" })} · {s.duration} min</span>
-                <span className="flex items-center gap-1"><Users size={12} />{s.spotsLeft}/{s.spotsTotal} locuri</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-light-green text-secondary-text hover:text-forest-green transition-colors">
-                <PencilSimple size={14} />
-              </button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-secondary-text hover:text-terracotta transition-colors">
-                <Trash size={14} />
-              </button>
-            </div>
+      {!loading && sessions.length === 0 ? (
+        <div className="card bg-white p-16 flex flex-col items-center justify-center text-center">
+          <div className="w-16 h-16 bg-light-green rounded-2xl flex items-center justify-center mb-4">
+            <VideoCamera size={28} className="text-forest-green" />
           </div>
-        )) : (
-          <div className="text-center py-16 text-secondary-text font-body text-body-md">
-            {tab === "Trecute" ? "3 sesiuni anterioare disponibile" : "Nicio sesiune anulată"}
-          </div>
-        )}
-      </div>
+          <h3 className="font-heading text-h3 text-deep-green mb-2">Nicio sesiune programată</h3>
+          <p className="font-body text-body-sm text-secondary-text max-w-sm mb-6">
+            Adaugă prima sesiune LIVE cu un facilitator.
+          </p>
+          <button onClick={openAdd} className="btn btn-primary btn-sm">
+            <Plus size={14} weight="bold" /> Adaugă prima sesiune
+          </button>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {sessions.map((s) => {
+            const dt = new Date(s.scheduled_at);
+            const booked = s.spots_total - s.spots_left;
+            return (
+              <div key={s.id} className="card bg-white p-5 flex items-center gap-4">
+                <div className="w-12 h-12 bg-light-green rounded-xl flex-shrink-0 flex items-center justify-center">
+                  <VideoCamera size={20} className="text-forest-green" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-body font-semibold text-body-sm text-deep-green line-clamp-1">{s.title}</h3>
+                    {s.is_premium && <span className="tag tag-green text-xs">Premium</span>}
+                    <span className={`tag text-xs ${s.status === "live" ? "bg-red-100 text-red-600 border-red-200 border" : "bg-forest-green/10 text-forest-green border-forest-green/20 border"}`}>
+                      {s.status === "live" ? "LIVE" : s.status === "upcoming" ? "Programat" : s.status}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 font-body text-label-xs text-secondary-text">
+                    <span className="flex items-center gap-1"><CalendarBlank size={12} />{dt.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" })}</span>
+                    <span className="flex items-center gap-1"><Clock size={12} />{dt.toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" })} · {s.duration} min</span>
+                    <span className="flex items-center gap-1"><Users size={12} />{booked}/{s.spots_total} locuri</span>
+                    {s.facilitator_name && <span>{s.facilitator_name}</span>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <button
+                    onClick={() => openEdit(s)}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-light-green transition-colors text-secondary-text hover:text-forest-green"
+                  >
+                    <PencilSimple size={14} />
+                  </button>
+                  <button
+                    onClick={() => setDeleteTarget(s.id)}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 transition-colors text-secondary-text hover:text-terracotta"
+                  >
+                    <Trash size={14} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Add Session Modal */}
+      {/* Add / Edit Session Modal */}
       <AnimatePresence>
         {showModal && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowModal(false)} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowModal(false)} />
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-2xl shadow-modal w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-heading text-h3 text-deep-green">Adaugă sesiune nouă</h2>
+                <h2 className="font-heading text-h3 text-deep-green">
+                  {editTarget ? "Editează sesiunea" : "Adaugă sesiune nouă"}
+                </h2>
                 <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green"><X size={16} /></button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Titlu sesiune</label>
-                  <input type="text" className="input w-full" placeholder="ex: Reglare somatică de grup" />
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Titlu sesiune *</label>
+                  <input
+                    type="text"
+                    className="input w-full"
+                    placeholder="ex: Reglare somatică de grup"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label className="font-body text-label-sm text-on-surface mb-1.5 block">Facilitator</label>
-                  <select className="input w-full">
-                    {["Dr. Ana Ionescu", "Mihai Pop", "Elena Stan", "Cristian Dima"].map((f) => <option key={f}>{f}</option>)}
-                  </select>
+                  <input
+                    type="text"
+                    className="input w-full"
+                    placeholder="Numele facilitatorului"
+                    value={form.facilitator_name}
+                    onChange={(e) => setForm({ ...form, facilitator_name: e.target.value })}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="font-body text-label-sm text-on-surface mb-1.5 block">Data</label>
-                    <input type="date" className="input w-full" />
+                    <label className="font-body text-label-sm text-on-surface mb-1.5 block">Data *</label>
+                    <input
+                      type="date"
+                      className="input w-full"
+                      value={form.date}
+                      onChange={(e) => setForm({ ...form, date: e.target.value })}
+                    />
                   </div>
                   <div>
-                    <label className="font-body text-label-sm text-on-surface mb-1.5 block">Ora</label>
-                    <input type="time" className="input w-full" />
+                    <label className="font-body text-label-sm text-on-surface mb-1.5 block">Ora *</label>
+                    <input
+                      type="time"
+                      className="input w-full"
+                      value={form.time}
+                      onChange={(e) => setForm({ ...form, time: e.target.value })}
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="font-body text-label-sm text-on-surface mb-1.5 block">Durată (minute)</label>
-                    <input type="number" className="input w-full" placeholder="60" />
+                    <input
+                      type="number"
+                      className="input w-full"
+                      placeholder="60"
+                      value={form.duration}
+                      onChange={(e) => setForm({ ...form, duration: Number(e.target.value) })}
+                    />
                   </div>
                   <div>
                     <label className="font-body text-label-sm text-on-surface mb-1.5 block">Locuri maxime</label>
-                    <input type="number" className="input w-full" placeholder="25" />
+                    <input
+                      type="number"
+                      className="input w-full"
+                      placeholder="25"
+                      value={form.spots_total}
+                      onChange={(e) => setForm({ ...form, spots_total: Number(e.target.value) })}
+                    />
                   </div>
                 </div>
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Link Zoom/Meet</label>
-                  <input type="url" className="input w-full" placeholder="https://zoom.us/j/..." />
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Link Zoom / Meet</label>
+                  <input
+                    type="url"
+                    className="input w-full"
+                    placeholder="https://zoom.us/j/..."
+                    value={form.meeting_url}
+                    onChange={(e) => setForm({ ...form, meeting_url: e.target.value })}
+                  />
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 accent-forest-green" />
-                  <span className="font-body text-body-sm text-on-surface">Premium only</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 accent-forest-green" />
-                  <span className="font-body text-body-sm text-on-surface">Sesiune recurentă (săptămânal)</span>
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 accent-forest-green"
+                    checked={form.is_premium}
+                    onChange={(e) => setForm({ ...form, is_premium: e.target.checked })}
+                  />
+                  <span className="font-body text-body-sm text-on-surface">Doar pentru abonați Premium</span>
                 </label>
               </div>
+
+              {error && (
+                <p className="mt-4 font-body text-body-sm text-red-600 bg-red-50 rounded-lg px-4 py-2">{error}</p>
+              )}
+
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setShowModal(false)} className="btn btn-ghost flex-1">Anulează</button>
-                <button className="btn btn-primary flex-1">Salvează sesiunea</button>
+                <button onClick={handleSave} disabled={saving} className="btn btn-primary flex-1 disabled:opacity-50">
+                  {saving ? "Se salvează..." : "Salvează sesiunea"}
+                </button>
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Delete confirmation */}
+      <AnimatePresence>
+        {deleteTarget !== null && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setDeleteTarget(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
+              className="relative bg-white rounded-2xl shadow-modal w-full max-w-sm p-6 text-center"
+            >
+              <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trash size={20} className="text-terracotta" />
+              </div>
+              <h3 className="font-heading text-h3 text-deep-green mb-2">Ștergi sesiunea?</h3>
+              <p className="font-body text-body-sm text-secondary-text mb-6">Această acțiune nu poate fi anulată.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteTarget(null)} className="btn btn-ghost flex-1">Anulează</button>
+                <button onClick={() => handleDelete(deleteTarget)} className="btn flex-1 bg-terracotta text-white hover:bg-terracotta/90">
+                  Șterge
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
