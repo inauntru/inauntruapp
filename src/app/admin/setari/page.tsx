@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Check, Warning, Plus, Trash, Eye, EyeSlash, Upload,
-  Link, EnvelopeSimple, Shield, Users, CreditCard, Gear,
+  Link, EnvelopeSimple, Shield, Users, CreditCard, Gear, CircleNotch,
 } from "@phosphor-icons/react";
 
 const TABS = [
@@ -54,13 +54,55 @@ function SaveBar({ onSave }: { onSave: () => void }) {
   );
 }
 
+const DEFAULT_PLATFORM = {
+  name: "INAUNTRU",
+  tagline: "Primul ecosistem de terapie somatică din România",
+  description: "INAUNTRU este platforma care îți oferă acces la practici somatice ghidate, sesiuni LIVE și suport pentru bunăstarea ta.",
+  email_support: "suport@inauntru.ro",
+  email_billing: "facturare@inauntru.ro",
+  cui: "",
+  address: "",
+  allow_register: true,
+  free_plan: true,
+  checkin_required: false,
+  push_notifications: true,
+};
+
+type PlatformSettings = typeof DEFAULT_PLATFORM;
+
 function PlatformTab() {
+  const [form, setForm] = useState<PlatformSettings>(DEFAULT_PLATFORM);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.platform) setForm({ ...DEFAULT_PLATFORM, ...(data.platform as Partial<PlatformSettings>) });
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  function upd(key: keyof PlatformSettings, value: string | boolean) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    await fetch("/api/admin/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "platform", value: form }),
+    });
+    setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
-  };
+  }
+
+  if (loading) return <div className="flex justify-center py-12"><CircleNotch size={24} className="animate-spin text-forest-green" /></div>;
 
   return (
     <div className="space-y-6">
@@ -75,18 +117,15 @@ function PlatformTab() {
         <div className="space-y-4">
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Numele platformei</label>
-            <input type="text" defaultValue="INAUNTRU" className="input w-full max-w-sm" />
+            <input type="text" value={form.name} onChange={(e) => upd("name", e.target.value)} className="input w-full max-w-sm" />
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Tagline</label>
-            <input type="text" defaultValue="Primul ecosistem de terapie somatică din România" className="input w-full max-w-lg" />
+            <input type="text" value={form.tagline} onChange={(e) => upd("tagline", e.target.value)} className="input w-full max-w-lg" />
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Descriere scurtă (SEO)</label>
-            <textarea
-              defaultValue="INAUNTRU este platforma care îți oferă acces la practici somatice ghidate, sesiuni LIVE și suport pentru bunăstarea ta."
-              className="input w-full max-w-lg min-h-[80px]"
-            />
+            <textarea value={form.description} onChange={(e) => upd("description", e.target.value)} className="input w-full max-w-lg min-h-[80px]" />
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Logo</label>
@@ -107,19 +146,19 @@ function PlatformTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Email suport</label>
-            <input type="email" defaultValue="suport@inauntru.ro" className="input w-full" />
+            <input type="email" value={form.email_support} onChange={(e) => upd("email_support", e.target.value)} className="input w-full" />
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Email facturare</label>
-            <input type="email" defaultValue="facturare@inauntru.ro" className="input w-full" />
+            <input type="email" value={form.email_billing} onChange={(e) => upd("email_billing", e.target.value)} className="input w-full" />
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">CUI</label>
-            <input type="text" defaultValue="RO12345678" className="input w-full" />
+            <input type="text" value={form.cui} onChange={(e) => upd("cui", e.target.value)} className="input w-full" placeholder="RO12345678" />
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Adresă sediu</label>
-            <input type="text" defaultValue="Cluj-Napoca, România" className="input w-full" />
+            <input type="text" value={form.address} onChange={(e) => upd("address", e.target.value)} className="input w-full" placeholder="Cluj-Napoca, România" />
           </div>
         </div>
       </div>
@@ -127,24 +166,29 @@ function PlatformTab() {
       <div className="card bg-white p-5">
         <h3 className="font-body font-semibold text-body-md text-deep-green mb-4">Funcționalități platformă</h3>
         <div className="space-y-3">
-          {[
-            { label: "Înregistrări noi", desc: "Permite utilizatorilor noi să se înregistreze", defaultChecked: true },
-            { label: "Modul de probă gratuit", desc: "Afișează planul gratuit la înregistrare", defaultChecked: true },
-            { label: "Check-in zilnic obligatoriu", desc: "Cere utilizatorilor să completeze check-in-ul la prima autentificare", defaultChecked: false },
-            { label: "Notificări push web", desc: "Trimite notificări browser pentru sesiuni LIVE", defaultChecked: true },
-          ].map((f) => (
-            <label key={f.label} className="flex items-center justify-between cursor-pointer p-3 rounded-xl hover:bg-light-green/50 transition-colors">
+          {([
+            { key: "allow_register" as const, label: "Înregistrări noi", desc: "Permite utilizatorilor noi să se înregistreze" },
+            { key: "free_plan" as const, label: "Modul de probă gratuit", desc: "Afișează planul gratuit la înregistrare" },
+            { key: "checkin_required" as const, label: "Check-in zilnic obligatoriu", desc: "Cere utilizatorilor să completeze check-in-ul la prima autentificare" },
+            { key: "push_notifications" as const, label: "Notificări push web", desc: "Trimite notificări browser pentru sesiuni LIVE" },
+          ]).map((f) => (
+            <label key={f.key} className="flex items-center justify-between cursor-pointer p-3 rounded-xl hover:bg-light-green/50 transition-colors">
               <div>
                 <p className="font-body text-body-sm text-on-surface font-medium">{f.label}</p>
                 <p className="font-body text-label-xs text-secondary-text">{f.desc}</p>
               </div>
-              <input type="checkbox" className="w-4 h-4 accent-forest-green" defaultChecked={f.defaultChecked} />
+              <input type="checkbox" className="w-4 h-4 accent-forest-green" checked={form[f.key] as boolean} onChange={(e) => upd(f.key, e.target.checked)} />
             </label>
           ))}
         </div>
       </div>
 
-      <SaveBar onSave={handleSave} />
+      <div className="flex justify-end mt-6">
+        <button onClick={handleSave} disabled={saving} className="btn btn-primary btn-sm gap-2 disabled:opacity-50">
+          {saving ? <CircleNotch size={14} className="animate-spin" /> : <Check size={14} weight="bold" />}
+          {saving ? "Se salvează..." : "Salvează modificările"}
+        </button>
+      </div>
     </div>
   );
 }

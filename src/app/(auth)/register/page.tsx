@@ -1,12 +1,19 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User, Check, Leaf } from "@phosphor-icons/react";
-import { PRICING_PLANS } from "@/lib/mockData";
+import { useAuth } from "@/contexts/AuthContext";
+
+const PLANS = [
+  { id: "gratuit", name: "Gratuit", price: 0, description: "Acces limitat la practici și resurse de bază" },
+  { id: "standard", name: "Standard", price: 39, description: "Acces extins la practici și o sesiune LIVE/lună", isPopular: false },
+  { id: "premium", name: "Premium", price: 59, description: "Acces complet la practici, 4 sesiuni LIVE/lună", isPopular: true },
+];
 
 export default function RegisterPage() {
+  const { signUp } = useAuth();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,18 +21,77 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("gratuit");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
 
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setStep(2);
   };
 
   const handleStep2 = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
+    setError(null);
+
+    const nameParts = name.trim().split(" ");
+    const firstName = nameParts[0] ?? "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+
+    const { error: signUpError } = await signUp(email, password, firstName, lastName);
+
+    if (signUpError) {
+      setError(signUpError);
+      setLoading(false);
+      return;
+    }
+
+    // If paid plan chosen, save intent for after verification
+    if (selectedPlan !== "gratuit") {
+      localStorage.setItem("pending_plan", selectedPlan);
+    }
+
+    setDone(true);
     setLoading(false);
   };
+
+  if (done) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-lg"
+      >
+        <div className="card p-8 md:p-10 text-center">
+          <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-5">
+            <Envelope size={28} weight="fill" className="text-forest-green" />
+          </div>
+          <h1 className="font-heading text-h2 text-deep-green mb-3">Verifică emailul</h1>
+          <p className="font-body text-body-sm text-secondary-text mb-2">
+            Am trimis un link de confirmare la
+          </p>
+          <p className="font-body font-semibold text-body-sm text-deep-green mb-5">{email}</p>
+          <p className="font-body text-body-sm text-secondary-text mb-6">
+            Click pe link pentru a activa contul tău. Dacă nu găsești emailul, verifică și folderul Spam.
+          </p>
+          <Link href="/login" className="btn btn-primary w-full justify-center">
+            Mergi la autentificare
+          </Link>
+          <p className="font-body text-label-xs text-secondary-text mt-4">
+            Nu ai primit emailul?{" "}
+            <button
+              onClick={() => { setDone(false); setStep(1); }}
+              className="text-forest-green hover:underline"
+            >
+              Încearcă din nou
+            </button>
+          </p>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -52,6 +118,12 @@ export default function RegisterPage() {
             transition={{ duration: 0.4 }}
           />
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl font-body text-label-xs text-red-600">
+            {error}
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {step === 1 ? (
@@ -91,9 +163,9 @@ export default function RegisterPage() {
 
               <p className="font-body text-label-xs text-secondary-text">
                 Prin înregistrare, ești de acord cu{" "}
-                <Link href="#" className="text-forest-green hover:underline">Termenii și condițiile</Link>{" "}
+                <Link href="/termeni" className="text-forest-green hover:underline">Termenii și condițiile</Link>{" "}
                 și{" "}
-                <Link href="#" className="text-forest-green hover:underline">Politica de confidențialitate</Link>.
+                <Link href="/confidentialitate" className="text-forest-green hover:underline">Politica de confidențialitate</Link>.
               </p>
 
               <button type="submit" disabled={!name || !email || !password} className="btn btn-primary w-full disabled:opacity-50">
@@ -115,7 +187,7 @@ export default function RegisterPage() {
                   Alege planul tău (poți schimba oricând):
                 </p>
                 <div className="space-y-3">
-                  {PRICING_PLANS.map((plan) => (
+                  {PLANS.map((plan) => (
                     <button
                       key={plan.id}
                       type="button"
@@ -131,6 +203,9 @@ export default function RegisterPage() {
                           <span className="font-body font-semibold text-body-sm text-deep-green">{plan.name}</span>
                           {plan.isPopular && (
                             <span className="tag tag-green">Popular</span>
+                          )}
+                          {plan.id !== "gratuit" && (
+                            <span className="tag bg-amber-50 text-amber-700 border border-amber-200 text-[10px]">În curând</span>
                           )}
                         </div>
                         <span className="font-body text-label-xs text-secondary-text">{plan.description}</span>
@@ -148,6 +223,11 @@ export default function RegisterPage() {
                     </button>
                   ))}
                 </div>
+                {selectedPlan !== "gratuit" && (
+                  <p className="font-body text-label-xs text-secondary-text mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                    Plata pentru planuri plătite va fi activată în curând. Contul tău va fi creat pe planul Gratuit și vei fi contactat pentru upgrade.
+                  </p>
+                )}
               </div>
 
               <div className="flex gap-3 mt-2">

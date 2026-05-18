@@ -6,7 +6,6 @@ import {
   Eye,
   Check,
   PaperPlane,
-  ArrowSquareOut,
   CaretRight,
   ShieldCheck,
   UserCircle,
@@ -21,6 +20,10 @@ import {
   PencilSimple,
 } from "@phosphor-icons/react";
 import { EMAIL_DEFAULTS, SHELL } from "@/lib/email-defaults";
+import dynamic from "next/dynamic";
+import type { RichTextEditorHandle } from "@/components/ui/RichTextEditor";
+
+const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), { ssr: false });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -156,7 +159,7 @@ export default function AdminEmailuriPage() {
   const [testEmail, setTestEmail] = useState("inauntru.app@gmail.com");
   const [authLoaded, setAuthLoaded] = useState(false);
 
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<RichTextEditorHandle>(null);
 
   const currentEmail = selected ? templates[selected.id] : null;
   const currentCategory = selected ? CATEGORIES.find((c) => c.id === selected.categoryId) : null;
@@ -186,36 +189,13 @@ export default function AdminEmailuriPage() {
       .catch(() => {});
   }, []);
 
-  // Sync visual editor content when template or tab changes
-  useEffect(() => {
-    if (activeTab !== "editare" || !editorRef.current || !currentEmail) return;
-    editorRef.current.innerHTML = getInnerContent(currentEmail.body);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, selected?.id]);
-
   function updateField(field: keyof EmailTemplate, value: string | EmailStatus) {
     if (!selected) return;
     setTemplates((prev) => ({ ...prev, [selected.id]: { ...prev[selected.id], [field]: value } }));
   }
 
-  function handleEditorChange() {
-    if (!editorRef.current || !selected) return;
-    updateField("body", SHELL(editorRef.current.innerHTML));
-  }
-
   function insertVariable(v: string) {
-    if (!editorRef.current) return;
-    editorRef.current.focus();
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      const range = sel.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(document.createTextNode(v));
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-    handleEditorChange();
+    editorRef.current?.insertText(v);
   }
 
   async function handleSave() {
@@ -407,55 +387,22 @@ export default function AdminEmailuriPage() {
                   ))}
                 </div>
 
-                {/* ── Editare (visual) ── */}
+                {/* ── Editare (TipTap) ── */}
                 {activeTab === "editare" && (
-                  <div>
-                    {/* Toolbar */}
-                    <div className="flex items-center gap-1 mb-3 p-1.5 bg-light-green/40 border border-sage-border rounded-xl w-fit">
-                      <button
-                        onMouseDown={(e) => { e.preventDefault(); document.execCommand("bold"); editorRef.current?.focus(); }}
-                        className="px-3 h-8 flex items-center justify-center rounded-lg hover:bg-white transition-colors font-bold text-body-sm text-deep-green"
-                        title="Bold (Ctrl+B)">
-                        B
-                      </button>
-                      <button
-                        onMouseDown={(e) => { e.preventDefault(); document.execCommand("italic"); editorRef.current?.focus(); }}
-                        className="px-3 h-8 flex items-center justify-center rounded-lg hover:bg-white transition-colors italic text-body-sm text-deep-green"
-                        title="Italic (Ctrl+I)">
-                        I
-                      </button>
-                      <div className="w-px h-5 bg-sage-border mx-1" />
-                      <span className="font-body text-[11px] text-secondary-text px-1">Selectează text și apasă un buton pentru formatare</span>
-                    </div>
-
-                    {/* Visual email editor */}
-                    <div style={{ background: "#f5f0eb", padding: "20px", borderRadius: "12px", border: "1px solid #e5e7eb" }}>
-                      <div
-                        ref={editorRef}
-                        contentEditable
-                        suppressContentEditableWarning
-                        onInput={handleEditorChange}
-                        style={{
-                          maxWidth: "540px",
-                          margin: "0 auto",
-                          background: "#fff",
-                          borderRadius: "16px",
-                          padding: "40px",
-                          boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
-                          minHeight: "300px",
-                          outline: "2px solid transparent",
-                          cursor: "text",
-                        }}
-                        onFocus={(e) => { (e.target as HTMLDivElement).style.outline = "2px solid #4a7c59"; }}
-                        onBlur={(e) => { (e.target as HTMLDivElement).style.outline = "2px solid transparent"; }}
-                      />
-                    </div>
+                  <div className="space-y-3">
+                    <RichTextEditor
+                      ref={editorRef}
+                      content={getInnerContent(currentEmail.body)}
+                      onChange={(html) => updateField("body", SHELL(html))}
+                      placeholder="Scrie conținutul emailului..."
+                      minHeight="280px"
+                    />
 
                     {/* Variables */}
-                    <div className="flex items-start gap-2.5 p-3 bg-light-green/60 border border-sage-border rounded-xl mt-3">
+                    <div className="flex items-start gap-2.5 p-3 bg-light-green/60 border border-sage-border rounded-xl">
                       <Info size={14} className="text-forest-green flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-body text-label-xs font-semibold text-deep-green mb-1.5">Variabile disponibile — click pentru a insera</p>
+                        <p className="font-body text-label-xs font-semibold text-deep-green mb-1.5">Variabile disponibile — click pentru a insera la cursor</p>
                         <div className="flex flex-wrap gap-1.5">
                           {(VARS_BY_CATEGORY[selected.categoryId] ?? []).map((v) => (
                             <button key={v} onClick={() => insertVariable(v)}
@@ -468,7 +415,7 @@ export default function AdminEmailuriPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 pt-1 mt-1">
+                    <div className="flex items-center gap-2 pt-1">
                       <input type="email" value={testEmail} onChange={(e) => setTestEmail(e.target.value)}
                         placeholder="email@test.com" className="input text-xs h-9 flex-1 max-w-xs" />
                       <button onClick={handleTestSend} disabled={testSending || !testEmail}

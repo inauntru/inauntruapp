@@ -118,6 +118,50 @@ function DeleteModal({ user, onClose, onDeleted }: { user: RealUser; onClose: ()
   );
 }
 
+// ── Update plan ────────────────────────────────────────────────────────────
+
+function PlanCard({ user, onSaved }: { user: RealUser; onSaved: (plan: UserPlan) => void }) {
+  const [plan, setPlan] = useState<UserPlan>(user.plan);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await fetch("/api/admin/users/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, plan }),
+      });
+      onSaved(plan);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="card bg-white p-5">
+      <h3 className="font-body font-semibold text-body-md text-deep-green mb-4">Plan abonament</h3>
+      <select value={plan} onChange={(e) => setPlan(e.target.value as UserPlan)} className="input w-full mb-3">
+        <option value="gratuit">Gratuit</option>
+        <option value="standard">Standard</option>
+        <option value="premium">Premium</option>
+      </select>
+      {saved && (
+        <div className="flex items-center gap-2 p-3 bg-forest-green/10 border border-forest-green/20 rounded-xl text-forest-green font-body text-label-xs mb-3">
+          <Check size={14} weight="bold" /> Planul a fost salvat.
+        </div>
+      )}
+      <button onClick={handleSave} disabled={saving || plan === user.plan} className="btn btn-primary btn-sm w-full gap-2 disabled:opacity-40">
+        {saving ? <CircleNotch size={13} className="animate-spin" /> : <Check size={13} weight="bold" />}
+        Salvează plan
+      </button>
+    </div>
+  );
+}
+
 // ── Update role ────────────────────────────────────────────────────────────
 
 function RoleCard({ user, onSaved }: { user: RealUser; onSaved: (role: UserRole) => void }) {
@@ -165,7 +209,7 @@ function RoleCard({ user, onSaved }: { user: RealUser; onSaved: (role: UserRole)
 
 // ── Detail view ────────────────────────────────────────────────────────────
 
-function UserDetail({ user, onBack, onDelete, onRoleUpdate }: { user: RealUser; onBack: () => void; onDelete: () => void; onRoleUpdate: (role: UserRole) => void }) {
+function UserDetail({ user, onBack, onDelete, onRoleUpdate, onPlanUpdate }: { user: RealUser; onBack: () => void; onDelete: () => void; onRoleUpdate: (role: UserRole) => void; onPlanUpdate: (plan: UserPlan) => void }) {
   return (
     <motion.div key="detail" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.25 }}>
       {/* Top bar */}
@@ -221,6 +265,8 @@ function UserDetail({ user, onBack, onDelete, onRoleUpdate }: { user: RealUser; 
               </div>
             </div>
           </div>
+
+          <PlanCard user={user} onSaved={onPlanUpdate} />
 
           <RoleCard user={user} onSaved={onRoleUpdate} />
 
@@ -526,6 +572,10 @@ export default function AdminUsersPage() {
             onRoleUpdate={(role) => {
               setSelected((prev) => prev ? { ...prev, role } : prev);
               setUsers((prev) => prev.map((u) => u.id === selected.id ? { ...u, role } : u));
+            }}
+            onPlanUpdate={(plan) => {
+              setSelected((prev) => prev ? { ...prev, plan } : prev);
+              setUsers((prev) => prev.map((u) => u.id === selected.id ? { ...u, plan } : u));
             }}
           />
         )}

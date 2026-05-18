@@ -16,12 +16,14 @@ import {
   X,
   Leaf,
   EnvelopeSimple,
+  Article,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_ITEMS = [
   { icon: ChartPieSlice, label: "Dashboard", href: "/admin" },
   { icon: FilmSlate, label: "Conținut", href: "/admin/continut" },
+  { icon: Article, label: "Blog", href: "/admin/blog" },
   { icon: Users, label: "Utilizatori", href: "/admin/utilizatori" },
   { icon: CalendarBlank, label: "Sesiuni LIVE", href: "/admin/sesiuni" },
   { icon: CreditCard, label: "Abonamente", href: "/admin/abonamente" },

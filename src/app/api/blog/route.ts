@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createServiceClient } from "@/lib/supabase";
 import { BLOG_POSTS } from "@/lib/mockData";
 import type { BlogPost } from "@/lib/database.types";
 
 export async function GET() {
+  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("blog_posts")
     .select("*")

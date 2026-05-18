@@ -149,6 +149,34 @@ export interface Database {
         };
         Update: Partial<Database["public"]["Tables"]["user_practices"]["Insert"]>;
       };
+      journal_entries: {
+        Row: {
+          id: number;
+          user_id: string;
+          title: string | null;
+          content: string;
+          mood: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["journal_entries"]["Row"], "id" | "created_at" | "updated_at"> & {
+          id?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["journal_entries"]["Insert"]>;
+      };
+      settings: {
+        Row: {
+          key: string;
+          value: Record<string, unknown>;
+          updated_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["settings"]["Row"], "updated_at"> & {
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["settings"]["Insert"]>;
+      };
     };
   };
 }
@@ -160,3 +188,5 @@ export type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 export type LiveSession = Database["public"]["Tables"]["live_sessions"]["Row"];
 export type CheckIn = Database["public"]["Tables"]["check_ins"]["Row"];
 export type UserPractice = Database["public"]["Tables"]["user_practices"]["Row"];
+export type JournalEntry = Database["public"]["Tables"]["journal_entries"]["Row"];
+export type Setting = Database["public"]["Tables"]["settings"]["Row"];
