@@ -107,7 +107,7 @@ export default function AdminStatisticiPage() {
                     <Cell key={entry.plan} fill={PLAN_COLORS[entry.plan] ?? "#9eb3a4"} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={tooltipStyle} formatter={(v: number, _: string, props: { payload?: { plan?: string } }) => [v, PLAN_LABELS[props.payload?.plan ?? ""] ?? props.payload?.plan ?? ""]} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown, _: unknown, props: { payload?: { plan?: string } }): [number, string] => [Number(v ?? 0), PLAN_LABELS[props.payload?.plan ?? ""] ?? props.payload?.plan ?? ""]} />
               </PieChart>
               <div className="flex flex-wrap gap-4 justify-center">
                 {data.usersByPlan.map((entry) => (
@@ -133,7 +133,7 @@ export default function AdminStatisticiPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
                 <XAxis dataKey="day" tick={{ fontSize: 10, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} interval={4} />
                 <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [v, "Utilizatori noi"]} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown): [number, string] => [Number(v ?? 0), "Utilizatori noi"]} />
                 <Bar dataKey="count" fill={CHART_COLOR} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -152,7 +152,7 @@ export default function AdminStatisticiPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
               <XAxis dataKey="day" tick={{ fontSize: 10, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} interval={4} />
               <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
-              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [v, "Check-in-uri"]} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown): [number, string] => [Number(v ?? 0), "Check-in-uri"]} />
               <Line type="monotone" dataKey="count" stroke={CHART_COLOR} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: CHART_COLOR }} />
             </LineChart>
           </ResponsiveContainer>

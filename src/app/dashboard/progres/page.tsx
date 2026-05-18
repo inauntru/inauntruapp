@@ -101,7 +101,7 @@ export default function ProgresPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
                 <XAxis dataKey="week" tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: "#f0f5f1" }} formatter={(v: number) => [v, "Practici"]} />
+                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: "#f0f5f1" }} formatter={(v: unknown): [number, string] => [Number(v ?? 0), "Practici"]} />
                 <Bar dataKey="count" fill={CHART_COLOR} radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -121,7 +121,7 @@ export default function ProgresPage() {
                   interval={4}
                 />
                 <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => [v, "Check-in-uri"]} />
+                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: unknown): [number, string] => [Number(v ?? 0), "Check-in-uri"]} />
                 <Line type="monotone" dataKey="count" stroke={CHART_COLOR} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: CHART_COLOR }} />
               </LineChart>
             </ResponsiveContainer>
@@ -139,7 +139,7 @@ export default function ProgresPage() {
                       <Cell key={entry.mood} fill={MOOD_COLORS[entry.mood] ?? "#9eb3a4"} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number, _: string, props: { payload?: { mood?: string } }) => [v, MOOD_LABELS[props.payload?.mood ?? ""] ?? props.payload?.mood ?? ""]} />
+                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v: unknown, _: unknown, props: { payload?: { mood?: string } }): [number, string] => [Number(v ?? 0), MOOD_LABELS[props.payload?.mood ?? ""] ?? props.payload?.mood ?? ""]} />
                 </PieChart>
                 <div className="flex flex-wrap gap-3">
                   {data.moodData.map((entry) => (

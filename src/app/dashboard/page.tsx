@@ -19,8 +19,6 @@ import {
 import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { LIVE_SESSIONS, PRACTICES } from "@/lib/mockData";
-
 function formatDate() {
   return new Date().toLocaleDateString("ro-RO", {
     weekday: "long",
@@ -37,12 +35,14 @@ const QUICK_ACCESS = [
   { icon: VideoCamera, label: "Sesiuni live", href: "/sesiuni-live", color: "bg-secondary-container text-on-secondary-container" },
 ];
 
-const RECENT_PRACTICES = PRACTICES.slice(0, 3);
-const UPCOMING_SESSION = LIVE_SESSIONS[0];
+type PracticeItem = { id: number; title: string; facilitator: string; duration: number; category: string; };
+type SessionItem = { title: string; facilitator: string; date: string; spotsTotal: number; spotsLeft: number; };
 
 export default function DashboardPage() {
   const { profile } = useAuth();
   const [checkInOpen, setCheckInOpen] = useState(false);
+  const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
+  const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
   const [checkInDone, setCheckInDone] = useState(false);
   const [stats, setStats] = useState({ streak: 0, minutesPracticed: 0, checkInsCount: 0 });
 
@@ -56,6 +56,17 @@ export default function DashboardPage() {
     fetch("/api/dashboard/stats")
       .then((r) => r.ok ? r.json() : null)
       .then((data) => { if (data) setStats(data); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/practices")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setRecentPractices(data.slice(0, 3)); })
+      .catch(() => {});
+    fetch("/api/sessions")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setUpcomingSession(data[0]); })
       .catch(() => {});
   }, []);
 
@@ -267,8 +278,10 @@ export default function DashboardPage() {
                   </Link>
                 </div>
                 <div className="space-y-3">
-                  {RECENT_PRACTICES.map((p) => (
-                    <div key={p.id} className="card p-4 flex items-center gap-4 hover:border-forest-green transition-colors cursor-pointer">
+                  {recentPractices.length === 0 ? (
+                    <p className="font-body text-body-sm text-secondary-text py-4 text-center">Nicio practică încă</p>
+                  ) : recentPractices.map((p) => (
+                    <Link key={p.id} href={`/practici/${p.id}`} className="card p-4 flex items-center gap-4 hover:border-forest-green transition-colors cursor-pointer">
                       <div className="w-12 h-12 rounded-xl bg-light-green flex items-center justify-center flex-shrink-0">
                         <Play size={18} weight="fill" className="text-forest-green" />
                       </div>
@@ -277,7 +290,7 @@ export default function DashboardPage() {
                         <p className="font-body text-label-xs text-secondary-text">{p.facilitator} · {p.duration} min</p>
                       </div>
                       <span className="tag tag-green flex-shrink-0">{p.category}</span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -288,38 +301,47 @@ export default function DashboardPage() {
               {/* Upcoming session */}
               <div>
                 <h2 className="font-heading text-h3 text-deep-green mb-4">Sesiune Live</h2>
-                <div className="card p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-forest-green animate-live-pulse" />
-                    <span className="font-body text-label-xs text-forest-green uppercase tracking-wider">Urmează</span>
+                {upcomingSession ? (
+                  <div className="card p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-forest-green animate-live-pulse" />
+                      <span className="font-body text-label-xs text-forest-green uppercase tracking-wider">Urmează</span>
+                    </div>
+                    <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1 line-clamp-2">
+                      {upcomingSession.title}
+                    </h3>
+                    <p className="font-body text-label-xs text-secondary-text mb-3">{upcomingSession.facilitator}</p>
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="flex items-center gap-1 font-body text-label-xs text-secondary-text">
+                        <CalendarBlank size={12} />
+                        {new Date(upcomingSession.date).toLocaleDateString("ro-RO", { day: "numeric", month: "short" })}
+                      </span>
+                      <span className="flex items-center gap-1 font-body text-label-xs text-secondary-text">
+                        <Clock size={12} />
+                        {new Date(upcomingSession.date).toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <div className="h-1.5 bg-light-green rounded-full mb-1 overflow-hidden">
+                      <div
+                        className="h-full bg-forest-green rounded-full"
+                        style={{ width: `${Math.round(((upcomingSession.spotsTotal - upcomingSession.spotsLeft) / upcomingSession.spotsTotal) * 100)}%` }}
+                      />
+                    </div>
+                    <p className="font-body text-label-xs text-secondary-text mb-4">
+                      {upcomingSession.spotsLeft} locuri rămase
+                    </p>
+                    <Link href="/sesiuni-live" className="btn btn-primary w-full btn-sm">
+                      Rezervă locul <ArrowRight size={14} weight="bold" />
+                    </Link>
                   </div>
-                  <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1 line-clamp-2">
-                    {UPCOMING_SESSION.title}
-                  </h3>
-                  <p className="font-body text-label-xs text-secondary-text mb-3">{UPCOMING_SESSION.facilitator}</p>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="flex items-center gap-1 font-body text-label-xs text-secondary-text">
-                      <CalendarBlank size={12} />
-                      {new Date(UPCOMING_SESSION.date).toLocaleDateString("ro-RO", { day: "numeric", month: "short" })}
-                    </span>
-                    <span className="flex items-center gap-1 font-body text-label-xs text-secondary-text">
-                      <Clock size={12} />
-                      {new Date(UPCOMING_SESSION.date).toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" })}
-                    </span>
+                ) : (
+                  <div className="card p-5 text-center">
+                    <p className="font-body text-body-sm text-secondary-text">Nicio sesiune programată</p>
+                    <Link href="/sesiuni-live" className="btn btn-secondary w-full btn-sm mt-3">
+                      Vezi toate sesiunile
+                    </Link>
                   </div>
-                  <div className="h-1.5 bg-light-green rounded-full mb-1 overflow-hidden">
-                    <div
-                      className="h-full bg-forest-green rounded-full"
-                      style={{ width: `${Math.round(((UPCOMING_SESSION.spotsTotal - UPCOMING_SESSION.spotsLeft) / UPCOMING_SESSION.spotsTotal) * 100)}%` }}
-                    />
-                  </div>
-                  <p className="font-body text-label-xs text-secondary-text mb-4">
-                    {UPCOMING_SESSION.spotsLeft} locuri rămase
-                  </p>
-                  <Link href="/sesiuni-live" className="btn btn-primary w-full btn-sm">
-                    Rezervă locul <ArrowRight size={14} weight="bold" />
-                  </Link>
-                </div>
+                )}
               </div>
 
               {/* Progress summary */}

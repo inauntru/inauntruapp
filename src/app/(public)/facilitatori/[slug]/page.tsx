@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -17,17 +18,44 @@ function genitiveName(fullName: string): string {
   if (first.endsWith("a")) return first.slice(0, -1) + "ei";
   return `lui ${first}`;
 }
-import { getFacilitators } from "@/lib/getFacilitators";
-import { useUsers } from "@/contexts/UsersContext";
+
+type FacilitatorShape = {
+  id: number | string;
+  slug: string;
+  name: string;
+  title: string;
+  tags: string[];
+  rating: number;
+  reviews: number;
+  bio: string;
+  photo: string;
+  practiceDuration: string;
+  certifications: string[];
+};
 
 export default function FacilitatorPage({ params }: { params: { slug: string } }) {
-  const { users } = useUsers();
-  const adminFacilitators = getFacilitators(users);
+  const [facilitator, setFacilitator] = useState<FacilitatorShape | null>(null);
 
-  const facilitator =
-    FACILITATORS.find((f) => f.slug === params.slug) ||
-    adminFacilitators.find((f) => f.slug === params.slug) ||
-    FACILITATORS[0];
+  useEffect(() => {
+    fetch("/api/facilitators")
+      .then((r) => r.json())
+      .then((data: FacilitatorShape[]) => {
+        const found = data.find((f) => f.slug === params.slug);
+        setFacilitator(found ?? (data[0] || null));
+      })
+      .catch(() => {
+        const mock = FACILITATORS.find((f) => f.slug === params.slug) ?? FACILITATORS[0];
+        setFacilitator(mock as FacilitatorShape);
+      });
+  }, [params.slug]);
+
+  if (!facilitator) {
+    return (
+      <div className="min-h-screen bg-bg-main flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-forest-green border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const practices = PRACTICES.filter((p) => p.facilitator === facilitator.name);
 
@@ -49,7 +77,7 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
             <div className="card p-6 text-center">
               <div className="w-32 h-32 rounded-full mx-auto mb-4 overflow-hidden relative">
                 <Image
-                  src={facilitator.photo}
+                  src={facilitator.photo || "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80"}
                   alt={facilitator.name}
                   fill
                   className="object-cover"

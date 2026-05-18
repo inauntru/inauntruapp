@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Plus, X, Trash, PencilSimple, BookOpen, SmileyHappy, SmileySad,
+  Plus, X, Trash, PencilSimple, BookOpen, Smiley, SmileySad,
   SmileyNervous, SmileyMeh, SmileyWink, CircleNotch, Check, ArrowLeft,
 } from "@phosphor-icons/react";
 import Link from "next/link";
@@ -29,7 +29,7 @@ interface CheckInEntry {
 }
 
 const MOOD_ICONS: Record<string, { icon: React.ElementType; label: string; color: string }> = {
-  happy:   { icon: SmileyHappy,   label: "Bucuros",   color: "text-forest-green" },
+  happy:   { icon: Smiley,         label: "Bucuros",   color: "text-forest-green" },
   content: { icon: SmileyWink,    label: "Mulțumit",  color: "text-teal-600" },
   neutral: { icon: SmileyMeh,     label: "Neutru",    color: "text-secondary-text" },
   anxious: { icon: SmileyNervous, label: "Anxios",    color: "text-amber-500" },

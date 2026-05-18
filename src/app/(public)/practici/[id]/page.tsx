@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { PRACTICES, FACILITATORS } from "@/lib/mockData";
+import { createServiceClient } from "@/lib/supabase";
+import type { Practice, Facilitator } from "@/lib/database.types";
 import PracticePlayer from "@/components/ui/PracticePlayer";
 import {
   ArrowLeft,
@@ -12,21 +14,138 @@ import {
   ArrowRight,
 } from "@phosphor-icons/react/dist/ssr";
 
-export function generateStaticParams() {
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
   return PRACTICES.map((p) => ({ id: String(p.id) }));
 }
 
-export default function PracticeDetailPage({ params }: { params: { id: string } }) {
-  const practice = PRACTICES.find((p) => p.id === Number(params.id));
+type NormalizedPractice = {
+  id: number;
+  title: string;
+  category: string;
+  facilitator: string;
+  facilitatorSlug: string;
+  duration: number;
+  level: string;
+  isPremium: boolean;
+  mediaType: string;
+  image: string;
+  tags: string[];
+  longDescription: string;
+};
+
+type NormalizedFacilitator = {
+  slug: string;
+  name: string;
+  title: string;
+  rating: number;
+  reviews: number;
+  bio: string;
+};
+
+async function getPractice(id: number): Promise<NormalizedPractice | null> {
+  try {
+    const supabase = createServiceClient();
+    const { data } = await supabase
+      .from("practices")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (data) {
+      const p = data as Practice;
+      return {
+        id: p.id,
+        title: p.title,
+        category: p.category,
+        facilitator: p.facilitator_name ?? "",
+        facilitatorSlug: p.facilitator_slug ?? "",
+        duration: p.duration,
+        level: p.level,
+        isPremium: p.is_premium,
+        mediaType: p.media_type ?? "audio",
+        image: p.image_url ?? "",
+        tags: p.tags ?? [],
+        longDescription: p.long_description ?? p.description ?? "",
+      };
+    }
+  } catch {}
+
+  const mock = PRACTICES.find((p) => p.id === id);
+  return mock ? (mock as unknown as NormalizedPractice) : null;
+}
+
+async function getFacilitatorBySlug(slug: string): Promise<NormalizedFacilitator | null> {
+  if (!slug) return null;
+  try {
+    const supabase = createServiceClient();
+    const { data } = await supabase
+      .from("facilitators")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+
+    if (data) {
+      const f = data as Facilitator;
+      return {
+        slug: f.slug,
+        name: f.name,
+        title: f.specialty ?? "",
+        rating: f.rating ?? 5.0,
+        reviews: f.sessions_count ?? 0,
+        bio: f.bio ?? "",
+      };
+    }
+  } catch {}
+
+  const mock = FACILITATORS.find((f) => f.slug === slug);
+  return mock ? (mock as unknown as NormalizedFacilitator) : null;
+}
+
+async function getRelated(id: number, category: string): Promise<NormalizedPractice[]> {
+  try {
+    const supabase = createServiceClient();
+    const { data } = await supabase
+      .from("practices")
+      .select("*")
+      .eq("status", "active")
+      .eq("category", category)
+      .neq("id", id)
+      .limit(3);
+
+    if (data && data.length > 0) {
+      return (data as Practice[]).map((p) => ({
+        id: p.id,
+        title: p.title,
+        category: p.category,
+        facilitator: p.facilitator_name ?? "",
+        facilitatorSlug: p.facilitator_slug ?? "",
+        duration: p.duration,
+        level: p.level,
+        isPremium: p.is_premium,
+        mediaType: p.media_type ?? "audio",
+        image: p.image_url ?? "",
+        tags: p.tags ?? [],
+        longDescription: p.long_description ?? "",
+      }));
+    }
+  } catch {}
+
+  const related = PRACTICES.filter((p) => p.id !== id && p.category === category).slice(0, 3);
+  if (related.length > 0) return related as unknown as NormalizedPractice[];
+  return PRACTICES.filter((p) => p.id !== id).slice(0, 3) as unknown as NormalizedPractice[];
+}
+
+export default async function PracticeDetailPage({ params }: { params: { id: string } }) {
+  const id = Number(params.id);
+  if (isNaN(id)) notFound();
+
+  const practice = await getPractice(id);
   if (!practice) notFound();
 
-  const facilitator = FACILITATORS.find((f) => f.slug === practice.facilitatorSlug);
-  const related = PRACTICES.filter(
-    (p) => p.id !== practice.id && p.category === practice.category
-  ).slice(0, 3);
-  const fallbackRelated = related.length > 0
-    ? related
-    : PRACTICES.filter((p) => p.id !== practice.id).slice(0, 3);
+  const facilitator = await getFacilitatorBySlug(practice.facilitatorSlug);
+  const fallbackRelated = await getRelated(id, practice.category);
 
   const levelColor: Record<string, string> = {
     "Începător": "tag-green",
@@ -39,7 +158,7 @@ export default function PracticeDetailPage({ params }: { params: { id: string } 
       {/* Hero */}
       <div className="relative h-[52vh] lg:h-[62vh] overflow-hidden">
         <Image
-          src={`${practice.image}?w=1400&q=85`}
+          src={practice.image ? `${practice.image}?w=1400&q=85` : "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1400&q=85"}
           alt={practice.title}
           fill
           className="object-cover"
@@ -192,9 +311,7 @@ export default function PracticeDetailPage({ params }: { params: { id: string } 
         {fallbackRelated.length > 0 && (
           <div className="mt-16 pt-10 border-t border-sage-border">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="font-heading text-h2 text-deep-green">
-                {related.length > 0 ? "Mai multe din " + practice.category : "Practici recomandate"}
-              </h2>
+              <h2 className="font-heading text-h2 text-deep-green">Practici recomandate</h2>
               <Link href="/practici" className="font-ui text-body-sm text-forest-green hover:text-deep-green transition-colors flex items-center gap-1">
                 Vezi toate <ArrowRight size={13} weight="bold" />
               </Link>
@@ -204,7 +321,7 @@ export default function PracticeDetailPage({ params }: { params: { id: string } 
                 <Link key={p.id} href={`/practici/${p.id}`} className="block group card card-lift overflow-hidden">
                   <div className="relative aspect-video overflow-hidden">
                     <Image
-                      src={`${p.image}?w=600&q=80`}
+                      src={p.image ? `${p.image}?w=600&q=80` : "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80"}
                       alt={p.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
