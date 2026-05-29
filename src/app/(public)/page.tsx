@@ -97,11 +97,11 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
+    <div style={{ overflowX: "clip" }}>
       <CheckInModal isOpen={checkInOpen} onClose={() => setCheckInOpen(false)} canSkip={false} />
 
       {/* ── HERO ── */}
-      <section className="relative min-h-[700px] lg:min-h-[820px] flex items-center overflow-hidden">
+      <section className="relative sticky top-0 z-0 min-h-[700px] lg:min-h-[820px] flex items-center overflow-hidden">
         {/* Video background */}
         <video
           autoPlay
@@ -216,6 +216,9 @@ export default function HomePage() {
           <p className="font-heading text-body-sm text-deep-green leading-snug">Reglarea sistemului nervos cu Elena</p>
         </motion.div>
       </section>
+
+      {/* All sections below scroll over the sticky hero */}
+      <div className="relative z-10">
 
       {/* ── INTENT SELECTOR ── */}
       <section className="py-16 lg:py-20 bg-indigo-bg">
@@ -755,6 +758,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      </div>{/* end relative z-10 wrapper */}
     </div>
   );
 }
