@@ -21,6 +21,7 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
 
   useEffect(() => {
     if (playing) {
+      window.dispatchEvent(new Event("practiceplay"));
       intervalRef.current = setInterval(() => {
         setProgress((p) => {
           if (p >= 100) { setPlaying(false); return 0; }
@@ -28,6 +29,7 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
         });
       }, 1000);
     } else {
+      window.dispatchEvent(new Event("practicestop"));
       if (intervalRef.current) clearInterval(intervalRef.current);
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };

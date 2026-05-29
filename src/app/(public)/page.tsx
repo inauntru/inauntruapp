@@ -101,7 +101,7 @@ export default function HomePage() {
       <CheckInModal isOpen={checkInOpen} onClose={() => setCheckInOpen(false)} canSkip={false} />
 
       {/* ── HERO ── */}
-      <section className="relative sticky top-0 z-0 min-h-[700px] lg:min-h-[820px] flex items-center overflow-hidden">
+      <section className="relative sticky top-0 z-0 h-screen min-h-[640px] flex items-center overflow-hidden -mt-16 lg:-mt-20">
         {/* Video background */}
         <video
           autoPlay
