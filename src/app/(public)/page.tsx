@@ -110,7 +110,7 @@ export default function HomePage() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/hero-video.mp4" type="video/mp4" />
+          <source src="/hero-video-2.mp4" type="video/mp4" />
         </video>
 
         {/* Gradient overlay — left side darker for text readability, right reveals video */}
@@ -349,7 +349,7 @@ export default function HomePage() {
         {/* Overlay — păstrează tenta verde deschis a secțiunii peste video */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ backgroundColor: "rgba(230, 245, 237, 0.25)" }}
+          style={{ backgroundColor: "rgba(230, 245, 237, 0.45)" }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <AnimateIn once={false} from="bottom">
