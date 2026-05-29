@@ -335,8 +335,23 @@ export default function HomePage() {
       </section> */}
 
       {/* ── HOW IT WORKS ── */}
-      <section id="cum-functioneaza" className="py-16 lg:py-24 bg-surface-container-low">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="cum-functioneaza" className="py-16 lg:py-24 relative overflow-hidden">
+        {/* Video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/journey-video.mp4" type="video/mp4" />
+        </video>
+        {/* Overlay — păstrează tenta verde deschis a secțiunii peste video */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundColor: "rgba(230, 245, 237, 0.88)" }}
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <AnimateIn once={false} from="bottom">
             <h2 className="font-heading text-h2 text-deep-green text-center mb-10 lg:mb-16">
               Călătoria ta spre interior
