@@ -47,7 +47,14 @@ export default function Navbar() {
   useEffect(() => {
     if (!isHomePage) { setScrolled(true); return; }
     const onScroll = () => {
-      setScrolled(window.scrollY > window.innerHeight * 0.75);
+      const vh = window.innerHeight;
+      // Hysteresis: switch to opaque later (80%), back to glass earlier (50%)
+      // prevents flickering at the boundary when bouncing on mobile
+      setScrolled((prev) => {
+        if (!prev && window.scrollY > vh * 0.8) return true;
+        if (prev && window.scrollY < vh * 0.5) return false;
+        return prev;
+      });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });

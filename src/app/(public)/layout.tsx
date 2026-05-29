@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackgroundMusic from "@/components/ui/BackgroundMusic";
+import MobileStickyBar from "@/components/ui/MobileStickyBar";
 import { ReactNode } from "react";
 
 export default function PublicLayout({ children }: { children: ReactNode }) {
@@ -10,15 +11,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <main className="pt-16 lg:pt-20">{children}</main>
       <Footer />
       <BackgroundMusic />
-      {/* Mobile sticky bottom bar */}
-      <div className="md:hidden mobile-sticky-bar">
-        <a
-          href="/register"
-          className="btn btn-primary w-full text-center flex items-center justify-center"
-        >
-          Începe gratuit
-        </a>
-      </div>
+      <MobileStickyBar />
     </>
   );
 }
