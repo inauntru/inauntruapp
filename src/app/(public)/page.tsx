@@ -349,7 +349,7 @@ export default function HomePage() {
         {/* Overlay — păstrează tenta verde deschis a secțiunii peste video */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ backgroundColor: "rgba(230, 245, 237, 0.88)" }}
+          style={{ backgroundColor: "rgba(230, 245, 237, 0.25)" }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <AnimateIn once={false} from="bottom">
