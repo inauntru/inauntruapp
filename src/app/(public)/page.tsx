@@ -101,126 +101,120 @@ export default function HomePage() {
       <CheckInModal isOpen={checkInOpen} onClose={() => setCheckInOpen(false)} canSkip={false} />
 
       {/* ── HERO ── */}
-      <section className="relative min-h-[700px] lg:min-h-[820px] flex items-center overflow-hidden" style={{ backgroundColor: "#2B8C5C" }}>
-        {/* Breathing circles */}
+      <section className="relative min-h-[700px] lg:min-h-[820px] flex items-center overflow-hidden">
+        {/* Video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
+
+        {/* Gradient overlay — left side darker for text readability, right reveals video */}
+        <div className="absolute inset-0 bg-gradient-to-r from-deep-green/92 via-deep-green/70 to-deep-green/30 pointer-events-none" />
+        {/* Bottom vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-deep-green/60 via-transparent to-transparent pointer-events-none" />
+
+        {/* Subtle light glow top-left */}
         <div
           className="absolute -top-20 -left-20 w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{ background: "rgba(200, 235, 211, 0.5)", filter: "blur(80px)", opacity: 0.4 }}
-        />
-        <div
-          className="absolute -bottom-20 -right-20 w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{ background: "rgba(255, 181, 155, 0.4)", filter: "blur(80px)", opacity: 0.4 }}
+          style={{ background: "rgba(200, 235, 211, 0.12)", filter: "blur(80px)" }}
         />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-
-            {/* LEFT */}
-            <div className="space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.5 }}
-              >
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/25 text-label-sm font-body text-white">
-                  Aici gândurile se așază 🌿
-                </span>
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.7, ease: "easeOut" }}
-                className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight"
-              >
-                Întoarce-te<br className="hidden sm:block" /> la tine.
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, duration: 0.6 }}
-                className="font-body text-body-lg max-w-lg"
-                style={{ color: "rgba(200, 235, 211, 0.9)" }}
-              >
-                Resetare rapidă în mai puțin de 2 minute. Metode simple pentru momentele când te simți blocat și ai nevoie de un nou început.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="flex flex-col sm:flex-row gap-4"
-              >
-                <Link
-                  href="/register"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-body font-semibold text-body-sm bg-white text-forest-green hover:bg-white/90 transition-colors shadow-md"
-                >
-                  Vreau mai multă liniște
-                  <ArrowRight size={16} weight="bold" />
-                </Link>
-                <Link
-                  href="#cum-functioneaza"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-body font-semibold text-body-sm text-white border border-white/30 hover:bg-white/10 transition-colors"
-                >
-                  <Play size={16} weight="fill" />
-                  Cum funcționează?
-                </Link>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.5 }}
-                className="flex items-center gap-3 pt-2"
-                style={{ color: "rgba(255,255,255,0.7)" }}
-              >
-                <div className="flex -space-x-2">
-                  {[
-                    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80",
-                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80",
-                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
-                  ].map((src, i) => (
-                    <div key={i} className="w-8 h-8 rounded-full border-2 border-forest-green overflow-hidden flex-shrink-0">
-                      <Image src={src} alt="" width={32} height={32} className="object-cover w-full h-full" />
-                    </div>
-                  ))}
-                </div>
-                <p className="font-body text-body-sm">
-                  Alătură-te celor <strong className="text-white">1.500+</strong> membri
-                </p>
-              </motion.div>
-            </div>
-
-            {/* RIGHT — square image + floating card */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16 lg:py-24">
+          <div className="max-w-2xl space-y-8">
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
-              className="relative hidden lg:block"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-white/5">
-                <Image
-                  src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80"
-                  alt="Grup de meditație"
-                  fill
-                  priority
-                  className="object-cover object-center"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
-              </div>
-              {/* Floating "Sesiune Live" card */}
-              <div className="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl max-w-[220px]">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-2 h-2 rounded-full bg-rose-powder animate-live-pulse" />
-                  <span className="font-body text-label-xs text-forest-green font-semibold">Sesiune Live Acum</span>
-                </div>
-                <p className="font-heading text-body-sm text-deep-green leading-snug">Reglarea sistemului nervos cu Elena</p>
-              </div>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/25 text-label-sm font-body text-white backdrop-blur-sm">
+                Aici gândurile se așază 🌿
+              </span>
             </motion.div>
 
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.7, ease: "easeOut" }}
+              className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight"
+            >
+              Întoarce-te<br className="hidden sm:block" /> la tine.
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.6 }}
+              className="font-body text-body-lg max-w-lg"
+              style={{ color: "rgba(200, 235, 211, 0.92)" }}
+            >
+              Resetare rapidă în mai puțin de 2 minute. Metode simple pentru momentele când te simți blocat și ai nevoie de un nou început.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-body font-semibold text-body-sm bg-white text-forest-green hover:bg-white/90 transition-colors shadow-md"
+              >
+                Vreau mai multă liniște
+                <ArrowRight size={16} weight="bold" />
+              </Link>
+              <Link
+                href="#cum-functioneaza"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-body font-semibold text-body-sm text-white border border-white/30 hover:bg-white/15 transition-colors backdrop-blur-sm"
+              >
+                <Play size={16} weight="fill" />
+                Cum funcționează?
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              className="flex items-center gap-3 pt-2"
+              style={{ color: "rgba(255,255,255,0.7)" }}
+            >
+              <div className="flex -space-x-2">
+                {[
+                  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80",
+                  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80",
+                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
+                ].map((src, i) => (
+                  <div key={i} className="w-8 h-8 rounded-full border-2 border-white/40 overflow-hidden flex-shrink-0">
+                    <Image src={src} alt="" width={32} height={32} className="object-cover w-full h-full" />
+                  </div>
+                ))}
+              </div>
+              <p className="font-body text-body-sm">
+                Alătură-te celor <strong className="text-white">1.500+</strong> membri
+              </p>
+            </motion.div>
           </div>
         </div>
+
+        {/* Floating "Sesiune Live" card — bottom right */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="absolute bottom-8 right-8 lg:right-14 bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-xl max-w-[220px] z-10 hidden lg:block"
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <div className="w-2 h-2 rounded-full bg-rose-powder animate-live-pulse" />
+            <span className="font-body text-label-xs text-forest-green font-semibold">Sesiune Live Acum</span>
+          </div>
+          <p className="font-heading text-body-sm text-deep-green leading-snug">Reglarea sistemului nervos cu Elena</p>
+        </motion.div>
       </section>
 
       {/* ── INTENT SELECTOR ── */}
