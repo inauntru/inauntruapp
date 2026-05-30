@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import {
   Check, Warning, Plus, Trash, Eye, EyeSlash, Upload,
   Link, EnvelopeSimple, Shield, Users, CreditCard, Gear, CircleNotch,
+  Article,
 } from "@phosphor-icons/react";
 
 const TABS = [
   { id: "platforma", label: "Platformă", icon: Gear },
+  { id: "texte", label: "Texte site", icon: Article },
   { id: "preturi", label: "Prețuri", icon: CreditCard },
   { id: "email", label: "Email", icon: EnvelopeSimple },
   { id: "integrari", label: "Integrări", icon: Link },
@@ -558,6 +560,564 @@ function AdminsTab() {
   );
 }
 
+// ─── SITE TEXT EDITOR ─────────────────────────────────────────────────────────
+
+type FieldType = "input" | "textarea";
+interface Field { key: string; label: string; type: FieldType; hint?: string; }
+interface Section { title: string; fields: Field[]; }
+interface PageSchema { id: string; label: string; sections: Section[]; }
+
+const f = (key: string, label: string, type: FieldType = "input", hint?: string): Field => ({ key, label, type, hint });
+
+const SITE_SCHEMA: PageSchema[] = [
+  {
+    id: "homepage", label: "Acasă",
+    sections: [
+      {
+        title: "Hero",
+        fields: [
+          f("hero_badge", "Text badge", "input", "ex: Aici gandurile se aseaza"),
+          f("hero_title", "Titlu principal"),
+          f("hero_subtitle", "Subtitlu", "textarea"),
+          f("hero_social_proof", "Text social proof (sub butoane)", "input", "ex: Alatura-te celor 1.500+ membri"),
+        ],
+      },
+      {
+        title: "De ce ai nevoie — titlu + 6 carduri",
+        fields: [
+          f("intent_title", "Titlu sectiune"),
+          f("intent1_title", "Card 1"),
+          f("intent2_title", "Card 2"),
+          f("intent3_title", "Card 3"),
+          f("intent4_title", "Card 4"),
+          f("intent5_title", "Card 5"),
+          f("intent6_title", "Card 6"),
+        ],
+      },
+      {
+        title: "Sectiunea problema — text",
+        fields: [
+          f("problem_label", "Label mic (deasupra titlului)"),
+          f("problem_title", "Titlu", "textarea"),
+          f("problem_body", "Paragraf explicativ", "textarea"),
+        ],
+      },
+      {
+        title: "Sectiunea problema — 4 carduri",
+        fields: [
+          f("prob_card1_title", "Card 1 — titlu"),
+          f("prob_card1_desc", "Card 1 — descriere", "textarea"),
+          f("prob_card2_title", "Card 2 — titlu"),
+          f("prob_card2_desc", "Card 2 — descriere", "textarea"),
+          f("prob_card3_title", "Card 3 — titlu"),
+          f("prob_card3_desc", "Card 3 — descriere", "textarea"),
+          f("prob_card4_title", "Card 4 — titlu"),
+          f("prob_card4_desc", "Card 4 — descriere", "textarea"),
+        ],
+      },
+      {
+        title: "Cum functioneaza — titlu + 3 pasi",
+        fields: [
+          f("howto_title", "Titlu sectiune"),
+          f("step1_title", "Pasul 1 — titlu"),
+          f("step1_desc", "Pasul 1 — descriere", "textarea"),
+          f("step2_title", "Pasul 2 — titlu"),
+          f("step2_desc", "Pasul 2 — descriere", "textarea"),
+          f("step3_title", "Pasul 3 — titlu"),
+          f("step3_desc", "Pasul 3 — descriere", "textarea"),
+        ],
+      },
+      {
+        title: "Platforma INAUNTRU — titlu + 4 functionalitati",
+        fields: [
+          f("platform_title", "Titlu sectiune"),
+          f("platform_subtitle", "Subtitlu", "textarea"),
+          f("feat1_title", "Functionalitate 1 — titlu"),
+          f("feat1_desc", "Functionalitate 1 — descriere", "textarea"),
+          f("feat2_title", "Functionalitate 2 — titlu"),
+          f("feat2_desc", "Functionalitate 2 — descriere", "textarea"),
+          f("feat3_title", "Functionalitate 3 — titlu"),
+          f("feat3_desc", "Functionalitate 3 — descriere", "textarea"),
+          f("feat4_title", "Functionalitate 4 — titlu"),
+          f("feat4_desc", "Functionalitate 4 — descriere", "textarea"),
+        ],
+      },
+      {
+        title: "Testimoniale",
+        fields: [
+          f("testimonials_title", "Titlu sectiune"),
+        ],
+      },
+      {
+        title: "Facilitatori",
+        fields: [
+          f("facilitators_label", "Label mic (deasupra titlului)"),
+          f("facilitators_title", "Titlu sectiune"),
+          f("facilitators_subtitle", "Subtitlu", "textarea"),
+        ],
+      },
+      {
+        title: "Garantie 14 zile",
+        fields: [
+          f("guarantee_title", "Titlu"),
+          f("guarantee_subtitle", "Subtitlu", "textarea"),
+        ],
+      },
+      {
+        title: "Call to action final",
+        fields: [
+          f("cta_title", "Titlu"),
+          f("cta_subtitle", "Subtitlu", "textarea"),
+        ],
+      },
+      {
+        title: "Intrebari frecvente — 8 intrebari",
+        fields: [
+          f("faq1_q", "Intrebare 1"), f("faq1_a", "Raspuns 1", "textarea"),
+          f("faq2_q", "Intrebare 2"), f("faq2_a", "Raspuns 2", "textarea"),
+          f("faq3_q", "Intrebare 3"), f("faq3_a", "Raspuns 3", "textarea"),
+          f("faq4_q", "Intrebare 4"), f("faq4_a", "Raspuns 4", "textarea"),
+          f("faq5_q", "Intrebare 5"), f("faq5_a", "Raspuns 5", "textarea"),
+          f("faq6_q", "Intrebare 6"), f("faq6_a", "Raspuns 6", "textarea"),
+          f("faq7_q", "Intrebare 7"), f("faq7_a", "Raspuns 7", "textarea"),
+          f("faq8_q", "Intrebare 8"), f("faq8_a", "Raspuns 8", "textarea"),
+        ],
+      },
+    ],
+  },
+  {
+    id: "preturi", label: "Preturi",
+    sections: [
+      {
+        title: "Header pagina",
+        fields: [
+          f("label", "Label mic (deasupra titlului)"),
+          f("title", "Titlu pagina"),
+          f("subtitle", "Subtitlu", "textarea"),
+          f("savings_badge", "Badge reducere anuala"),
+        ],
+      },
+      {
+        title: "Plan 1 — Gratuit",
+        fields: [
+          f("p1_name", "Nume plan"),
+          f("p1_desc", "Descriere scurta"),
+          f("p1_feat1", "Inclus 1"), f("p1_feat2", "Inclus 2"), f("p1_feat3", "Inclus 3"),
+          f("p1_feat4", "Inclus 4"), f("p1_feat5", "Inclus 5"),
+          f("p1_miss1", "Neinclus 1"), f("p1_miss2", "Neinclus 2"),
+          f("p1_miss3", "Neinclus 3"), f("p1_miss4", "Neinclus 4"),
+        ],
+      },
+      {
+        title: "Plan 2 — Standard (cel mai popular)",
+        fields: [
+          f("p2_name", "Nume plan"),
+          f("p2_desc", "Descriere scurta"),
+          f("p2_feat1", "Inclus 1"), f("p2_feat2", "Inclus 2"), f("p2_feat3", "Inclus 3"),
+          f("p2_feat4", "Inclus 4"), f("p2_feat5", "Inclus 5"), f("p2_feat6", "Inclus 6"),
+          f("p2_feat7", "Inclus 7"),
+          f("p2_miss1", "Neinclus 1"), f("p2_miss2", "Neinclus 2"),
+        ],
+      },
+      {
+        title: "Plan 3 — Premium",
+        fields: [
+          f("p3_name", "Nume plan"),
+          f("p3_desc", "Descriere scurta"),
+          f("p3_feat1", "Inclus 1"), f("p3_feat2", "Inclus 2"), f("p3_feat3", "Inclus 3"),
+          f("p3_feat4", "Inclus 4"), f("p3_feat5", "Inclus 5"), f("p3_feat6", "Inclus 6"),
+          f("p3_feat7", "Inclus 7"),
+        ],
+      },
+      {
+        title: "FAQ Facturare — 4 intrebari",
+        fields: [
+          f("bfaq1_q", "Intrebare 1"), f("bfaq1_a", "Raspuns 1", "textarea"),
+          f("bfaq2_q", "Intrebare 2"), f("bfaq2_a", "Raspuns 2", "textarea"),
+          f("bfaq3_q", "Intrebare 3"), f("bfaq3_a", "Raspuns 3", "textarea"),
+          f("bfaq4_q", "Intrebare 4"), f("bfaq4_a", "Raspuns 4", "textarea"),
+        ],
+      },
+    ],
+  },
+  {
+    id: "despre_noi", label: "Despre noi",
+    sections: [
+      {
+        title: "Header pagina",
+        fields: [
+          f("label", "Label mic (deasupra titlului)"),
+          f("title", "Titlu principal"),
+          f("body", "Paragraf sub titlu", "textarea"),
+        ],
+      },
+      {
+        title: "Povestea fondatorului",
+        fields: [
+          f("founder_label", "Label mic"),
+          f("founder_title", "Titlu sectiune"),
+          f("founder_body1", "Paragraf 1", "textarea"),
+          f("founder_body2", "Paragraf 2", "textarea"),
+          f("founder_body3", "Paragraf 3", "textarea"),
+          f("founder_quote", "Citat (in card)", "textarea"),
+          f("founder_quote_author", "Autor citat"),
+        ],
+      },
+      {
+        title: "Valorile noastre — 4 carduri",
+        fields: [
+          f("val1_title", "Valoare 1 — titlu"), f("val1_desc", "Valoare 1 — descriere", "textarea"),
+          f("val2_title", "Valoare 2 — titlu"), f("val2_desc", "Valoare 2 — descriere", "textarea"),
+          f("val3_title", "Valoare 3 — titlu"), f("val3_desc", "Valoare 3 — descriere", "textarea"),
+          f("val4_title", "Valoare 4 — titlu"), f("val4_desc", "Valoare 4 — descriere", "textarea"),
+        ],
+      },
+      {
+        title: "Viziune — 3 etape",
+        fields: [
+          f("tl1_year", "Etapa 1 — an"), f("tl1_location", "Etapa 1 — locatie"), f("tl1_desc", "Etapa 1 — descriere", "textarea"),
+          f("tl2_year", "Etapa 2 — an"), f("tl2_location", "Etapa 2 — locatie"), f("tl2_desc", "Etapa 2 — descriere", "textarea"),
+          f("tl3_year", "Etapa 3 — an"), f("tl3_location", "Etapa 3 — locatie"), f("tl3_desc", "Etapa 3 — descriere", "textarea"),
+        ],
+      },
+    ],
+  },
+  {
+    id: "practici", label: "Practici",
+    sections: [
+      {
+        title: "Header pagina",
+        fields: [
+          f("label", "Label mic (deasupra titlului)"),
+          f("title", "Titlu principal"),
+          f("subtitle", "Subtitlu", "textarea"),
+          f("search_placeholder", "Placeholder cautare"),
+          f("empty_title", "Titlu cand nu sunt rezultate"),
+          f("empty_desc", "Descriere cand nu sunt rezultate", "textarea"),
+        ],
+      },
+    ],
+  },
+  {
+    id: "inspiratie", label: "Inspiratie (Blog)",
+    sections: [
+      {
+        title: "Header pagina",
+        fields: [
+          f("label", "Label mic (deasupra titlului)"),
+          f("title", "Titlu principal"),
+          f("subtitle", "Subtitlu", "textarea"),
+        ],
+      },
+    ],
+  },
+  {
+    id: "sesiuni_live", label: "Sesiuni Live",
+    sections: [
+      {
+        title: "Header pagina",
+        fields: [
+          f("title", "Titlu pagina"),
+          f("subtitle", "Subtitlu", "textarea"),
+          f("empty_state", "Text cand nu sunt sesiuni disponibile"),
+        ],
+      },
+    ],
+  },
+  {
+    id: "facilitatori", label: "Facilitatori",
+    sections: [
+      {
+        title: "Header pagina",
+        fields: [
+          f("label", "Label mic (deasupra titlului)"),
+          f("title", "Titlu pagina"),
+          f("subtitle", "Subtitlu", "textarea"),
+        ],
+      },
+    ],
+  },
+];
+
+const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
+  homepage: {
+    hero_badge: "Aici gandurile se aseaza",
+    hero_title: "Intoarce-te la tine.",
+    hero_subtitle: "Resetare rapida in mai putin de 2 minute. Metode simple pentru momentele cand te simti blocat si ai nevoie de un nou inceput.",
+    hero_social_proof: "Alatura-te celor 1.500+ membri",
+    intent_title: "De ce ai nevoie in acest moment?",
+    intent1_title: "Pauza de reincarcare",
+    intent2_title: "Somn odihnitor",
+    intent3_title: "Eliberare de presiune si agitatie",
+    intent4_title: "Prezenta si claritate mentala",
+    intent5_title: "Recalibrare si echilibru interior",
+    intent6_title: "Explorare si crestere",
+    problem_label: "Corpul tau iti vorbeste",
+    problem_title: "Te simti coplesit de ganduri? Recupereaza-ti timpul pierdut in analiza si revino la ce conteaza pentru tine.",
+    problem_body: "Multe dintre problemele noastre moderne nu sunt doar in capul nostru. Ele sunt stocate in corp ca tensiune cronica, respiratie superficiala si oboseala persistenta.",
+    prob_card1_title: "Tensiune Musculara",
+    prob_card1_desc: "Gat, umeri si maxilar mereu incordate fara un motiv aparent.",
+    prob_card2_title: "Insomnie Alerta",
+    prob_card2_desc: "Esti obosit, dar corpul tau refuza sa intre in starea de repaus.",
+    prob_card3_title: "Deconectare",
+    prob_card3_desc: "Simti ca traiesti de la gat in sus, ignorand semnalele corpului.",
+    prob_card4_title: "Burnout Emotional",
+    prob_card4_desc: "Reactii disproportionate la stresori mici de zi cu zi.",
+    howto_title: "Calatoria ta spre interior",
+    step1_title: "Evaluare Initiala",
+    step1_desc: "Identificam unde este blocata energia in corpul tau printr-un chestionar de autodescoperire ghidat.",
+    step2_title: "Practica Zilnica",
+    step2_desc: "Primesti un program personalizat de 10-20 minute cu exercitii de respiratie, miscare si constientizare.",
+    step3_title: "Monitorizare Progres",
+    step3_desc: "Urmaresti cum se schimba starea ta de bine prin jurnalul de senzatii si check-in-uri zilnice.",
+    platform_title: "Tot ce ai nevoie intr-un singur loc",
+    platform_subtitle: "Acces instant de pe orice dispozitiv la resurse premium de vindecare somatica.",
+    feat1_title: "Biblioteca",
+    feat1_desc: "70+ sesiuni audio si video de la facilitatori certificati, disponibile oricand.",
+    feat2_title: "Sesiuni LIVE",
+    feat2_desc: "Cercuri de vindecare si workshop-uri interactive saptamanale cu facilitatorii nostri.",
+    feat3_title: "Check-in Zilnic",
+    feat3_desc: "Sistem inteligent care iti recomanda practica potrivita starii tale de azi.",
+    feat4_title: "Monitorizarea progresului",
+    feat4_desc: "Noteaza cum te simti si urmareste-ti evolutia pas cu pas.",
+    testimonials_title: "Povesti de transformare",
+    facilitators_label: "Ghizi experti",
+    facilitators_title: "Ghidat de experti in somatizare",
+    facilitators_subtitle: "O echipa de terapeuti, practicieni somatic si specialisti certificati, formati in Romania si international.",
+    guarantee_title: "Testeaza gratuit timp de 14 zile.",
+    guarantee_subtitle: "Primesti acces la toate metodele noastre de recalibrare.",
+    cta_title: "Alege sa te simti mai bine acum.",
+    cta_subtitle: "Incepe sa te simti mai bine imediat. Anulezi oricand, fara batai de cap.",
+    faq1_q: "Ce este terapia somatica si cu ce difera de meditatie?",
+    faq1_a: "Terapia somatica se concentreaza pe senzatiile corporale si cum acestea poarta amprenta experientelor noastre emotionale si traumatice. Spre deosebire de meditatie (care lucreaza cu mintea), terapia somatica lucreaza direct cu corpul ca intrare in sistemul nervos.",
+    faq2_q: "Am nevoie de experienta anterioara?",
+    faq2_a: "Nu. Platforma este conceputa pentru toate nivelurile, de la absolute beginner la practicieni cu experienta. Fiecare sesiune indica nivelul recomandat.",
+    faq3_q: "Cat timp dureaza o practica?",
+    faq3_a: "Practicile variaza de la 5 minute (tehnici rapide de ancorare) la 30+ minute (sesiuni profunde de corp). Majoritatea utilizatorilor practica 10-20 de minute pe zi.",
+    faq4_q: "Poate inlocui INAUNTRU terapia clasica?",
+    faq4_a: "INAUNTRU este un instrument de suport, nu un substitut pentru psihoterapie. Daca ai nevoie de suport terapeutic individual, te incurajam sa lucrezi si cu un terapeut calificat.",
+    faq5_q: "Cum functioneaza perioada gratuita de 14 zile?",
+    faq5_a: "Primele 14 zile sunt complet gratuite si iti ofera acces la planul Premium pentru a testa experienta. Nu ai nevoie de card pentru a incepe.",
+    faq6_q: "Pot descarca practicile pentru utilizare offline?",
+    faq6_a: "Descarcarea offline este disponibila pentru abonantii Premium+. Planurile Gratuit si Premium necesita conexiune internet.",
+    faq7_q: "Sesiunile live sunt inregistrate?",
+    faq7_a: "Da, toate sesiunile live sunt inregistrate si disponibile in biblioteca de replay in termen de 24 de ore.",
+    faq8_q: "Exista optiuni corporate / B2B?",
+    faq8_a: "Da! Oferim pachete corporate pentru companii care doresc sa investeasca in bunastarea angajatilor. Contactati-ne la business@inauntru.ro pentru un demo.",
+  },
+  preturi: {
+    label: "Alege claritatea.",
+    title: "Planuri pentru echilibru zilnic.",
+    subtitle: "Redescopera-ti starea de bine. Alege varianta care ti se potriveste. E mai simplu decat crezi sa te simti din nou tu.",
+    savings_badge: "Economisesti 35%",
+    p1_name: "Gratuit", p1_desc: "Recalibrare rapida",
+    p1_feat1: "5 practici gratuite pe luna", p1_feat2: "1 sesiune live pe luna",
+    p1_feat3: "Check-in zilnic", p1_feat4: "Acces la blog si resurse", p1_feat5: "Monitorizarea progresului",
+    p1_miss1: "Biblioteca completa (70+ practici)", p1_miss2: "Sesiuni live nelimitate",
+    p1_miss3: "Progres personalizat", p1_miss4: "Suport dedicat",
+    p2_name: "Standard", p2_desc: "Claritate si echilibru",
+    p2_feat1: "Acces nelimitat la toate practicile", p2_feat2: "Sesiuni live nelimitate",
+    p2_feat3: "Check-in zilnic + harta corpului", p2_feat4: "Progres personalizat",
+    p2_feat5: "Monitorizarea progresului", p2_feat6: "Recomandari bazate pe check-in",
+    p2_feat7: "Suport email 48h",
+    p2_miss1: "Sesiuni 1:1 cu facilitatorul", p2_miss2: "Program corporativ",
+    p3_name: "Premium", p3_desc: "Transformare profunda",
+    p3_feat1: "Tot ce include Premium", p3_feat2: "1 sesiune 1:1 pe luna cu facilitatorul",
+    p3_feat3: "Program personalizat de 30 zile", p3_feat4: "Acces anticipat la continut nou",
+    p3_feat5: "Grup privat de suport", p3_feat6: "Suport prioritar 24h",
+    p3_feat7: "Download practici offline",
+    bfaq1_q: "Pot anula oricand abonamentul?", bfaq1_a: "Da, poti anula oricand din setarile contului tau. Nu exista penalitati sau taxe de anulare.",
+    bfaq2_q: "Ce metode de plata acceptati?", bfaq2_a: "Acceptam card Visa, Mastercard si plata prin transfer bancar pentru planurile anuale.",
+    bfaq3_q: "Exista perioada de proba gratuita?", bfaq3_a: "Planul Gratuit este disponibil fara limita de timp. Nu cerem card de credit.",
+    bfaq4_q: "Pot schimba planul ulterior?", bfaq4_a: "Da, poti face upgrade sau downgrade oricand. Diferenta se calculeaza proportional.",
+  },
+  despre_noi: {
+    label: "Despre noi",
+    title: "Cultivam echilibrul prin stiinta somatizarii si caldura comunitatii.",
+    body: "INAUNTRU s-a nascut din convingerea ca fiecare persoana din Romania merita acces la practici de reglare somatica de calitate - disponibile oricand, oriunde.",
+    founder_label: "Povestea fondatorului",
+    founder_title: "De ce am creat INAUNTRU",
+    founder_body1: "",
+    founder_body2: "",
+    founder_body3: "",
+    founder_quote: "Am construit INAUNTRU pentru ca eu insami am cautat ani de zile un loc sigur sa ma vindec.",
+    founder_quote_author: "Sabina, Co-Founder",
+    val1_title: "Compasiune", val1_desc: "Fiecare persoana merita acces la practici de bunastare, indiferent de context sau resurse.",
+    val2_title: "Fundamentare", val2_desc: "Toate practicile sunt bazate pe cercetari validate in neurostiinta si psihoterapie somatica.",
+    val3_title: "Accesibilitate", val3_desc: "Credem ca vindecarea este un drept, nu un privilegiu rezervat celor cu resurse financiare mari.",
+    val4_title: "Autenticitate", val4_desc: "Facilitatorii nostri sunt practicieni reali cu experienta clinica verificata, nu actori sau influenceri.",
+    tl1_year: "2026", tl1_location: "Romania", tl1_desc: "Lansare platforma cu 70+ practici, sesiuni live si facilitatori certificati. Primii 5.000 utilizatori.",
+    tl2_year: "2027", tl2_location: "Europa de Est", tl2_desc: "Expansiune in Bulgaria, Ungaria si Moldova. Continut in 4 limbi, 20+ facilitatori internationali.",
+    tl3_year: "2028+", tl3_location: "Global", tl3_desc: "Ecosistem complet de somatic wellness: formare facilitatori, certificare, parteneriate clinice.",
+  },
+  practici: {
+    label: "Biblioteca practici",
+    title: "70+ practici somatice",
+    subtitle: "Respiratie, miscare, corp si voce — fiecare practica ghidata de experti somatic din Romania.",
+    search_placeholder: "De ce ai nevoie acum?",
+    empty_title: "Nicio practica gasita",
+    empty_desc: "Incearca sa modifici filtrele sau cauta altceva.",
+  },
+  inspiratie: {
+    label: "Resurse & Educatie",
+    title: "Centrul de Educatie Somatica",
+    subtitle: "Stiinta somatica, practici ghidate si perspective de la facilitatorii nostri.",
+  },
+  sesiuni_live: {
+    title: "Sesiuni Live",
+    subtitle: "Conecteaza-te in timp real cu facilitatorii nostri certificati.",
+    empty_state: "Nu exista sesiuni programate momentan.",
+  },
+  facilitatori: {
+    label: "Echipa noastra",
+    title: "Facilitatorii nostri",
+    subtitle: "Profesionisti in terapie somatica, gata sa te ghideze spre echilibru interior.",
+  },
+};
+
+function SiteTextTab() {
+  const [activePage, setActivePage] = useState("homepage");
+  const [content, setContent] = useState<Record<string, Record<string, string>>>(DEFAULT_SITE_CONTENT);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [deploying, setDeploying] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.site_content) {
+          setContent((prev) => {
+            const merged: Record<string, Record<string, string>> = { ...prev };
+            for (const pageId of Object.keys(data.site_content)) {
+              merged[pageId] = { ...(prev[pageId] ?? {}), ...(data.site_content[pageId] ?? {}) };
+            }
+            return merged;
+          });
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  function handleChange(pageId: string, key: string, value: string) {
+    setContent((prev) => ({
+      ...prev,
+      [pageId]: { ...(prev[pageId] ?? {}), [key]: value },
+    }));
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    await fetch("/api/admin/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "site_content", value: content }),
+    });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 4000);
+
+    // Trigger Vercel rebuild so changes go live automatically
+    setDeploying(true);
+    await fetch("/api/admin/deploy", { method: "POST" });
+    setDeploying(false);
+  }
+
+  const activePage_ = SITE_SCHEMA.find((p) => p.id === activePage)!;
+  const pageContent = content[activePage] ?? {};
+
+  if (loading) return <div className="flex justify-center py-12"><CircleNotch size={24} className="animate-spin text-forest-green" /></div>;
+
+  return (
+    <div className="space-y-6">
+      {saved && (
+        <div className="flex items-center gap-2 p-3 bg-forest-green/10 border border-forest-green/20 rounded-xl text-forest-green font-body text-body-sm">
+          <Check size={16} weight="bold" />
+          {deploying
+            ? "Textele salvate — site-ul se actualizează automat în ~2 minute..."
+            : "Textele salvate și deploy pornit. Site-ul va fi actualizat în ~2 minute."}
+        </div>
+      )}
+
+      {/* Notă info */}
+      <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+        <Warning size={15} className="text-amber-600 flex-shrink-0 mt-0.5" />
+        <p className="font-body text-label-xs text-amber-700">
+          Textele editate aici se salvează în baza de date. Paginile vor fi actualizate să le folosească automat în pasul următor de implementare.
+        </p>
+      </div>
+
+      {/* Page selector */}
+      <div className="flex gap-2 flex-wrap">
+        {SITE_SCHEMA.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => setActivePage(p.id)}
+            className={`px-4 py-2 rounded-full font-body text-body-sm font-medium transition-all ${
+              activePage === p.id
+                ? "bg-forest-green text-white shadow-sm"
+                : "bg-white border border-sage-border text-secondary-text hover:border-forest-green hover:text-deep-green"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Fields */}
+      <div className="space-y-4">
+        {activePage_.sections.map((section) => (
+          <div key={section.title} className="card bg-white p-5">
+            <h3 className="font-body font-semibold text-body-sm text-deep-green mb-4 pb-3 border-b border-sage-border/60">
+              {section.title}
+            </h3>
+            <div className="space-y-4">
+              {section.fields.map((field) => (
+                <div key={field.key}>
+                  <label className="font-body text-label-sm text-on-surface mb-1 block">
+                    {field.label}
+                  </label>
+                  {field.hint && (
+                    <p className="font-body text-label-xs text-secondary-text mb-1.5">{field.hint}</p>
+                  )}
+                  {field.type === "textarea" ? (
+                    <textarea
+                      value={pageContent[field.key] ?? ""}
+                      onChange={(e) => handleChange(activePage, field.key, e.target.value)}
+                      className="input w-full min-h-[80px] resize-y"
+                      rows={3}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={pageContent[field.key] ?? ""}
+                      onChange={(e) => handleChange(activePage, field.key, e.target.value)}
+                      className="input w-full"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Save */}
+      <div className="flex justify-end pt-2">
+        <button onClick={handleSave} disabled={saving || deploying} className="btn btn-primary btn-sm gap-2 disabled:opacity-50">
+          <CircleNotch size={14} className={saving || deploying ? "animate-spin" : "hidden"} />
+          {!saving && !deploying && <Check size={14} weight="bold" />}
+          {saving ? "Se salvează..." : deploying ? "Se pornește deploy-ul..." : "Salvează și publică"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+
 export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState("platforma");
 
@@ -592,6 +1152,7 @@ export default function AdminSettingsPage() {
 
       {/* Tab content */}
       {activeTab === "platforma" && <PlatformTab />}
+      {activeTab === "texte" && <SiteTextTab />}
       {activeTab === "preturi" && <PricingTab />}
       {activeTab === "email" && <EmailTab />}
       {activeTab === "integrari" && <IntegrationsTab />}
