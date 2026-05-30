@@ -8,5 +8,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const role = cookieStore.get("admin_role")?.value ?? "moderator";
-  return NextResponse.json({ role });
+  const name = cookieStore.get("admin_name")?.value
+    ? decodeURIComponent(cookieStore.get("admin_name")!.value)
+    : "Admin";
+  return NextResponse.json({ role, name });
 }

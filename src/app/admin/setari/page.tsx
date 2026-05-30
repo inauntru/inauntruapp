@@ -42,10 +42,11 @@ const GDPR_REQUESTS = [
   { id: 3, user: "Elena M.", email: "elena.m@gmail.com", type: "Export date", date: "2026-04-20", status: "completed" },
 ];
 
-const ADMIN_USERS_LIST = [
-  { id: 1, name: "Sabina Blendea", email: "sabina@inauntru.ro", role: "Super Admin", avatar: "SB" },
-  { id: 2, name: "Tudor Ionescu", email: "tudor.i@gmail.com", role: "Moderator", avatar: "TI" },
-];
+const ROLE_LABELS: Record<string, string> = {
+  super_admin: "Super Admin",
+  editor: "Editor",
+  moderator: "Moderator",
+};
 
 function SaveBar({ onSave }: { onSave: () => void }) {
   return (
@@ -477,8 +478,16 @@ const DEFAULT_PERMISSIONS: Record<string, Record<string, boolean>> = {
   moderator: { dashboard: true, utilizatori: true, statistici: true },
 };
 
+interface AdminUserEntry { email: string; role: string; name: string; }
+
 function AdminsTab() {
   const [showInvite, setShowInvite] = useState(false);
+  const [adminUsers, setAdminUsers] = useState<AdminUserEntry[]>([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteName, setInviteName] = useState("");
+  const [inviteRole, setInviteRole] = useState("editor");
+  const [inviteSaving, setInviteSaving] = useState(false);
+  const [inviteError, setInviteError] = useState("");
   const [permissions, setPermissions] = useState(DEFAULT_PERMISSIONS);
   const [permSaving, setPermSaving] = useState(false);
   const [permSaved, setPermSaved] = useState(false);
@@ -486,9 +495,47 @@ function AdminsTab() {
   useEffect(() => {
     fetch("/api/admin/settings")
       .then((r) => r.json())
-      .then((d) => { if (d.admin_permissions) setPermissions(d.admin_permissions); })
+      .then((d) => {
+        if (d.admin_permissions) setPermissions(d.admin_permissions);
+        if (d.admin_users) setAdminUsers(d.admin_users);
+      })
       .catch(() => {});
   }, []);
+
+  async function saveAdminUsers(users: AdminUserEntry[]) {
+    await fetch("/api/admin/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "admin_users", value: users }),
+    });
+  }
+
+  async function handleAddAdmin() {
+    if (!inviteEmail.trim()) { setInviteError("Emailul este obligatoriu."); return; }
+    if (adminUsers.find((u) => u.email === inviteEmail.trim())) {
+      setInviteError("Acest email are deja acces."); return;
+    }
+    setInviteSaving(true);
+    setInviteError("");
+    const updated = [...adminUsers, { email: inviteEmail.trim(), name: inviteName.trim() || inviteEmail.trim(), role: inviteRole }];
+    await saveAdminUsers(updated);
+    setAdminUsers(updated);
+    setInviteEmail(""); setInviteName(""); setInviteRole("editor");
+    setShowInvite(false);
+    setInviteSaving(false);
+  }
+
+  async function handleChangeRole(email: string, role: string) {
+    const updated = adminUsers.map((u) => u.email === email ? { ...u, role } : u);
+    setAdminUsers(updated);
+    await saveAdminUsers(updated);
+  }
+
+  async function handleRemove(email: string) {
+    const updated = adminUsers.filter((u) => u.email !== email);
+    setAdminUsers(updated);
+    await saveAdminUsers(updated);
+  }
 
   function togglePerm(role: string, item: string) {
     setPermissions((prev) => ({
@@ -509,59 +556,94 @@ function AdminsTab() {
     setTimeout(() => setPermSaved(false), 2500);
   }
 
-  const ROLES = ["Super Admin", "Editor", "Moderator"];
 
   return (
     <div className="space-y-6">
       <div className="card bg-white p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-body font-semibold text-body-md text-deep-green">Utilizatori admin</h3>
-          <button onClick={() => setShowInvite(!showInvite)} className="btn btn-primary btn-sm">
-            <Plus size={14} weight="bold" /> Invită admin
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-body font-semibold text-body-md text-deep-green">Conturi cu acces admin</h3>
+          <button onClick={() => { setShowInvite(!showInvite); setInviteError(""); }} className="btn btn-primary btn-sm">
+            <Plus size={14} weight="bold" /> Adaugă cont
           </button>
         </div>
+        <p className="font-body text-label-xs text-secondary-text mb-4">
+          Contul backup (username/parolă) are mereu Super Admin și nu apare aici. Adaugă conturi de pe platformă folosind emailul lor.
+        </p>
 
         {showInvite && (
-          <div className="mb-4 p-4 bg-light-green rounded-xl border border-sage-border">
-            <h4 className="font-body text-body-sm font-semibold text-deep-green mb-3">Invitație nouă</h4>
+          <div className="mb-4 p-4 bg-light-green rounded-xl border border-sage-border space-y-3">
+            <h4 className="font-body text-body-sm font-semibold text-deep-green">Cont nou cu acces admin</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <input type="email" placeholder="Email admin" className="input w-full" />
-              <select className="input w-full">
-                {ROLES.map((r) => <option key={r}>{r}</option>)}
+              <input
+                type="email"
+                placeholder="Email (de pe platformă)"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="input w-full"
+              />
+              <input
+                type="text"
+                placeholder="Nume afișat (opțional)"
+                value={inviteName}
+                onChange={(e) => setInviteName(e.target.value)}
+                className="input w-full"
+              />
+              <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} className="input w-full">
+                <option value="super_admin">Super Admin</option>
+                <option value="editor">Editor</option>
+                <option value="moderator">Moderator</option>
               </select>
-              <button className="btn btn-primary btn-sm">Trimite invitație</button>
+            </div>
+            {inviteError && <p className="font-body text-label-xs text-red-600">{inviteError}</p>}
+            <div className="flex gap-2">
+              <button onClick={handleAddAdmin} disabled={inviteSaving} className="btn btn-primary btn-sm disabled:opacity-50">
+                {inviteSaving ? "Se salvează..." : "Salvează accesul"}
+              </button>
+              <button onClick={() => setShowInvite(false)} className="btn btn-ghost btn-sm">Anulează</button>
             </div>
           </div>
         )}
 
-        <div className="space-y-3">
-          {ADMIN_USERS_LIST.map((u) => (
-            <div key={u.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-light-green/50 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-deep-green flex items-center justify-center flex-shrink-0">
-                  <span className="font-body text-xs font-bold text-white">{u.avatar}</span>
+        {adminUsers.length === 0 ? (
+          <p className="font-body text-body-sm text-secondary-text text-center py-6">
+            Niciun cont adăugat încă. Apasă „Adaugă cont" pentru a da acces unui utilizator din platformă.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {adminUsers.map((u) => (
+              <div key={u.email} className="flex items-center justify-between p-3 rounded-xl hover:bg-light-green/50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-deep-green flex items-center justify-center flex-shrink-0">
+                    <span className="font-body text-xs font-bold text-white">
+                      {u.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-body text-body-sm font-semibold text-deep-green">{u.name}</p>
+                    <p className="font-body text-[10px] text-secondary-text">{u.email}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-body text-body-sm font-semibold text-deep-green">{u.name}</p>
-                  <p className="font-body text-[10px] text-secondary-text">{u.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <select
-                  defaultValue={u.role}
-                  className="border border-sage-border rounded-lg px-3 py-1.5 font-body text-label-xs text-on-surface focus:outline-none focus:border-forest-green bg-white"
-                >
-                  {ROLES.map((r) => <option key={r}>{r}</option>)}
-                </select>
-                {u.id !== 1 && (
-                  <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-secondary-text hover:text-terracotta transition-colors">
+                <div className="flex items-center gap-3">
+                  <select
+                    value={u.role}
+                    onChange={(e) => handleChangeRole(u.email, e.target.value)}
+                    className="border border-sage-border rounded-lg px-3 py-1.5 font-body text-label-xs text-on-surface focus:outline-none focus:border-forest-green bg-white"
+                  >
+                    <option value="super_admin">Super Admin</option>
+                    <option value="editor">Editor</option>
+                    <option value="moderator">Moderator</option>
+                  </select>
+                  <button
+                    onClick={() => handleRemove(u.email)}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-secondary-text hover:text-terracotta transition-colors"
+                  >
                     <Trash size={13} />
                   </button>
-                )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card bg-white p-5">
