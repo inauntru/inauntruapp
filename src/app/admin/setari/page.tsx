@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import {
   Check, Warning, Plus, Trash, Eye, EyeSlash, Upload,
   Link, EnvelopeSimple, Shield, Users, CreditCard, Gear, CircleNotch,
@@ -459,8 +460,54 @@ function GdprTab() {
   );
 }
 
+const NAV_OPTIONS = [
+  { id: "dashboard", label: "Dashboard" },
+  { id: "continut", label: "Conținut (Practici)" },
+  { id: "blog", label: "Blog" },
+  { id: "utilizatori", label: "Utilizatori" },
+  { id: "sesiuni", label: "Sesiuni LIVE" },
+  { id: "abonamente", label: "Abonamente" },
+  { id: "emailuri", label: "Emailuri" },
+  { id: "statistici", label: "Statistici" },
+  { id: "setari", label: "Setări (generale)" },
+];
+
+const DEFAULT_PERMISSIONS: Record<string, Record<string, boolean>> = {
+  editor: { dashboard: true, continut: true, blog: true, sesiuni: true, emailuri: true, statistici: true, setari: true },
+  moderator: { dashboard: true, utilizatori: true, statistici: true },
+};
+
 function AdminsTab() {
   const [showInvite, setShowInvite] = useState(false);
+  const [permissions, setPermissions] = useState(DEFAULT_PERMISSIONS);
+  const [permSaving, setPermSaving] = useState(false);
+  const [permSaved, setPermSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((d) => { if (d.admin_permissions) setPermissions(d.admin_permissions); })
+      .catch(() => {});
+  }, []);
+
+  function togglePerm(role: string, item: string) {
+    setPermissions((prev) => ({
+      ...prev,
+      [role]: { ...(prev[role] ?? {}), [item]: !(prev[role]?.[item] ?? false) },
+    }));
+  }
+
+  async function savePermissions() {
+    setPermSaving(true);
+    await fetch("/api/admin/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "admin_permissions", value: permissions }),
+    });
+    setPermSaving(false);
+    setPermSaved(true);
+    setTimeout(() => setPermSaved(false), 2500);
+  }
 
   const ROLES = ["Super Admin", "Editor", "Moderator"];
 
@@ -518,42 +565,61 @@ function AdminsTab() {
       </div>
 
       <div className="card bg-white p-5">
-        <h3 className="font-body font-semibold text-body-md text-deep-green mb-4">Permisiuni pe rol</h3>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-body font-semibold text-body-md text-deep-green">Acces secțiuni per rol</h3>
+          <p className="font-body text-label-xs text-secondary-text">Super Admin are mereu acces la tot.</p>
+        </div>
+        <p className="font-body text-label-xs text-secondary-text mb-4">Bifează ce secțiuni din meniu poate vedea fiecare rol.</p>
+
+        {permSaved && (
+          <div className="flex items-center gap-2 p-3 bg-forest-green/10 border border-forest-green/20 rounded-xl text-forest-green font-body text-body-sm mb-4">
+            <Check size={14} weight="bold" /> Permisiunile au fost salvate.
+          </div>
+        )}
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr>
-                <th className="text-left font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 pr-6">Permisiune</th>
-                {ROLES.map((r) => (
-                  <th key={r} className="font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 px-4 text-center">{r}</th>
-                ))}
+                <th className="text-left font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 pr-6">Secțiune</th>
+                <th className="font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 px-6 text-center">Super Admin</th>
+                <th className="font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 px-6 text-center">Editor</th>
+                <th className="font-body text-label-xs text-secondary-text uppercase tracking-wider pb-3 px-6 text-center">Moderator</th>
               </tr>
             </thead>
             <tbody>
-              {[
-                { label: "Gestionare utilizatori & roluri", perms: [true, false, false] },
-                { label: "Adăugare / editare conținut", perms: [true, true, false] },
-                { label: "Gestionare sesiuni LIVE", perms: [true, true, false] },
-                { label: "Vizualizare statistici", perms: [true, true, true] },
-                { label: "Gestionare abonamente", perms: [true, false, false] },
-                { label: "Editare setări platformă", perms: [true, false, false] },
-                { label: "Gestionare admini", perms: [true, false, false] },
-              ].map((row) => (
-                <tr key={row.label} className="border-t border-sage-border/40">
-                  <td className="py-2 pr-6 font-body text-body-sm text-on-surface">{row.label}</td>
-                  {row.perms.map((p, i) => (
-                    <td key={i} className="py-2 px-4 text-center">
-                      {p ? (
-                        <Check size={14} weight="bold" className="text-forest-green mx-auto" />
-                      ) : (
-                        <span className="text-secondary-text/40 text-body-sm">—</span>
-                      )}
-                    </td>
-                  ))}
+              {NAV_OPTIONS.map((item) => (
+                <tr key={item.id} className="border-t border-sage-border/40">
+                  <td className="py-2.5 pr-6 font-body text-body-sm text-on-surface">{item.label}</td>
+                  <td className="py-2.5 px-6 text-center">
+                    <Check size={14} weight="bold" className="text-forest-green mx-auto" />
+                  </td>
+                  <td className="py-2.5 px-6 text-center">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 accent-forest-green cursor-pointer"
+                      checked={permissions.editor?.[item.id] ?? false}
+                      onChange={() => togglePerm("editor", item.id)}
+                    />
+                  </td>
+                  <td className="py-2.5 px-6 text-center">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 accent-forest-green cursor-pointer"
+                      checked={permissions.moderator?.[item.id] ?? false}
+                      onChange={() => togglePerm("moderator", item.id)}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="flex justify-end mt-4">
+          <button onClick={savePermissions} disabled={permSaving} className="btn btn-primary btn-sm gap-2 disabled:opacity-50">
+            {permSaving ? <CircleNotch size={14} className="animate-spin" /> : <Check size={14} weight="bold" />}
+            {permSaving ? "Se salvează..." : "Salvează permisiunile"}
+          </button>
         </div>
       </div>
     </div>
@@ -1120,6 +1186,12 @@ function SiteTextTab() {
 
 export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState("platforma");
+  const { isSuperAdmin } = useAdminRole();
+
+  const visibleTabs = TABS.filter((t) => {
+    if (t.id === "texte") return isSuperAdmin;
+    return true;
+  });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -1131,7 +1203,7 @@ export default function AdminSettingsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-sage-border mb-6 overflow-x-auto no-scrollbar">
-        {TABS.map((t) => {
+        {visibleTabs.map((t) => {
           const Icon = t.icon;
           return (
             <button

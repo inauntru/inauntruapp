@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChartPieSlice,
   FilmSlate,
@@ -21,16 +21,18 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_ITEMS = [
-  { icon: ChartPieSlice, label: "Dashboard", href: "/admin" },
-  { icon: FilmSlate, label: "Conținut", href: "/admin/continut" },
-  { icon: Article, label: "Blog", href: "/admin/blog" },
-  { icon: Users, label: "Utilizatori", href: "/admin/utilizatori" },
-  { icon: CalendarBlank, label: "Sesiuni LIVE", href: "/admin/sesiuni" },
-  { icon: CreditCard, label: "Abonamente", href: "/admin/abonamente" },
-  { icon: EnvelopeSimple, label: "Emailuri", href: "/admin/emailuri" },
-  { icon: ChartLine, label: "Statistici", href: "/admin/statistici" },
-  { icon: GearSix, label: "Setări", href: "/admin/setari" },
+  { icon: ChartPieSlice, label: "Dashboard", href: "/admin", id: "dashboard" },
+  { icon: FilmSlate, label: "Conținut", href: "/admin/continut", id: "continut" },
+  { icon: Article, label: "Blog", href: "/admin/blog", id: "blog" },
+  { icon: Users, label: "Utilizatori", href: "/admin/utilizatori", id: "utilizatori" },
+  { icon: CalendarBlank, label: "Sesiuni LIVE", href: "/admin/sesiuni", id: "sesiuni" },
+  { icon: CreditCard, label: "Abonamente", href: "/admin/abonamente", id: "abonamente" },
+  { icon: EnvelopeSimple, label: "Emailuri", href: "/admin/emailuri", id: "emailuri" },
+  { icon: ChartLine, label: "Statistici", href: "/admin/statistici", id: "statistici" },
+  { icon: GearSix, label: "Setări", href: "/admin/setari", id: "setari" },
 ];
+
+type Permissions = Record<string, Record<string, boolean>>;
 
 function NavItem({ item, isActive }: { item: typeof NAV_ITEMS[0]; isActive: boolean }) {
   const Icon = item.icon;
@@ -52,6 +54,25 @@ function NavItem({ item, isActive }: { item: typeof NAV_ITEMS[0]; isActive: bool
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [role, setRole] = useState<string>("super_admin");
+  const [permissions, setPermissions] = useState<Permissions>({});
+
+  useEffect(() => {
+    fetch("/api/admin/me")
+      .then((r) => r.json())
+      .then((d) => setRole(d.role ?? "moderator"))
+      .catch(() => {});
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((d) => { if (d.admin_permissions) setPermissions(d.admin_permissions); })
+      .catch(() => {});
+  }, []);
+
+  const visibleItems = NAV_ITEMS.filter((item) => {
+    if (role === "super_admin") return true;
+    const perms = permissions[role] ?? {};
+    return perms[item.id] === true;
+  });
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
@@ -75,7 +96,7 @@ export default function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {NAV_ITEMS.map((item) => (
+        {visibleItems.map((item) => (
           <NavItem key={item.href} item={item} isActive={isActive(item.href)} />
         ))}
       </nav>

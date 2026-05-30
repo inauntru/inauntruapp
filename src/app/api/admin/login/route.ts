@@ -10,14 +10,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Credențiale incorecte." }, { status: 401 });
   }
 
-  const cookieValue = "authenticated";
   const maxAge = 60 * 60 * 8;
   const secure = process.env.NODE_ENV === "production";
+  const cookieOpts = `Path=/; HttpOnly; SameSite=Lax;${secure ? " Secure;" : ""} Max-Age=${maxAge}`;
 
-  const res = NextResponse.json({ ok: true });
-  res.headers.set(
-    "Set-Cookie",
-    `admin_token=${cookieValue}; Path=/; HttpOnly; SameSite=Lax;${secure ? " Secure;" : ""} Max-Age=${maxAge}`
-  );
+  const res = NextResponse.json({ ok: true, role: "super_admin" });
+  res.headers.append("Set-Cookie", `admin_token=authenticated; ${cookieOpts}`);
+  res.headers.append("Set-Cookie", `admin_role=super_admin; ${cookieOpts}`);
   return res;
 }
