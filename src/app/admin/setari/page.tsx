@@ -42,11 +42,6 @@ const GDPR_REQUESTS = [
   { id: 3, user: "Elena M.", email: "elena.m@gmail.com", type: "Export date", date: "2026-04-20", status: "completed" },
 ];
 
-const ROLE_LABELS: Record<string, string> = {
-  super_admin: "Super Admin",
-  editor: "Editor",
-  moderator: "Moderator",
-};
 
 function SaveBar({ onSave }: { onSave: () => void }) {
   return (
@@ -1188,14 +1183,6 @@ function SiteTextTab() {
             : "Textele salvate și deploy pornit. Site-ul va fi actualizat în ~2 minute."}
         </div>
       )}
-
-      {/* Notă info */}
-      <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-        <Warning size={15} className="text-amber-600 flex-shrink-0 mt-0.5" />
-        <p className="font-body text-label-xs text-amber-700">
-          Textele editate aici se salvează în baza de date. Paginile vor fi actualizate să le folosească automat în pasul următor de implementare.
-        </p>
-      </div>
 
       {/* Page selector */}
       <div className="flex gap-2 flex-wrap">
