@@ -80,7 +80,7 @@ export default function HomePageClient({ siteContent }: Props) {
         <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
           <source src="/hero-video-2.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-r from-deep-green/92 via-deep-green/70 to-deep-green/30 pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to right, rgba(15,46,26,0.82) 0%, rgba(15,46,26,0.76) 35%, rgba(15,46,26,0.45) 58%, rgba(15,46,26,0.05) 80%, transparent 100%)" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-deep-green/60 via-transparent to-transparent pointer-events-none" />
         <div className="absolute -top-20 -left-20 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "rgba(200,235,211,0.12)", filter: "blur(80px)" }} />
 
@@ -105,7 +105,7 @@ export default function HomePageClient({ siteContent }: Props) {
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.6 }}
               className="font-body text-body-lg max-w-lg"
-              style={{ color: "rgba(200,235,211,0.95)", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}
+              style={{ color: "rgba(240,252,244,0.92)", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}
             >
               {t("hero_subtitle", "Resetare rapidă în mai puțin de 2 minute. Metode simple pentru momentele când te simți blocat și ai nevoie de un nou început.")}
             </motion.p>
@@ -227,7 +227,7 @@ export default function HomePageClient({ siteContent }: Props) {
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: "rgba(230,245,237,0.45)" }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <AnimateIn once={false} from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green text-center mb-10 lg:mb-16" style={{ textShadow: "0 1px 6px rgba(255,255,255,0.8)" }}>
+            <h2 className="font-heading text-h2 text-deep-green text-center mb-10 lg:mb-16">
               {t("howto_title", "Călătoria ta spre interior")}
             </h2>
           </AnimateIn>
@@ -237,11 +237,11 @@ export default function HomePageClient({ siteContent }: Props) {
               {howItWorks.map((step) => (
                 <div key={step.step} className="flex flex-row lg:flex-col items-start lg:items-center gap-5 lg:gap-0 text-left lg:text-center">
                   <div className="relative mb-0 lg:mb-8 flex-shrink-0">
-                    <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo text-white rounded-full flex items-center justify-center font-heading text-xl lg:text-2xl font-bold shadow-button ring-8 ring-white/60">
+                    <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo text-white rounded-full flex items-center justify-center font-heading text-xl lg:text-2xl font-bold shadow-button ring-8 ring-indigo-bg">
                       {step.step}
                     </div>
                   </div>
-                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 lg:p-5">
+                  <div>
                     <h3 className="font-heading text-h3 text-deep-green mb-2 lg:mb-3">{step.title}</h3>
                     <p className="font-body text-body-md text-deep-green/70 max-w-sm">{step.desc}</p>
                   </div>
