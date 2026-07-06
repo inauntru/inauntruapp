@@ -14,7 +14,6 @@ import {
   SignOut,
   List,
   X,
-  Leaf,
   EnvelopeSimple,
   Article,
   Anchor,
@@ -86,11 +85,11 @@ export default function AdminSidebar() {
       {/* Logo */}
       <div className="px-5 pb-6 border-b border-white/10">
         <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-forest-green rounded-full flex items-center justify-center">
-            <Leaf size={13} weight="fill" className="text-white" />
-          </div>
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" className="text-white">
+            <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+          </svg>
           <div>
-            <span className="font-heading font-bold text-base text-white block leading-tight">INAUNTRU</span>
+            <span className="font-heading font-bold text-base text-white block leading-tight">With<span className="text-forest-green">In</span></span>
             <span className="font-body text-[10px] text-white/40 uppercase tracking-widest">Admin</span>
           </div>
         </Link>
@@ -129,10 +128,10 @@ export default function AdminSidebar() {
       {/* Mobile: top bar with hamburger */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-deep-green border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-forest-green rounded-full flex items-center justify-center">
-            <Leaf size={11} weight="fill" className="text-white" />
-          </div>
-          <span className="font-heading font-bold text-base text-white">INAUNTRU Admin</span>
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" className="text-white">
+            <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+          </svg>
+          <span className="font-heading font-bold text-base text-white">WithIn Admin</span>
         </Link>
         <button
           onClick={() => setMobileOpen(true)}

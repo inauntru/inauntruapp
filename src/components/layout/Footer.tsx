@@ -40,10 +40,10 @@ export default function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-forest-green rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-heading font-bold">I</span>
-              </div>
-              <span className="font-heading font-bold text-xl tracking-tight">INAUNTRU</span>
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="text-white">
+                <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+              </svg>
+              <span className="font-heading text-xl tracking-tight">With<span className="font-bold">In</span></span>
             </div>
             <p className="font-body text-body-sm text-white/70 mb-6 leading-relaxed max-w-sm">
               Prima platformă de terapie somatică digitală din România. Practici bazate pe știință pentru echilibrul tău interior.
@@ -131,7 +131,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="font-body text-body-sm text-white/40">
-              © 2026 INAUNTRU. Toate drepturile rezervate.
+              © 2026 WithIn. Toate drepturile rezervate.
             </p>
 
             {/* Badges */}

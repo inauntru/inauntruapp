@@ -18,8 +18,8 @@ import {
 } from "@phosphor-icons/react";
 
 const NAV_LINKS = [
-  { href: "/ancore", label: "Ancore", icon: Anchor },
   { href: "/practici", label: "Practici", icon: BookOpen },
+  { href: "/ancore", label: "Ancore", icon: Anchor },
   { href: "/sesiuni-live", label: "Sesiuni Live", icon: Video },
   { href: "/facilitatori", label: "Facilitatori", icon: Users },
   { href: "/preturi", label: "Prețuri", icon: CurrencyCircleDollar },
@@ -83,11 +83,11 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-forest-green rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                <span className="text-white text-xs font-heading font-bold">I</span>
-              </div>
-              <span className={`font-heading font-bold text-xl tracking-tight transition-colors duration-500 ${glass ? "text-white" : "text-deep-green"}`}>
-                INAUNTRU
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className={`transition-colors duration-500 ${glass ? "text-white" : "text-forest-green"}`}>
+                <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+              </svg>
+              <span className={`font-heading text-xl tracking-tight transition-colors duration-500 ${glass ? "text-white" : "text-deep-green"}`}>
+                With<span className={`font-bold ${glass ? "" : "text-forest-green"}`}>In</span>
               </span>
             </Link>
 
@@ -173,7 +173,7 @@ export default function Navbar() {
               className="fixed top-0 right-0 bottom-0 z-50 w-80 bg-white shadow-modal flex flex-col"
             >
               <div className="flex items-center justify-between p-6 border-b border-sage-border">
-                <span className="font-heading font-bold text-lg text-deep-green">INAUNTRU</span>
+                <span className="font-heading text-lg text-deep-green">With<span className="font-bold text-forest-green">In</span></span>
                 <button
                   className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-light-green transition-colors"
                   onClick={() => setMobileOpen(false)}

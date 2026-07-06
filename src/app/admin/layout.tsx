@@ -2,7 +2,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import { ReactNode } from "react";
 
 export const metadata = {
-  title: "Admin — INAUNTRU",
+  title: "Admin — WithIn",
 };
 
 export default function AdminLayout({ children }: { children: ReactNode }) {

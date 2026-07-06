@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Practici Somatice — INAUNTRU",
+  title: "Practici Somatice — WithIn",
   description: "70+ practici somatice ghidate de experți: respirație, mișcare, corp și voce. Disponibile oricând, pentru orice nivel.",
 };
 

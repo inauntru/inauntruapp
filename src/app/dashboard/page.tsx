@@ -97,10 +97,10 @@ export default function DashboardPage() {
           {/* Logo */}
           <div className="px-6 mb-8">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-forest-green rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-heading font-bold">I</span>
-              </div>
-              <span className="font-heading font-bold text-lg text-white">INAUNTRU</span>
+              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" className="text-white">
+                <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+              </svg>
+              <span className="font-heading text-lg text-white">With<span className="font-bold">In</span></span>
             </Link>
           </div>
 

@@ -4,7 +4,7 @@ import Providers from "@/components/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "INAUNTRU — Terapie Somatică Digitală",
+  title: "WithIn — Terapie Somatică Digitală",
   description:
     "Prima platformă de terapie somatică digitală din România. Practici ghidate, sesiuni live și suport personalizat pentru echilibrul tău interior.",
   keywords: "terapie somatica, meditatie, anxietate, somn, wellness, Romania",

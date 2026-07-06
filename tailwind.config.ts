@@ -28,7 +28,7 @@ const config: Config = {
         "nav-border": "#C8C8F0",
         // Verde mid
         "verde-mid": "#4AAA78",
-        // Material tokens — updated
+        // Material tokens
         "primary": "#2B8C5C",
         "primary-dark": "#0F2E1A",
         "primary-container": "#2B8C5C",
