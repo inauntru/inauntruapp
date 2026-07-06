@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -82,13 +83,15 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 lg:h-20">
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className={`transition-colors duration-500 ${glass ? "text-white" : "text-forest-green"}`}>
-                <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-              </svg>
-              <span className={`font-heading text-xl tracking-tight transition-colors duration-500 ${glass ? "text-white" : "text-deep-green"}`}>
-                With<span className={`font-bold ${glass ? "" : "text-forest-green"}`}>In</span>
-              </span>
+            <Link href="/" className="flex items-center group">
+              <Image
+                src="/logo-orizontal.png"
+                alt="WithIn"
+                width={110}
+                height={31}
+                priority
+                className={`object-contain transition-all duration-500 ${glass ? "brightness-0 invert" : ""}`}
+              />
             </Link>
 
             {/* Desktop nav */}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Flame,
@@ -96,11 +97,8 @@ export default function DashboardPage() {
         <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 bg-deep-green border-r border-white/10 py-8 z-40">
           {/* Logo */}
           <div className="px-6 mb-8">
-            <Link href="/" className="flex items-center gap-2">
-              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" className="text-white">
-                <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-              </svg>
-              <span className="font-heading text-lg text-white">With<span className="font-bold">In</span></span>
+            <Link href="/">
+              <Image src="/logo-orizontal-alb.png" alt="WithIn" width={100} height={28} className="object-contain" priority />
             </Link>
           </div>
 

@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import Image from "next/image";
 import {
   InstagramLogo,
   FacebookLogo,
@@ -39,11 +40,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="text-white">
-                <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-              </svg>
-              <span className="font-heading text-xl tracking-tight">With<span className="font-bold">In</span></span>
+            <div className="mb-4">
+              <Image src="/logo-orizontal-alb.png" alt="WithIn" width={130} height={36} className="object-contain" />
             </div>
             <p className="font-body text-body-sm text-white/70 mb-6 leading-relaxed max-w-sm">
               Prima platformă de terapie somatică digitală din România. Practici bazate pe știință pentru echilibrul tău interior.
