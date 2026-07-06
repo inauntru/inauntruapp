@@ -34,7 +34,7 @@ const MOODS: MoodOption[] = [
 ];
 
 const BODY_ZONES = [
-  "Cap", "Gât", "Umeri", "Piept", "Abdomen", "Spate", "Șolduri", "Picioare",
+  "Cap", "Gât", "Umeri", "Mâini", "Piept", "Abdomen", "Spate", "Șolduri", "Picioare",
 ];
 
 const INTENSITY = [
@@ -118,6 +118,13 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
     center: { x: 0, opacity: 1 },
     exit: { x: "-100%", opacity: 0 },
   };
+
+  const zoneClass = (zone: string) =>
+    `body-zone${selectedZones.includes(zone) ? " active" : ""}`;
+  const armClass = () =>
+    `body-zone${selectedZones.includes("Mâini") ? " active" : ""}`;
+  const legClass = () =>
+    `body-zone${selectedZones.includes("Picioare") ? " active" : ""}`;
 
   const canProceedStep1 = selectedMood !== null;
   const canProceedStep2 = selectedZones.length > 0 || noTension;
@@ -230,44 +237,68 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       >
                         <h2 className="font-heading text-h3 text-deep-green mb-1">Unde simți tensiunea?</h2>
-                        <p className="font-body text-body-sm text-secondary-text mb-6">Poți selecta mai multe zone.</p>
-                        <div className="flex gap-6">
-                          <div className="flex-shrink-0 w-28 flex flex-col items-center gap-1">
-                            <div className="relative">
-                              <div onClick={() => toggleZone("Cap")} className={`w-10 h-10 rounded-full border-2 mx-auto cursor-pointer transition-all duration-200 ${selectedZones.includes("Cap") ? "bg-rose-powder border-terracotta" : "border-sage-border bg-surface-container-low hover:border-forest-green"}`} />
-                              <div onClick={() => toggleZone("Gât")} className={`w-4 h-3 mx-auto border-x-2 cursor-pointer transition-all ${selectedZones.includes("Gât") ? "bg-rose-powder border-terracotta" : "border-sage-border"}`} />
-                              <div onClick={() => toggleZone("Umeri")} className={`w-20 h-5 rounded-full border-2 cursor-pointer transition-all ${selectedZones.includes("Umeri") ? "bg-rose-powder border-terracotta" : "border-sage-border hover:border-forest-green"}`} />
-                              <div onClick={() => toggleZone("Piept")} className={`w-16 h-10 rounded-lg border-2 mx-auto cursor-pointer transition-all mt-0.5 ${selectedZones.includes("Piept") ? "bg-rose-powder border-terracotta" : "border-sage-border hover:border-forest-green"}`} />
-                              <div onClick={() => toggleZone("Abdomen")} className={`w-14 h-8 rounded-lg border-2 mx-auto cursor-pointer transition-all mt-0.5 ${selectedZones.includes("Abdomen") ? "bg-rose-powder border-terracotta" : "border-sage-border hover:border-forest-green"}`} />
-                              <div onClick={() => toggleZone("Șolduri")} className={`w-16 h-6 rounded-lg border-2 mx-auto cursor-pointer transition-all mt-0.5 ${selectedZones.includes("Șolduri") ? "bg-rose-powder border-terracotta" : "border-sage-border hover:border-forest-green"}`} />
-                              <div className="flex gap-2 justify-center mt-0.5">
-                                {[0, 1].map((leg) => (
-                                  <div key={leg} onClick={() => toggleZone("Picioare")} className={`w-6 h-12 rounded-lg border-2 cursor-pointer transition-all ${selectedZones.includes("Picioare") ? "bg-rose-powder border-terracotta" : "border-sage-border hover:border-forest-green"}`} />
-                                ))}
-                              </div>
-                            </div>
+                        <p className="font-body text-body-sm text-secondary-text mb-4">Poți selecta mai multe zone.</p>
+                        <div className="flex gap-4 items-start">
+                          {/* SVG body silhouette */}
+                          <div className="flex-shrink-0">
+                            <svg viewBox="0 0 110 230" width="96" fill="none">
+                              {/* Cap */}
+                              <ellipse className={zoneClass("Cap")} cx="55" cy="14" rx="12" ry="13" onClick={() => toggleZone("Cap")}/>
+                              {/* Gât */}
+                              <path className={zoneClass("Gât")} d="M49,26 Q52,24 55,24 Q58,24 61,26 L62,36 Q58,38 55,38 Q52,38 48,36 Z" onClick={() => toggleZone("Gât")}/>
+                              {/* Umeri */}
+                              <path className={zoneClass("Umeri")} d="M15,36 Q20,31 49,34 H61 Q90,31 95,36 L92,49 Q82,45 55,46 Q28,45 18,49 Z" onClick={() => toggleZone("Umeri")}/>
+                              {/* Left arm (Mâini) */}
+                              <path className={armClass()} d="M18,49 Q14,45 9,47 L7,100 Q6,108 7,114 Q5,120 5,126 Q5,132 7,135 Q9,137 12,137 Q15,137 17,135 Q19,132 18,126 Q17,120 18,114 Q19,108 19,100 L19,49 Z" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="5" y="133" width="3" height="10" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="9" y="132" width="3" height="11" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="13" y="131" width="3.2" height="12" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="17" y="132" width="3" height="11" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="19.5" y="123" width="3" height="9" rx="1.5" transform="rotate(16,21,127)" onClick={() => toggleZone("Mâini")}/>
+                              {/* Right arm (Mâini) */}
+                              <path className={armClass()} d="M92,49 Q96,45 101,47 L103,100 Q104,108 103,114 Q105,120 105,126 Q105,132 103,135 Q101,137 98,137 Q95,137 93,135 Q91,132 92,126 Q93,120 92,114 Q91,108 91,100 L91,49 Z" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="102" y="133" width="3" height="10" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="98" y="132" width="3" height="11" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="93.8" y="131" width="3.2" height="12" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="90" y="132" width="3" height="11" rx="1.6" onClick={() => toggleZone("Mâini")}/>
+                              <rect className={armClass()} x="87.5" y="123" width="3" height="9" rx="1.5" transform="rotate(-16,89,127)" onClick={() => toggleZone("Mâini")}/>
+                              {/* Piept */}
+                              <path className={zoneClass("Piept")} d="M19,48 Q28,45 55,46 Q82,45 91,48 L89,71 Q80,73 55,73 Q30,73 21,71 Z" onClick={() => toggleZone("Piept")}/>
+                              {/* Abdomen */}
+                              <path className={zoneClass("Abdomen")} d="M21,71 Q30,73 55,73 Q80,73 89,71 L87,92 Q78,94 55,94 Q32,94 23,92 Z" onClick={() => toggleZone("Abdomen")}/>
+                              {/* Șolduri */}
+                              <path className={zoneClass("Șolduri")} d="M23,92 Q32,94 55,94 Q78,94 87,92 L88,109 Q80,113 55,113 Q30,113 22,109 Z" onClick={() => toggleZone("Șolduri")}/>
+                              {/* Picioare */}
+                              <rect className={legClass()} x="24" y="111" width="22" height="114" rx="9" onClick={() => toggleZone("Picioare")}/>
+                              <rect className={legClass()} x="64" y="111" width="22" height="114" rx="9" onClick={() => toggleZone("Picioare")}/>
+                            </svg>
                           </div>
-                          <div className="flex-1">
-                            <div className="flex flex-wrap gap-2">
+                          {/* Zone buttons */}
+                          <div className="flex-1 flex flex-col gap-1.5 pt-1">
+                            <div className="flex flex-wrap gap-1.5">
                               {BODY_ZONES.map((zone) => (
                                 <motion.button
                                   key={zone}
                                   onClick={() => toggleZone(zone)}
                                   whileTap={{ scale: 0.95 }}
-                                  className={`px-3 py-1.5 rounded-full text-body-sm font-body font-medium border transition-all duration-200 ${
+                                  className={`px-3 py-1.5 rounded-full text-body-sm font-body font-medium border transition-all duration-200 flex items-center gap-1.5 ${
                                     selectedZones.includes(zone)
-                                      ? "bg-rose-powder border-terracotta text-deep-green"
+                                      ? "bg-light-green border-forest-green text-forest-green"
                                       : "bg-white border-sage-border text-secondary-text hover:border-forest-green"
                                   }`}
                                 >
+                                  {selectedZones.includes(zone) && (
+                                    <span className="w-3 h-3 rounded-full bg-forest-green flex items-center justify-center flex-shrink-0">
+                                      <Check size={8} weight="bold" className="text-white" />
+                                    </span>
+                                  )}
                                   {zone}
-                                  {selectedZones.includes(zone) && <Check size={12} weight="bold" className="inline ml-1" />}
                                 </motion.button>
                               ))}
                             </div>
                             <button
                               onClick={() => { setNoTension(true); setSelectedZones([]); setTimeout(goNext, 200); }}
-                              className="mt-3 px-3 py-1.5 rounded-full text-body-sm font-body font-medium border border-sage-border bg-white text-secondary-text hover:border-forest-green transition-all duration-200"
+                              className="mt-1 px-3 py-1.5 rounded-full text-body-sm font-body font-medium border border-dashed border-sage-border bg-white text-secondary-text hover:border-forest-green transition-all duration-200 text-left"
                             >
                               Nu simt tensiune nicăieri
                             </button>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   ChartPieSlice,
   FilmSlate,
@@ -84,14 +85,9 @@ export default function AdminSidebar() {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-5 pb-6 border-b border-white/10">
-        <Link href="/admin" className="flex items-center gap-2">
-          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" className="text-white">
-            <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-          </svg>
-          <div>
-            <span className="font-heading font-bold text-base text-white block leading-tight">With<span className="text-forest-green">In</span></span>
-            <span className="font-body text-[10px] text-white/40 uppercase tracking-widest">Admin</span>
-          </div>
+        <Link href="/admin" className="flex flex-col items-center gap-1">
+          <Image src="/logo-vertical-alb.png" alt="WithIn" width={90} height={52} className="object-contain" priority />
+          <span className="font-body text-[10px] text-white/35 uppercase tracking-widest">Admin</span>
         </Link>
       </div>
 
@@ -128,10 +124,8 @@ export default function AdminSidebar() {
       {/* Mobile: top bar with hamburger */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-deep-green border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2">
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" className="text-white">
-            <path d="M28,16 A12,12 0 1,1 22,5.6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-          </svg>
-          <span className="font-heading font-bold text-base text-white">WithIn Admin</span>
+          <Image src="/logo-orizontal-alb.png" alt="WithIn" width={80} height={28} className="object-contain" priority />
+          <span className="font-body text-[10px] text-white/40 uppercase tracking-widest">Admin</span>
         </Link>
         <button
           onClick={() => setMobileOpen(true)}

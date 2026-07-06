@@ -325,6 +325,25 @@
   font-family: var(--font-ui) !important;
 }
 
+/* Body map SVG zones */
+.body-zone {
+  fill: transparent;
+  stroke: #C2D9CC;
+  stroke-width: 0.7;
+  cursor: pointer;
+  transition: fill 0.18s, stroke 0.18s, stroke-width 0.18s, filter 0.18s;
+}
+.body-zone:hover {
+  fill: rgba(43, 140, 92, 0.09);
+  stroke: #2B8C5C;
+}
+.body-zone.active {
+  fill: rgba(43, 140, 92, 0.17);
+  stroke: #2B8C5C;
+  stroke-width: 1.3;
+  filter: drop-shadow(0 0 4px rgba(43, 140, 92, 0.25));
+}
+
 /* Sticky mobile bar */
 .mobile-sticky-bar {
   position: fixed;
