@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, X, Trash, PencilSimple, CircleNotch, Check, Warning,
-  MagnifyingGlass, Anchor,
+  MagnifyingGlass, Anchor, UploadSimple, DownloadSimple,
 } from "@phosphor-icons/react";
 import {
   CATEGORIE_CONFIG,
@@ -51,6 +51,8 @@ export default function AdminAncorePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AncoreExercise | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [importMsg, setImportMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   async function fetchExercises() {
     setLoading(true);
@@ -129,6 +131,58 @@ export default function AdminAncorePage() {
     setDeleteTarget(null);
   }
 
+  function handleExport() {
+    const json = JSON.stringify(exercises, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ancore-exercises.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    setImporting(true);
+    setImportMsg(null);
+
+    try {
+      const text = await file.text();
+      let parsed: AncoreExercise[];
+
+      if (file.name.endsWith(".json")) {
+        parsed = JSON.parse(text);
+      } else {
+        // Extract array from .ts file: find content between first [ and last ]
+        const match = text.match(/ANCORE_DATA[^=]*=\s*(\[[\s\S]*\]);?\s*$/m) ||
+                      text.match(/=\s*(\[[\s\S]+\])\s*;?\s*$/m);
+        if (!match) throw new Error("Nu am găsit un array valid în fișier.");
+        // eslint-disable-next-line no-new-func
+        parsed = new Function("return " + match[1])();
+      }
+
+      if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Fișierul nu conține exerciții valide.");
+
+      // Send to API — replace all exercises
+      const res = await fetch("/api/admin/ancore/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exercises: parsed }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Eroare la import");
+
+      await fetchExercises();
+      setImportMsg({ type: "ok", text: `${parsed.length} exerciții importate cu succes.` });
+    } catch (err) {
+      setImportMsg({ type: "err", text: err instanceof Error ? err.message : "Eroare la import" });
+    }
+    setImporting(false);
+  }
+
   const filtered = exercises.filter((ex) => {
     if (filterCat !== "Toate" && ex.categorie !== filterCat) return false;
     if (search && !ex.nume.toLowerCase().includes(search.toLowerCase()) && !ex.descriere_scurta.toLowerCase().includes(search.toLowerCase())) return false;
@@ -138,15 +192,37 @@ export default function AdminAncorePage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="font-heading text-h2 text-deep-green">Ancore</h1>
           <p className="font-body text-body-sm text-secondary-text">{exercises.length} exerciții total</p>
         </div>
-        <button onClick={openAdd} className="btn btn-primary btn-sm gap-1.5">
-          <Plus size={14} weight="bold" /> Exercițiu nou
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleExport} className="btn btn-ghost btn-sm gap-1.5" title="Exportă toate exercițiile ca JSON">
+            <DownloadSimple size={14} weight="bold" /> Export
+          </button>
+          <label className={`btn btn-ghost btn-sm gap-1.5 cursor-pointer ${importing ? "opacity-50 pointer-events-none" : ""}`} title="Importă exerciții din fișier .json sau .ts">
+            {importing ? <CircleNotch size={14} className="animate-spin" /> : <UploadSimple size={14} weight="bold" />}
+            Import
+            <input type="file" accept=".json,.ts" className="hidden" onChange={handleImportFile} disabled={importing} />
+          </label>
+          <button onClick={openAdd} className="btn btn-primary btn-sm gap-1.5">
+            <Plus size={14} weight="bold" /> Exercițiu nou
+          </button>
+        </div>
       </div>
+
+      {importMsg && (
+        <div className={`mb-4 p-3 rounded-xl font-body text-label-xs flex items-center gap-2 ${
+          importMsg.type === "ok"
+            ? "bg-forest-green/10 border border-forest-green/20 text-forest-green"
+            : "bg-red-50 border border-red-200 text-red-600"
+        }`}>
+          {importMsg.type === "ok" ? <Check size={14} weight="bold" /> : <Warning size={14} />}
+          {importMsg.text}
+          <button onClick={() => setImportMsg(null)} className="ml-auto"><X size={12} /></button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="card bg-white p-4 mb-4 flex flex-col gap-3">

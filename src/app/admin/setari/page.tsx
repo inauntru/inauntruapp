@@ -980,6 +980,20 @@ const SITE_SCHEMA: PageSchema[] = [
       },
     ],
   },
+  {
+    id: "ancore", label: "Ancore",
+    sections: [
+      {
+        title: "Hero pagina",
+        fields: [
+          f("label", "Label mic (deasupra titlului)", "input", "ex: Exerciții de reglare"),
+          f("title", "Titlu principal", "input", "ex: Ancore"),
+          f("subtitle", "Subtitlu", "textarea", "ex: Trei întrebări scurte. Ancora potrivită pentru tine acum."),
+          f("cta_button", "Text buton CTA", "input", "ex: Descoperă ancora ta"),
+        ],
+      },
+    ],
+  },
 ];
 
 const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
@@ -1115,6 +1129,12 @@ const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
     label: "Echipa noastra",
     title: "Facilitatorii nostri",
     subtitle: "Profesionisti in terapie somatica, gata sa te ghideze spre echilibru interior.",
+  },
+  ancore: {
+    label: "Exercitii de reglare",
+    title: "Ancore",
+    subtitle: "Trei intrebari scurte. Ancora potrivita pentru tine acum.",
+    cta_button: "Descopera ancora ta",
   },
 };
 
