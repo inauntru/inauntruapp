@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase";
+
+async function requireAdmin() {
+  const cookieStore = await cookies();
+  return cookieStore.get("admin_token")?.value === "authenticated";
+}
 
 type ProfileRow = {
   id: string;
@@ -11,6 +17,8 @@ type ProfileRow = {
 };
 
 export async function GET() {
+  if (!await requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const serviceClient = createServiceClient();
 

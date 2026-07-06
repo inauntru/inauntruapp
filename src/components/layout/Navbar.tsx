@@ -14,9 +14,11 @@ import {
   CurrencyCircleDollar,
   Newspaper,
   Info,
+  Anchor,
 } from "@phosphor-icons/react";
 
 const NAV_LINKS = [
+  { href: "/ancore", label: "Ancore", icon: Anchor },
   { href: "/practici", label: "Practici", icon: BookOpen },
   { href: "/sesiuni-live", label: "Sesiuni Live", icon: Video },
   { href: "/facilitatori", label: "Facilitatori", icon: Users },

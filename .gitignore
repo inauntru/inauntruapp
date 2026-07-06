@@ -36,3 +36,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Large video files — upload separately to CDN, not suitable for git
+public/ancore-video.mp4

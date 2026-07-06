@@ -17,6 +17,7 @@ import {
   Leaf,
   EnvelopeSimple,
   Article,
+  Anchor,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { icon: ChartPieSlice, label: "Dashboard", href: "/admin", id: "dashboard" },
   { icon: FilmSlate, label: "Conținut", href: "/admin/continut", id: "continut" },
   { icon: Article, label: "Blog", href: "/admin/blog", id: "blog" },
+  { icon: Anchor, label: "Ancore", href: "/admin/ancore", id: "ancore" },
   { icon: Users, label: "Utilizatori", href: "/admin/utilizatori", id: "utilizatori" },
   { icon: CalendarBlank, label: "Sesiuni LIVE", href: "/admin/sesiuni", id: "sesiuni" },
   { icon: CreditCard, label: "Abonamente", href: "/admin/abonamente", id: "abonamente" },
