@@ -166,14 +166,12 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="font-body text-label-xs text-secondary-text">{step}/3</span>
-                      {canSkip && (
-                        <button
-                          onClick={onClose}
-                          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green transition-colors"
-                        >
-                          <X size={16} weight="regular" />
-                        </button>
-                      )}
+                      <button
+                        onClick={onClose}
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-light-green hover:bg-sage-border transition-colors"
+                      >
+                        <X size={18} weight="bold" className="text-secondary-text" />
+                      </button>
                     </div>
                   </div>
 
