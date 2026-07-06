@@ -4,10 +4,23 @@ import Providers from "@/components/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "WithIn — Terapie Somatică Digitală",
+  title: "WithIn — Return to Yourself",
   description:
-    "Prima platformă de terapie somatică digitală din România. Practici ghidate, sesiuni live și suport personalizat pentru echilibrul tău interior.",
-  keywords: "terapie somatica, meditatie, anxietate, somn, wellness, Romania",
+    "Întoarce-te la tine. Resetare rapidă în mai puțin de 2 minute. Metode simple pentru momentele când te simți blocat și ai nevoie de un nou început.",
+  keywords: "meditatie, anxietate, somn, wellness, respiratie, mindfulness, Romania",
+  openGraph: {
+    title: "WithIn — Return to Yourself",
+    description:
+      "Întoarce-te la tine. Resetare rapidă în mai puțin de 2 minute. Metode simple pentru momentele când te simți blocat.",
+    siteName: "WithIn",
+    locale: "ro_RO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WithIn — Return to Yourself",
+    description: "Întoarce-te la tine. Resetare rapidă în mai puțin de 2 minute.",
+  },
 };
 
 export default function RootLayout({
