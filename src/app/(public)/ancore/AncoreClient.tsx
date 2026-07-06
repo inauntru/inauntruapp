@@ -161,7 +161,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
               {isIntro ? "Încearcă" : "Continuă"} <ArrowRight size={14} weight="bold" />
             </button>
           ) : (
-            <button onClick={() => { onComplete ? onComplete() : onClose(); }} className="btn btn-primary flex-1 gap-2">
+            <button onClick={() => { if (onComplete) onComplete(); else onClose(); }} className="btn btn-primary flex-1 gap-2">
               <Check size={14} weight="bold" /> Gata
             </button>
           )}
