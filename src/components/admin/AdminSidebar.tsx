@@ -86,7 +86,7 @@ export default function AdminSidebar() {
       {/* Logo */}
       <div className="px-5 pb-6 border-b border-white/10">
         <Link href="/admin" className="flex flex-col items-center gap-1">
-          <Image src="/logo-vertical-alb.png" alt="WithIn" width={90} height={52} className="object-contain" priority />
+          <Image src="/logo-vertical-alb.png" alt="WithIn" width={100} height={86} className="object-contain" priority />
           <span className="font-body text-[10px] text-white/35 uppercase tracking-widest">Admin</span>
         </Link>
       </div>
@@ -124,7 +124,7 @@ export default function AdminSidebar() {
       {/* Mobile: top bar with hamburger */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-deep-green border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2">
-          <Image src="/logo-orizontal-alb.png" alt="WithIn" width={80} height={28} className="object-contain" priority />
+          <Image src="/logo-orizontal-alb.png" alt="WithIn" width={96} height={27} className="object-contain" priority />
           <span className="font-body text-[10px] text-white/40 uppercase tracking-widest">Admin</span>
         </Link>
         <button
