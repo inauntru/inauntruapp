@@ -254,7 +254,7 @@ export default function AncoreClient({ siteContent }: Props) {
         <video autoPlay muted loop playsInline
           className="absolute inset-0 w-full h-full object-cover"
           style={{ objectPosition: "center center" }}>
-          <source src="/hero-video-2.mp4" type="video/mp4" />
+          <source src="/header-ancore.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to right, rgba(15,46,26,0.85) 0%, rgba(15,46,26,0.70) 40%, rgba(15,46,26,0.30) 70%, transparent 100%)" }} />

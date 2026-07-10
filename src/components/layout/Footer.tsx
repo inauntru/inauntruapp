@@ -44,7 +44,7 @@ export default function Footer() {
               <Image src="/logo-orizontal-alb.png" alt="WithIn" width={130} height={36} className="object-contain" />
             </div>
             <p className="font-body text-body-sm text-white/70 mb-6 leading-relaxed max-w-sm">
-              Prima platformă de terapie somatică digitală din România. Practici bazate pe știință pentru echilibrul tău interior.
+              Practici bazate pe știință pentru echilibrul tău interior. Întoarce-te la tine în mai puțin de 2 minute.
             </p>
 
             {/* Newsletter */}
