@@ -1144,7 +1144,6 @@ function SiteTextTab() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [deploying, setDeploying] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -1181,11 +1180,6 @@ function SiteTextTab() {
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 4000);
-
-    // Trigger Vercel rebuild so changes go live automatically
-    setDeploying(true);
-    await fetch("/api/admin/deploy", { method: "POST" });
-    setDeploying(false);
   }
 
   const activePage_ = SITE_SCHEMA.find((p) => p.id === activePage)!;
@@ -1198,9 +1192,7 @@ function SiteTextTab() {
       {saved && (
         <div className="flex items-center gap-2 p-3 bg-forest-green/10 border border-forest-green/20 rounded-xl text-forest-green font-body text-body-sm">
           <Check size={16} weight="bold" />
-          {deploying
-            ? "Textele salvate — site-ul se actualizează automat în ~2 minute..."
-            : "Textele salvate și deploy pornit. Site-ul va fi actualizat în ~2 minute."}
+          Textele salvate — schimbările sunt vizibile imediat pe site.
         </div>
       )}
 
@@ -1261,10 +1253,9 @@ function SiteTextTab() {
 
       {/* Save */}
       <div className="flex justify-end pt-2">
-        <button onClick={handleSave} disabled={saving || deploying} className="btn btn-primary btn-sm gap-2 disabled:opacity-50">
-          <CircleNotch size={14} className={saving || deploying ? "animate-spin" : "hidden"} />
-          {!saving && !deploying && <Check size={14} weight="bold" />}
-          {saving ? "Se salvează..." : deploying ? "Se pornește deploy-ul..." : "Salvează și publică"}
+        <button onClick={handleSave} disabled={saving} className="btn btn-primary btn-sm gap-2 disabled:opacity-50">
+          {saving ? <CircleNotch size={14} className="animate-spin" /> : <Check size={14} weight="bold" />}
+          {saving ? "Se salvează..." : "Salvează"}
         </button>
       </div>
     </div>

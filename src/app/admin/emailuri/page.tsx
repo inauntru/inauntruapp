@@ -240,17 +240,26 @@ export default function AdminEmailuriPage() {
         return;
       }
     } else {
-      // Non-auth templates → settings table with key "email_templates"
-      const AUTH_IDS = new Set(["verify_email", "reset_password", "change_email", "invite_user"]);
-      const nonAuthTemplates: Record<string, { subject: string; body: string }> = {};
-      for (const [id, tpl] of Object.entries(templates)) {
-        if (!AUTH_IDS.has(id)) nonAuthTemplates[id] = { subject: tpl.subject, body: tpl.body };
-      }
+      // Non-auth: load existing saved templates, merge only this template, then save back
+      let existing: Record<string, { subject: string; body: string }> = {};
+      try {
+        const getRes = await fetch("/api/admin/settings");
+        if (getRes.ok) {
+          const data = await getRes.json();
+          existing = data?.email_templates ?? {};
+        }
+      } catch {}
+
+      const merged = {
+        ...existing,
+        [selected.id]: { subject: currentEmail.subject, body: currentEmail.body },
+      };
+
       try {
         const res = await fetch("/api/admin/settings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key: "email_templates", value: nonAuthTemplates }),
+          body: JSON.stringify({ key: "email_templates", value: merged }),
         });
         if (!res.ok) {
           const d = await res.json();
