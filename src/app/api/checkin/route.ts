@@ -70,16 +70,35 @@ export async function POST(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: profile } = await (serviceClient as any)
     .from("profiles")
-    .select("check_ins_count")
+    .select("check_ins_count, first_name")
     .eq("id", user.id)
-    .single() as { data: { check_ins_count: number } | null };
+    .single() as { data: { check_ins_count: number; first_name: string | null } | null };
 
   if (profile !== null) {
+    const wasFirst = (profile.check_ins_count ?? 0) === 0;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (serviceClient as any)
       .from("profiles")
       .update({ check_ins_count: (profile.check_ins_count ?? 0) + 1 })
       .eq("id", user.id);
+
+    if (wasFirst) {
+      try {
+        const { data: authData } = await serviceClient.auth.admin.getUserById(user.id);
+        const email = authData.user?.email;
+        if (email) {
+          const { sendEmail } = await import("@/lib/email");
+          await sendEmail({
+            templateId: "first_checkin",
+            to: email,
+            vars: {
+              prenume: profile.first_name || authData.user?.user_metadata?.first_name || "acolo",
+              link: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://inauntru.ro"}/dashboard`,
+            },
+          });
+        }
+      } catch {}
+    }
   }
 
   return NextResponse.json({ ok: true });

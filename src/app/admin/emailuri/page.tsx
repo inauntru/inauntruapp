@@ -165,7 +165,7 @@ export default function AdminEmailuriPage() {
   const currentCategory = selected ? CATEGORIES.find((c) => c.id === selected.categoryId) : null;
   const currentDef = currentCategory?.emails.find((e) => e.id === selected?.id);
 
-  // Load current auth templates from Supabase on mount
+  // Load auth templates from Supabase Management API
   useEffect(() => {
     fetch("/api/admin/auth-templates")
       .then((r) => r.ok ? r.json() : null)
@@ -176,11 +176,26 @@ export default function AdminEmailuriPage() {
           const updated = { ...prev };
           for (const [id, tpl] of Object.entries(data) as [string, { subject: string; body: string }][]) {
             if (tpl.body && updated[id]) {
-              updated[id] = {
-                ...updated[id],
-                subject: tpl.subject || updated[id].subject,
-                body: tpl.body || updated[id].body,
-              };
+              updated[id] = { ...updated[id], subject: tpl.subject || updated[id].subject, body: tpl.body || updated[id].body };
+            }
+          }
+          return updated;
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  // Load saved non-auth templates from settings table
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (!data?.email_templates) return;
+        setTemplates((prev) => {
+          const updated = { ...prev };
+          for (const [id, tpl] of Object.entries(data.email_templates) as [string, { subject: string; body: string }][]) {
+            if (tpl.body && updated[id]) {
+              updated[id] = { ...updated[id], subject: tpl.subject || updated[id].subject, body: tpl.body || updated[id].body };
             }
           }
           return updated;
@@ -203,8 +218,8 @@ export default function AdminEmailuriPage() {
     setSaving(true);
     setSaveError(null);
 
-    // For system/auth templates → push to Supabase Management API
     if (currentDef?.isSystem) {
+      // Auth templates → Supabase Management API
       try {
         const res = await fetch("/api/admin/auth-templates", {
           method: "PUT",
@@ -216,6 +231,30 @@ export default function AdminEmailuriPage() {
         if (!res.ok) {
           const d = await res.json();
           setSaveError(d.error ?? "Eroare la salvare în Supabase");
+          setSaving(false);
+          return;
+        }
+      } catch {
+        setSaveError("Eroare de rețea — verifică conexiunea");
+        setSaving(false);
+        return;
+      }
+    } else {
+      // Non-auth templates → settings table with key "email_templates"
+      const AUTH_IDS = new Set(["verify_email", "reset_password", "change_email", "invite_user"]);
+      const nonAuthTemplates: Record<string, { subject: string; body: string }> = {};
+      for (const [id, tpl] of Object.entries(templates)) {
+        if (!AUTH_IDS.has(id)) nonAuthTemplates[id] = { subject: tpl.subject, body: tpl.body };
+      }
+      try {
+        const res = await fetch("/api/admin/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: "email_templates", value: nonAuthTemplates }),
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          setSaveError(d.error ?? "Eroare la salvare");
           setSaving(false);
           return;
         }
