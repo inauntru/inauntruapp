@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import { getSiteContent } from "@/lib/siteContent";
 import FacilitatoriClient from "./FacilitatoriClient";
 
