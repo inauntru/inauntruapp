@@ -48,10 +48,10 @@ export const metadata: Metadata = {
     description: "Practici de meditație ghidată și exerciții de respirație. Întoarce-te la tine în 2 minute.",
     images: ["/opengraph-image.png"],
   },
+  // PRE-LAUNCH: noindex activ — la lansare schimba in index: true, follow: true
   robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+    index: false,
+    follow: false,
   },
 };
 

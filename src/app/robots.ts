@@ -1,16 +1,9 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
-
+// PRE-LAUNCH: toate crawlerele blocate
+// La lansare: schimba cu allow: "/" si decomenteza disallow-urile specifice
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/admin", "/dashboard", "/api/", "/_next/"],
-      },
-    ],
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    rules: [{ userAgent: "*", disallow: "/" }],
   };
 }
