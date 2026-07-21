@@ -8,10 +8,57 @@ import {
   ArrowLeft, Check, CircleNotch, Eye, EyeSlash,
   Warning, X, Lock, User, ShieldCheck, Trash,
   Bell, CreditCard, Shield, Question, ArrowRight,
-  Export, SignOut, Cake,
+  Export, SignOut,
 } from "@phosphor-icons/react";
 import { getDailyQuote, getZodiacSign } from "@/lib/quotes";
 import { useAuth } from "@/contexts/AuthContext";
+
+// ── Date picker ────────────────────────────────────────────────────────────
+
+const MONTHS_RO = [
+  "Ianuarie","Februarie","Martie","Aprilie","Mai","Iunie",
+  "Iulie","August","Septembrie","Octombrie","Noiembrie","Decembrie",
+];
+
+function DatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const maxYear = new Date().getFullYear() - 13;
+  const [y, m, d] = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)?.slice(1).map(Number) ?? [0, 0, 0];
+
+  function update(newY: number, newM: number, newD: number) {
+    if (newY && newM && newD) {
+      onChange(`${newY}-${String(newM).padStart(2, "0")}-${String(newD).padStart(2, "0")}`);
+    } else {
+      onChange("");
+    }
+  }
+
+  const daysInMonth = y && m ? new Date(y, m, 0).getDate() : 31;
+  const years = Array.from({ length: maxYear - 1923 }, (_, i) => maxYear - i);
+
+  const sel = "input cursor-pointer pr-2";
+  return (
+    <div className="flex gap-2">
+      <select value={d || ""} onChange={e => update(y, m, Number(e.target.value))} className={`${sel} flex-1`}>
+        <option value="">Zi</option>
+        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(n => (
+          <option key={n} value={n}>{n}</option>
+        ))}
+      </select>
+      <select value={m || ""} onChange={e => update(y, Number(e.target.value), d)} className={`${sel} flex-[1.7]`}>
+        <option value="">Lună</option>
+        {MONTHS_RO.map((name, i) => (
+          <option key={i + 1} value={i + 1}>{name}</option>
+        ))}
+      </select>
+      <select value={y || ""} onChange={e => update(Number(e.target.value), m, d)} className={`${sel} flex-[1.3]`}>
+        <option value="">An</option>
+        {years.map(yr => (
+          <option key={yr} value={yr}>{yr}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -130,16 +177,7 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
 
       <div>
         <label className={labelCls}>Data nașterii</label>
-        <div className="relative">
-          <Cake size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text pointer-events-none" />
-          <input
-            type="date"
-            value={pDob}
-            onChange={e => setPDob(e.target.value)}
-            max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split("T")[0]}
-            className="input w-full pl-10"
-          />
-        </div>
+        <DatePicker value={pDob} onChange={setPDob} />
         {zodiacSign ? (
           <p className="font-body text-label-xs text-secondary-text mt-1.5 flex items-center gap-1.5">
             Semnul tău zodiacal: <span className="font-semibold text-deep-green">{ZODIAC_EMOJI[zodiacSign]} {zodiacSign}</span>
