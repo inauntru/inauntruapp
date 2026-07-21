@@ -66,7 +66,8 @@ export default function ContPage() {
 
   // Delete modal
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [showDeletePass, setShowDeletePass] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -115,7 +116,11 @@ export default function ContPage() {
     setDeleting(true);
     setDeleteError(null);
     try {
-      const res = await fetch("/api/user/delete", { method: "DELETE" });
+      const res = await fetch("/api/user/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: deletePassword }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Eroare");
       router.push("/");
@@ -346,13 +351,24 @@ export default function ContPage() {
               </p>
 
               <div className="mb-4">
-                <label className={labelCls}>Scrie „{email}" pentru a confirma</label>
-                <input
-                  className="input w-full"
-                  value={deleteConfirm}
-                  onChange={(e) => setDeleteConfirm(e.target.value)}
-                  placeholder={email}
-                />
+                <label className={labelCls}>Introdu parola pentru a confirma</label>
+                <div className="relative">
+                  <input
+                    type={showDeletePass ? "text" : "password"}
+                    className="input w-full pr-12"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder="Parola contului tău"
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDeletePass(!showDeletePass)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-deep-green"
+                  >
+                    {showDeletePass ? <EyeSlash size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               {deleteError && (
@@ -360,16 +376,16 @@ export default function ContPage() {
               )}
 
               <div className="flex gap-3">
-                <button onClick={() => setDeleteOpen(false)} disabled={deleting} className="btn btn-ghost btn-sm flex-1">
+                <button onClick={() => { setDeleteOpen(false); setDeletePassword(""); setDeleteError(null); }} disabled={deleting} className="btn btn-ghost btn-sm flex-1">
                   Anulează
                 </button>
                 <button
                   onClick={handleDelete}
-                  disabled={deleting || deleteConfirm !== email}
+                  disabled={deleting || !deletePassword}
                   className="flex-1 h-9 rounded-full bg-red-600 text-white font-ui font-semibold text-label-xs uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-red-700 transition-colors disabled:opacity-40"
                 >
                   {deleting ? <CircleNotch size={13} className="animate-spin" /> : <Trash size={13} />}
-                  {deleting ? "Se șterge..." : "Șterge definitiv"}
+                  {deleting ? "Se verifică..." : "Șterge definitiv"}
                 </button>
               </div>
             </motion.div>
