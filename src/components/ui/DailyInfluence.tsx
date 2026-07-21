@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { type ZodiacSign } from "@/lib/quotes";
-import { type InfluenceLevel } from "@/lib/zodiac-influences";
+import { type InfluenceLevel, getDailyInfluences } from "@/lib/zodiac-influences";
 
 const ZODIAC_EMOJI: Record<string, string> = {
   Berbec:"♈", Taur:"♉", Gemeni:"♊", Rac:"♋", Leu:"♌", Fecioară:"♍",
@@ -45,7 +45,23 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
     fetch(`/api/astro/daily?sign=${encodeURIComponent(sign)}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(d => { setData(d); setLoading(false); })
-      .catch(() => { setError(true); setLoading(false); });
+      .catch(() => {
+        // Fallback la conținut static deterministic
+        const fallback = getDailyInfluences(dateOfBirth);
+        if (fallback) {
+          const labelToKey: Record<string, string> = { Corp: "corp", Minte: "minte", "Relații": "relatii", Energie: "energie" };
+          setData({
+            areas: fallback.areas.map(a => ({
+              key: labelToKey[a.area] ?? a.area.toLowerCase(),
+              level: a.level,
+              description: a.description,
+            })),
+          });
+        } else {
+          setError(true);
+        }
+        setLoading(false);
+      });
   }, [sign, dateOfBirth]);
 
   const today = new Date().toLocaleDateString("ro-RO", { day: "numeric", month: "short" });
