@@ -1144,6 +1144,7 @@ function SiteTextTab() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [deploying, setDeploying] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -1179,7 +1180,12 @@ function SiteTextTab() {
     });
     setSaving(false);
     setSaved(true);
-    setTimeout(() => setSaved(false), 4000);
+
+    setDeploying(true);
+    await fetch("/api/admin/deploy", { method: "POST" });
+    setDeploying(false);
+
+    setTimeout(() => setSaved(false), 8000);
   }
 
   const activePage_ = SITE_SCHEMA.find((p) => p.id === activePage)!;
@@ -1192,7 +1198,7 @@ function SiteTextTab() {
       {saved && (
         <div className="flex items-center gap-2 p-3 bg-forest-green/10 border border-forest-green/20 rounded-xl text-forest-green font-body text-body-sm">
           <Check size={16} weight="bold" />
-          Textele salvate — schimbările sunt vizibile imediat pe site.
+          {deploying ? "Textele salvate — site-ul se actualizează (~2 minute)..." : "Textele salvate și deploy pornit. Site-ul se va actualiza în ~2 minute."}
         </div>
       )}
 
@@ -1253,9 +1259,9 @@ function SiteTextTab() {
 
       {/* Save */}
       <div className="flex justify-end pt-2">
-        <button onClick={handleSave} disabled={saving} className="btn btn-primary btn-sm gap-2 disabled:opacity-50">
-          {saving ? <CircleNotch size={14} className="animate-spin" /> : <Check size={14} weight="bold" />}
-          {saving ? "Se salvează..." : "Salvează"}
+        <button onClick={handleSave} disabled={saving || deploying} className="btn btn-primary btn-sm gap-2 disabled:opacity-50">
+          {(saving || deploying) ? <CircleNotch size={14} className="animate-spin" /> : <Check size={14} weight="bold" />}
+          {saving ? "Se salvează..." : deploying ? "Se publică..." : "Salvează și publică"}
         </button>
       </div>
     </div>
