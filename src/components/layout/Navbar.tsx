@@ -16,7 +16,7 @@ import {
   Newspaper,
   Info,
   Anchor,
-  SquaresFourFour,
+  SquaresFour,
   SignOut,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
