@@ -26,7 +26,6 @@ import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDailyQuote, type ZodiacSign } from "@/lib/quotes";
-import { getDailyInfluences } from "@/lib/zodiac-influences";
 import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
 
 const ZODIAC_EMOJI: Record<ZodiacSign, string> = {
@@ -56,7 +55,6 @@ export default function DashboardPage() {
   const { profile, user: authUser } = useAuth();
   const dateOfBirth = authUser?.user_metadata?.date_of_birth as string | undefined;
   const { quote: dailyQuote, sign: zodiacSign } = getDailyQuote(dateOfBirth);
-  const dailyInfluences = dateOfBirth ? getDailyInfluences(dateOfBirth) : null;
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
@@ -370,8 +368,8 @@ export default function DashboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
               >
-                {dailyInfluences
-                  ? <DailyInfluence influences={dailyInfluences} />
+                {dateOfBirth && zodiacSign
+                  ? <DailyInfluence sign={zodiacSign} dateOfBirth={dateOfBirth} />
                   : <DailyInfluencePlaceholder />}
               </motion.div>
 
