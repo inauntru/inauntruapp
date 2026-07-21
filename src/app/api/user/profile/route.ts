@@ -1,0 +1,39 @@
+import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { createServiceClient } from "@/lib/supabase";
+
+async function getSessionUser() {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+  );
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
+
+export async function PATCH(req: Request) {
+  const user = await getSessionUser();
+  if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
+
+  const { first_name, last_name } = await req.json();
+  if (!first_name?.trim() || !last_name?.trim())
+    return NextResponse.json({ error: "Prenumele și numele sunt obligatorii" }, { status: 400 });
+
+  const service = createServiceClient();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: profileError } = await (service.from("profiles") as any)
+    .update({ first_name: first_name.trim(), last_name: last_name.trim() })
+    .eq("id", user.id);
+
+  if (profileError) return NextResponse.json({ error: profileError.message }, { status: 500 });
+
+  await service.auth.admin.updateUserById(user.id, {
+    user_metadata: { first_name: first_name.trim(), last_name: last_name.trim() },
+  });
+
+  return NextResponse.json({ ok: true });
+}

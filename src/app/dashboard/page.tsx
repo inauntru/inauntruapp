@@ -20,6 +20,7 @@ import {
   X,
   Anchor,
   PencilSimple,
+  GearSix,
 } from "@phosphor-icons/react";
 import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
@@ -142,6 +143,7 @@ export default function DashboardPage() {
                 { icon: VideoCamera, label: "Sesiuni Live", href: "/sesiuni-live" },
                 { icon: Notebook, label: "Jurnal", href: "/dashboard/jurnal" },
                 { icon: ChartLine, label: "Progresul meu", href: "/dashboard/progres" },
+                { icon: GearSix, label: "Contul meu", href: "/dashboard/cont" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
@@ -164,15 +166,20 @@ export default function DashboardPage() {
 
             {/* User */}
             <div className="px-3 pt-6 border-t border-white/10">
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors cursor-pointer">
-                <div className="w-8 h-8 rounded-full bg-forest-green flex items-center justify-center">
+              <Link
+                href="/dashboard/cont"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-forest-green flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs font-bold">{initials}</span>
                 </div>
-                <div>
-                  <p className="font-body text-body-sm font-semibold text-white">{fullName}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-body text-body-sm font-semibold text-white truncate">{fullName}</p>
                   <p className="font-body text-label-xs text-white/40">{planLabel}</p>
                 </div>
-              </div>
+                <GearSix size={14} className="text-white/30 flex-shrink-0" />
+              </Link>
             </div>
           </motion.aside>
         )}
