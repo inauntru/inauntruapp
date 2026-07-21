@@ -161,7 +161,15 @@ function ExerciseModal({ ex, onClose, onComplete }: {
               {isIntro ? "Încearcă" : "Continuă"} <ArrowRight size={14} weight="bold" />
             </button>
           ) : (
-            <button onClick={() => { if (onComplete) onComplete(); else onClose(); }} className="btn btn-primary flex-1 gap-2">
+            <button onClick={() => {
+              // Save completion to localStorage for journal progress
+              try {
+                const prev = JSON.parse(localStorage.getItem("ancore-completed") || "[]");
+                prev.push({ id: ex.id, name: ex.nume, categorie: ex.categorie, nivel: ex.nivel, completedAt: new Date().toISOString() });
+                localStorage.setItem("ancore-completed", JSON.stringify(prev));
+              } catch {}
+              if (onComplete) onComplete(); else onClose();
+            }} className="btn btn-primary flex-1 gap-2">
               <Check size={14} weight="bold" /> Gata
             </button>
           )}

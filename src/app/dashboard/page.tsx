@@ -50,7 +50,7 @@ export default function DashboardPage() {
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
   const [checkInDone, setCheckInDone] = useState(false);
-  const [stats, setStats] = useState({ streak: 0, minutesPracticed: 0, checkInsCount: 0 });
+  const [stats, setStats] = useState({ streak: 0, minutesPracticed: 0, checkInsCount: 0, practicesCompleted: 0, checkInsThisWeek: 0, journalCount: 0 });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const firstName = profile?.first_name || authUser?.user_metadata?.first_name || "acolo";
@@ -406,28 +406,37 @@ export default function DashboardPage() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-body text-label-xs text-secondary-text">Practici completate</span>
-                      <span className="font-body text-label-xs font-bold text-deep-green">23/30</span>
+                      <span className="font-body text-label-xs font-bold text-deep-green">
+                        <CountUp to={stats.practicesCompleted} />
+                      </span>
                     </div>
                     <div className="h-3 bg-light-green rounded-full overflow-hidden">
-                      <div className="h-full bg-forest-green rounded-full" style={{ width: "77%" }} />
+                      <div className="h-full bg-forest-green rounded-full transition-all duration-700"
+                        style={{ width: `${Math.min(100, stats.practicesCompleted * 10)}%` }} />
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-body text-label-xs text-secondary-text">Obiectiv săptămânal</span>
-                      <span className="font-body text-label-xs font-bold text-deep-green">5/7 zile</span>
+                      <span className="font-body text-label-xs text-secondary-text">Check-in-uri săptămâna aceasta</span>
+                      <span className="font-body text-label-xs font-bold text-deep-green">
+                        <CountUp to={stats.checkInsThisWeek} />/7 zile
+                      </span>
                     </div>
                     <div className="h-3 bg-light-green rounded-full overflow-hidden">
-                      <div className="h-full bg-forest-green rounded-full" style={{ width: "71%" }} />
+                      <div className="h-full bg-forest-green rounded-full transition-all duration-700"
+                        style={{ width: `${Math.round((stats.checkInsThisWeek / 7) * 100)}%` }} />
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-body text-label-xs text-secondary-text">Check-in-uri</span>
-                      <span className="font-body text-label-xs font-bold text-deep-green">12/14 zile</span>
+                      <span className="font-body text-label-xs text-secondary-text">Total check-in-uri</span>
+                      <span className="font-body text-label-xs font-bold text-deep-green">
+                        <CountUp to={stats.checkInsCount} />
+                      </span>
                     </div>
                     <div className="h-3 bg-indigo-light rounded-full overflow-hidden">
-                      <div className="h-full bg-indigo rounded-full" style={{ width: "86%" }} />
+                      <div className="h-full bg-indigo rounded-full transition-all duration-700"
+                        style={{ width: `${Math.min(100, stats.checkInsCount * 5)}%` }} />
                     </div>
                   </div>
                   <Link href="/dashboard/progres" className="font-body text-label-xs text-forest-green hover:underline flex items-center gap-1">
@@ -444,15 +453,14 @@ export default function DashboardPage() {
                     <div className="w-8 h-8 rounded-lg bg-rose-powder/40 flex items-center justify-center">
                       <PencilSimple size={15} weight="fill" className="text-terracotta" />
                     </div>
-                    <span className="font-body text-label-xs text-terracotta font-semibold uppercase tracking-wider">Azi</span>
+                    <span className="font-body text-label-xs text-terracotta font-semibold uppercase tracking-wider">
+                      {stats.journalCount > 0 ? `${stats.journalCount} ${stats.journalCount === 1 ? "notă" : "note"}` : "Azi"}
+                    </span>
                   </div>
-                  <p className="font-body text-body-sm text-on-surface mb-1">
+                  <p className="font-body text-body-sm text-on-surface mb-4">
                     {checkInDone
-                      ? "Ai completat check-in-ul. Scrie câteva gânduri despre cum te simți."
+                      ? "Ai completat check-in-ul. Dacă vrei, notează câteva gânduri despre cum te simți acum."
                       : "Un moment de reflecție scrisă poate clarifica mult din ce simți."}
-                  </p>
-                  <p className="font-body text-label-xs text-secondary-text italic mb-4">
-                    &ldquo;Scrisul este cel mai aproape putem ajunge de mintea altcuiva.&rdquo;
                   </p>
                   <Link href="/dashboard/jurnal" className="w-full h-9 rounded-full bg-terracotta/90 hover:bg-terracotta text-white font-ui font-semibold text-label-xs uppercase tracking-wide flex items-center justify-center gap-2 transition-colors">
                     <PencilSimple size={13} weight="bold" />

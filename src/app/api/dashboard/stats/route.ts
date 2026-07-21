@@ -13,9 +13,7 @@ export async function GET() {
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll: (toSet) => {
-          try {
-            toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-          } catch {}
+          try { toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)); } catch {}
         },
       },
     }
@@ -24,21 +22,20 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Total minutes from completed user_practices
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Completed practices
   const { data: practicesRaw } = await (supabase as any)
     .from("user_practices")
-    .select("duration_watched")
+    .select("duration_watched, completed_at")
     .eq("user_id", user.id)
     .eq("completed", true);
 
-  const practices = (practicesRaw ?? []) as Pick<UserPractice, "duration_watched">[];
+  const practices = (practicesRaw ?? []) as Pick<UserPractice, "duration_watched" | "completed_at">[];
   const minutesPracticed = Math.round(
     practices.reduce((sum, p) => sum + (p.duration_watched ?? 0), 0) / 60
   );
+  const practicesCompleted = practices.length;
 
-  // Streak: count consecutive days ending today from check_ins
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // All check-ins for streak + weekly count
   const { data: checkInsRaw } = await (supabase as any)
     .from("check_ins")
     .select("created_at")
@@ -46,6 +43,8 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   const checkIns = (checkInsRaw ?? []) as Pick<CheckIn, "created_at">[];
+
+  // Streak: consecutive days ending today
   let streak = 0;
   if (checkIns.length > 0) {
     const today = new Date();
@@ -56,14 +55,30 @@ export async function GET() {
       return d.getTime();
     }));
     let cursor = today.getTime();
-    while (days.has(cursor)) {
-      streak++;
-      cursor -= 86400000;
-    }
+    while (days.has(cursor)) { streak++; cursor -= 86400000; }
   }
 
-  // Check-ins total count (from profile)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Check-ins in the last 7 days
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 6);
+  weekAgo.setHours(0, 0, 0, 0);
+  const checkInsThisWeek = new Set(
+    checkIns
+      .filter((c) => new Date(c.created_at) >= weekAgo)
+      .map((c) => {
+        const d = new Date(c.created_at);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime();
+      })
+  ).size;
+
+  // Journal entries count
+  const { count: journalCount } = await (supabase as any)
+    .from("journal_entries")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  // Total check-ins from profile
   const { data: profileRaw } = await (supabase as any)
     .from("profiles")
     .select("check_ins_count")
@@ -75,6 +90,9 @@ export async function GET() {
   return NextResponse.json({
     streak,
     minutesPracticed,
-    checkInsCount: profile?.check_ins_count ?? 0,
+    checkInsCount: profile?.check_ins_count ?? checkIns.length,
+    practicesCompleted,
+    checkInsThisWeek,
+    journalCount: journalCount ?? 0,
   });
 }

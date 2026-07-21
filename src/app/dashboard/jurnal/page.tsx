@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, X, Trash, PencilSimple, BookOpen, Smiley, SmileySad,
   SmileyNervous, SmileyMeh, SmileyWink, CircleNotch, Check, ArrowLeft,
+  Anchor, ArrowRight,
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -28,6 +29,28 @@ interface CheckInEntry {
   created_at: string;
 }
 
+interface AncoreEntry {
+  id: string;
+  name: string;
+  categorie: string;
+  nivel: string;
+  completedAt: string;
+}
+
+const CATEGORIE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  "ALERTĂ":    { bg: "#E8EEF2", text: "#2E4A5E", border: "#B8CDD8" },
+  "BLOCATĂ":   { bg: "#EDEDED", text: "#3A3A3A", border: "#C8C8C8" },
+  "OBOSEALĂ":  { bg: "#FBF4E8", text: "#6B4C1E", border: "#E8D8B8" },
+  "LINIȘTIRE": { bg: "#F5EBE8", text: "#6B2E22", border: "#E0C8C0" },
+  "CONECTARE": { bg: "#E8F0E5", text: "#1E5C30", border: "#B8D8B0" },
+};
+
+const NIVEL_COLORS: Record<string, { bg: string; text: string }> = {
+  "SOS":          { bg: "#FEE2E2", text: "#991B1B" },
+  "REGLEAZĂ":     { bg: "#E0E7FF", text: "#3730A3" },
+  "APROFUNDEAZĂ": { bg: "#D1FAE5", text: "#065F46" },
+};
+
 const MOOD_ICONS: Record<string, { icon: React.ElementType; label: string; color: string }> = {
   happy:   { icon: Smiley,         label: "Bucuros",   color: "text-forest-green" },
   content: { icon: SmileyWink,    label: "Mulțumit",  color: "text-teal-600" },
@@ -48,9 +71,10 @@ function stripHtml(html: string) {
 }
 
 export default function JurnalPage() {
-  const [tab, setTab] = useState<"note" | "checkins">("note");
+  const [tab, setTab] = useState<"note" | "checkins" | "ancore">("note");
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [checkIns, setCheckIns] = useState<CheckInEntry[]>([]);
+  const [ancoreHistory, setAncoreHistory] = useState<AncoreEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
   const [editing, setEditing] = useState<JournalEntry | null>(null);
@@ -67,6 +91,12 @@ export default function JurnalPage() {
       setCheckIns(c.checkIns ?? []);
       setLoading(false);
     }).catch(() => setLoading(false));
+
+    // Ancore completions from localStorage
+    try {
+      const saved = JSON.parse(localStorage.getItem("ancore-completed") || "[]") as AncoreEntry[];
+      setAncoreHistory(saved.slice().reverse()); // newest first
+    } catch {}
   }, []);
 
   function openNew() {
@@ -119,10 +149,14 @@ export default function JurnalPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-sage-border mb-6">
-        {[{ id: "note", label: "Note personale" }, { id: "checkins", label: "Check-in-uri" }].map((t) => (
+        {[
+          { id: "note",     label: "Note personale" },
+          { id: "checkins", label: "Check-in-uri" },
+          { id: "ancore",   label: `Ancore${ancoreHistory.length > 0 ? ` (${ancoreHistory.length})` : ""}` },
+        ].map((t) => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id as "note" | "checkins")}
+            onClick={() => setTab(t.id as "note" | "checkins" | "ancore")}
             className={`px-4 py-3 font-body text-body-sm font-medium border-b-2 -mb-px transition-all ${
               tab === t.id ? "border-forest-green text-forest-green" : "border-transparent text-secondary-text hover:text-deep-green"
             }`}
@@ -233,6 +267,104 @@ export default function JurnalPage() {
                 );
               })}
             </div>
+          )}
+        </>
+      )}
+
+      {tab === "ancore" && (
+        <>
+          {ancoreHistory.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Anchor size={48} className="text-sage-border mb-4" />
+              <p className="font-heading text-h3 text-deep-green mb-2">Nicio ancoră finalizată încă</p>
+              <p className="font-body text-body-sm text-secondary-text mb-5">
+                Când completezi o ancoră, aceasta va apărea aici împreună cu progresul tău.
+              </p>
+              <Link href="/ancore" className="btn btn-primary btn-sm gap-2">
+                <Anchor size={14} /> Mergi la Ancore
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Summary cards */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {[
+                  { label: "Total completate", value: ancoreHistory.length },
+                  { label: "Categorii diferite", value: new Set(ancoreHistory.map(a => a.categorie)).size },
+                  { label: "Luna aceasta", value: ancoreHistory.filter(a => new Date(a.completedAt).getMonth() === new Date().getMonth()).length },
+                ].map(s => (
+                  <div key={s.label} className="card bg-white p-4 text-center">
+                    <p className="font-heading text-2xl font-bold text-deep-green">{s.value}</p>
+                    <p className="font-body text-label-xs text-secondary-text mt-1">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Category distribution */}
+              <div className="card bg-white p-5 mb-6">
+                <h3 className="font-body font-semibold text-body-sm text-deep-green mb-4">Pe categorii</h3>
+                <div className="space-y-3">
+                  {(["ALERTĂ", "BLOCATĂ", "OBOSEALĂ", "LINIȘTIRE", "CONECTARE"] as const).map(cat => {
+                    const count = ancoreHistory.filter(a => a.categorie === cat).length;
+                    if (count === 0) return null;
+                    const colors = CATEGORIE_COLORS[cat];
+                    const pct = Math.round((count / ancoreHistory.length) * 100);
+                    return (
+                      <div key={cat}>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-body text-label-xs text-secondary-text"
+                            style={{ color: colors.text }}>{cat.charAt(0) + cat.slice(1).toLowerCase()}</span>
+                          <span className="font-body text-label-xs font-bold text-deep-green">{count}</span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: colors.border + "40" }}>
+                          <div className="h-full rounded-full transition-all duration-700"
+                            style={{ width: `${pct}%`, backgroundColor: colors.text }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* History list */}
+              <div className="space-y-3">
+                {ancoreHistory.map((entry, i) => {
+                  const catColors = CATEGORIE_COLORS[entry.categorie] ?? { bg: "#F5F5F5", text: "#555", border: "#DDD" };
+                  const nivColors = NIVEL_COLORS[entry.nivel] ?? { bg: "#F5F5F5", text: "#555" };
+                  return (
+                    <motion.div key={`${entry.id}-${i}`}
+                      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(i * 0.03, 0.3) }}
+                      className="card bg-white p-4 flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: catColors.bg }}>
+                        <Anchor size={18} style={{ color: catColors.text }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-body font-semibold text-body-sm text-deep-green truncate">{entry.name}</p>
+                        <p className="font-body text-label-xs text-secondary-text">
+                          {formatDate(entry.completedAt)} · {formatTime(entry.completedAt)}
+                        </p>
+                      </div>
+                      <div className="flex gap-1.5 flex-shrink-0">
+                        <span className="tag text-[10px]" style={{ backgroundColor: catColors.bg, color: catColors.text, borderColor: catColors.border }}>
+                          {entry.categorie.charAt(0) + entry.categorie.slice(1).toLowerCase()}
+                        </span>
+                        <span className="tag text-[10px]" style={{ backgroundColor: nivColors.bg, color: nivColors.text }}>
+                          {entry.nivel === "SOS" ? "Rapid" : entry.nivel === "REGLEAZĂ" ? "Reglează" : "Profund"}
+                        </span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 text-center">
+                <Link href="/ancore" className="inline-flex items-center gap-1.5 font-body text-body-sm text-forest-green hover:underline">
+                  Deschide Ancore <ArrowRight size={14} weight="bold" />
+                </Link>
+              </div>
+            </>
           )}
         </>
       )}
