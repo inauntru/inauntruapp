@@ -8,8 +8,9 @@ import {
   ArrowLeft, Check, CircleNotch, Eye, EyeSlash,
   Warning, X, Lock, User, ShieldCheck, Trash,
   Bell, CreditCard, Shield, Question, ArrowRight,
-  Export, SignOut,
+  Export, SignOut, Cake,
 } from "@phosphor-icons/react";
+import { getDailyQuote, getZodiacSign } from "@/lib/quotes";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -68,14 +69,26 @@ const GOALS = [
   "Mindfulness zilnic",
 ];
 
+const ZODIAC_EMOJI: Record<string, string> = {
+  Berbec: "♈", Taur: "♉", Gemeni: "♊", Rac: "♋", Leu: "♌", Fecioară: "♍",
+  Balanță: "♎", Scorpion: "♏", Săgetător: "♐", Capricorn: "♑", Vărsător: "♒", Pești: "♓",
+};
+
 function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>["profile"]; authUser: ReturnType<typeof useAuth>["user"] }) {
   const fn = profile?.first_name || authUser?.user_metadata?.first_name || "";
   const ln = profile?.last_name  || authUser?.user_metadata?.last_name  || "";
-  const [pFirst, setPFirst] = useState(fn);
-  const [pLast,  setPLast]  = useState(ln);
-  const [saving, setSaving] = useState(false);
-  const [error,  setError]  = useState<string | null>(null);
-  const [ok,     setOk]     = useState(false);
+  const savedDob = (authUser?.user_metadata?.date_of_birth as string | undefined) ?? "";
+  const [pFirst, setPFirst]   = useState(fn);
+  const [pLast,  setPLast]    = useState(ln);
+  const [pDob,   setPDob]     = useState(savedDob);
+  const [saving, setSaving]   = useState(false);
+  const [error,  setError]    = useState<string | null>(null);
+  const [ok,     setOk]       = useState(false);
+
+  const zodiacSign = pDob ? (() => {
+    const d = new Date(pDob);
+    return !isNaN(d.getTime()) ? getZodiacSign(d.getMonth() + 1, d.getDate()) : null;
+  })() : null;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -83,7 +96,7 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
     const res = await fetch("/api/user/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ first_name: pFirst, last_name: pLast }),
+      body: JSON.stringify({ first_name: pFirst, last_name: pLast, date_of_birth: pDob || null }),
     });
     const data = await res.json();
     if (!res.ok) { setError(data.error ?? "Eroare"); } else { setOk(true); setTimeout(() => setOk(false), 3000); }
@@ -106,6 +119,30 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
         <label className={labelCls}>Email</label>
         <input className="input w-full bg-light-green/40 text-secondary-text cursor-not-allowed" value={authUser?.email || ""} readOnly />
         <p className="font-body text-label-xs text-secondary-text mt-1.5">Adresa de email nu poate fi modificată momentan.</p>
+      </div>
+
+      <div>
+        <label className={labelCls}>Data nașterii</label>
+        <div className="relative">
+          <Cake size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text pointer-events-none" />
+          <input
+            type="date"
+            value={pDob}
+            onChange={e => setPDob(e.target.value)}
+            max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split("T")[0]}
+            className="input w-full pl-10"
+          />
+        </div>
+        {zodiacSign ? (
+          <p className="font-body text-label-xs text-secondary-text mt-1.5 flex items-center gap-1.5">
+            Semnul tău zodiacal: <span className="font-semibold text-deep-green">{ZODIAC_EMOJI[zodiacSign]} {zodiacSign}</span>
+            <span className="text-secondary-text">— citatul zilei se personalizează pentru tine</span>
+          </p>
+        ) : (
+          <p className="font-body text-label-xs text-secondary-text mt-1.5">
+            Opțional. Folosim data nașterii doar pentru a personaliza citatul zilei cu semnul tău zodiacal.
+          </p>
+        )}
       </div>
 
       <div className="pt-2 border-t border-sage-border/40">

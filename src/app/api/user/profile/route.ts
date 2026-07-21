@@ -18,7 +18,7 @@ export async function PATCH(req: Request) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
 
-  const { first_name, last_name } = await req.json();
+  const { first_name, last_name, date_of_birth } = await req.json();
   if (!first_name?.trim() || !last_name?.trim())
     return NextResponse.json({ error: "Prenumele și numele sunt obligatorii" }, { status: 400 });
 
@@ -32,7 +32,11 @@ export async function PATCH(req: Request) {
   if (profileError) return NextResponse.json({ error: profileError.message }, { status: 500 });
 
   await service.auth.admin.updateUserById(user.id, {
-    user_metadata: { first_name: first_name.trim(), last_name: last_name.trim() },
+    user_metadata: {
+      first_name: first_name.trim(),
+      last_name: last_name.trim(),
+      date_of_birth: date_of_birth ?? null,
+    },
   });
 
   return NextResponse.json({ ok: true });

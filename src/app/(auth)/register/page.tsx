@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User, Check, Leaf } from "@phosphor-icons/react";
+import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User, Check, Leaf, Cake } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const PLANS = [
@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("gratuit");
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ export default function RegisterPage() {
     const firstName = nameParts[0] ?? "";
     const lastName = nameParts.slice(1).join(" ") || "";
 
-    const { error: signUpError } = await signUp(email, password, firstName, lastName);
+    const { error: signUpError } = await signUp(email, password, firstName, lastName, dateOfBirth || undefined);
 
     if (signUpError) {
       setError(signUpError);
@@ -159,6 +160,25 @@ export default function RegisterPage() {
                     {showPassword ? <EyeSlash size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+              </div>
+
+              <div>
+                <label className="font-body text-label-sm text-on-surface mb-1.5 block">
+                  Data nașterii <span className="text-secondary-text font-normal">(opțional)</span>
+                </label>
+                <div className="relative">
+                  <Cake size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text pointer-events-none" />
+                  <input
+                    type="date"
+                    value={dateOfBirth}
+                    onChange={(e) => setDateOfBirth(e.target.value)}
+                    max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split("T")[0]}
+                    className="input pl-10 w-full"
+                  />
+                </div>
+                <p className="font-body text-label-xs text-secondary-text mt-1.5">
+                  Folosim data nașterii doar pentru a personaliza citatul zilei cu semnul tău zodiacal. ✨
+                </p>
               </div>
 
               <p className="font-body text-label-xs text-secondary-text">

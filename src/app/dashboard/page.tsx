@@ -25,7 +25,12 @@ import {
 import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { getDailyQuote } from "@/lib/quotes";
+import { getDailyQuote, type ZodiacSign } from "@/lib/quotes";
+
+const ZODIAC_EMOJI: Record<ZodiacSign, string> = {
+  Berbec: "♈", Taur: "♉", Gemeni: "♊", Rac: "♋", Leu: "♌", Fecioară: "♍",
+  Balanță: "♎", Scorpion: "♏", Săgetător: "♐", Capricorn: "♑", Vărsător: "♒", Pești: "♓",
+};
 function formatDate() {
   return new Date().toLocaleDateString("ro-RO", {
     weekday: "long",
@@ -47,7 +52,8 @@ type SessionItem = { title: string; facilitator: string; date: string; spotsTota
 
 export default function DashboardPage() {
   const { profile, user: authUser } = useAuth();
-  const dailyQuote = getDailyQuote();
+  const dateOfBirth = authUser?.user_metadata?.date_of_birth as string | undefined;
+  const { quote: dailyQuote, sign: zodiacSign } = getDailyQuote(dateOfBirth);
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
@@ -465,6 +471,11 @@ export default function DashboardPage() {
                       : "Un moment de reflecție scrisă poate clarifica mult din ce simți."}
                   </p>
                   <blockquote className="border-l-2 border-terracotta/40 pl-3 mb-4">
+                    {zodiacSign && (
+                      <p className="font-body text-label-xs text-terracotta/60 uppercase tracking-widest mb-1.5">
+                        {ZODIAC_EMOJI[zodiacSign]} {zodiacSign}
+                      </p>
+                    )}
                     <p className="font-body text-label-xs text-secondary-text italic leading-relaxed">
                       &ldquo;{dailyQuote.text}&rdquo;
                     </p>
