@@ -16,7 +16,7 @@ import {
   Newspaper,
   Info,
   Anchor,
-  Squares,
+  SquaresFourFour,
   SignOut,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -143,7 +143,7 @@ export default function Navbar() {
                         : "btn-ghost"
                     }`}
                   >
-                    <Squares size={16} weight="regular" />
+                    <SquaresFour size={16} weight="regular" />
                     Dashboard
                   </Link>
                   <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-500 ${glass ? "bg-white/10 border border-white/20" : "bg-light-green border border-sage-border"}`}>
@@ -254,7 +254,7 @@ export default function Navbar() {
                       </div>
                     </div>
                     <Link href="/dashboard" className="btn btn-primary w-full">
-                      <Squares size={18} weight="regular" />
+                      <SquaresFour size={18} weight="regular" />
                       Dashboard
                     </Link>
                     <button onClick={() => signOut()} className="btn btn-ghost w-full text-secondary-text">
