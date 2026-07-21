@@ -1,5 +1,4 @@
-﻿export const dynamic = 'force-dynamic'
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { getSiteContent } from "@/lib/siteContent";
 import HomePageClient from "./HomePageClient";
 
