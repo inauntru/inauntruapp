@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,7 +8,7 @@ import {
   ArrowLeft, Check, CircleNotch, Eye, EyeSlash,
   Warning, X, Lock, User, ShieldCheck, Trash,
   Bell, CreditCard, Shield, Question, ArrowRight,
-  Export, SignOut,
+  Export, SignOut, CaretDown,
 } from "@phosphor-icons/react";
 import { getDailyQuote, getZodiacSign } from "@/lib/quotes";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,42 +20,123 @@ const MONTHS_RO = [
   "Iulie","August","Septembrie","Octombrie","Noiembrie","Decembrie",
 ];
 
+interface SelectOption { value: number; label: string }
+
+function PickerDropdown({
+  value, onChange, options, placeholder, narrow,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  options: SelectOption[];
+  placeholder: string;
+  narrow?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [open]);
+
+  // Scroll selected item into view when opening
+  useEffect(() => {
+    if (!open || !listRef.current || !value) return;
+    const el = listRef.current.querySelector("[data-selected]") as HTMLElement | null;
+    el?.scrollIntoView({ block: "center" });
+  }, [open, value]);
+
+  const selected = options.find(o => o.value === value);
+
+  return (
+    <div ref={ref} className={`relative ${narrow ? "w-[4.5rem]" : "flex-1"}`}>
+      <button
+        type="button"
+        onClick={() => setOpen(p => !p)}
+        className={`w-full flex items-center justify-between gap-1 px-3 py-2.5 rounded-xl border font-body text-body-sm transition-colors ${
+          open
+            ? "border-forest-green bg-white text-deep-green"
+            : value
+              ? "border-sage-border bg-white text-deep-green hover:border-forest-green/50"
+              : "border-sage-border bg-white text-secondary-text hover:border-forest-green/50"
+        }`}
+      >
+        <span className="truncate">{selected?.label ?? placeholder}</span>
+        <CaretDown
+          size={12}
+          weight="bold"
+          className={`flex-shrink-0 text-secondary-text transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.12 }}
+            className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 rounded-xl border border-sage-border/60 bg-white shadow-modal overflow-hidden"
+          >
+            <div ref={listRef} className="max-h-52 overflow-y-auto overscroll-contain py-1">
+              {options.map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  data-selected={opt.value === value ? true : undefined}
+                  onClick={() => { onChange(opt.value); setOpen(false); }}
+                  className={`w-full text-left px-3 py-1.5 font-body text-body-sm transition-colors ${
+                    opt.value === value
+                      ? "bg-deep-green text-white font-semibold"
+                      : "text-on-surface hover:bg-light-green"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function DatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const maxYear = new Date().getFullYear() - 13;
-  const [y, m, d] = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)?.slice(1).map(Number) ?? [0, 0, 0];
+  const parsed = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
-  function update(newY: number, newM: number, newD: number) {
-    if (newY && newM && newD) {
-      onChange(`${newY}-${String(newM).padStart(2, "0")}-${String(newD).padStart(2, "0")}`);
-    } else {
-      onChange("");
-    }
+  const [selY, setSelY] = useState(parsed ? +parsed[1] : 0);
+  const [selM, setSelM] = useState(parsed ? +parsed[2] : 0);
+  const [selD, setSelD] = useState(parsed ? +parsed[3] : 0);
+
+  function emit(y: number, m: number, d: number) {
+    if (y && m && d) onChange(`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
   }
 
-  const daysInMonth = y && m ? new Date(y, m, 0).getDate() : 31;
-  const years = Array.from({ length: maxYear - 1923 }, (_, i) => maxYear - i);
+  const daysInMonth = selY && selM ? new Date(selY, selM, 0).getDate() : 31;
+  const dayOpts = Array.from({ length: daysInMonth }, (_, i) => ({ value: i+1, label: String(i+1) }));
+  const monthOpts = MONTHS_RO.map((n, i) => ({ value: i+1, label: n }));
+  const yearOpts = Array.from({ length: maxYear - 1923 }, (_, i) => ({ value: maxYear - i, label: String(maxYear - i) }));
 
-  const sel = "input cursor-pointer pr-2";
   return (
     <div className="flex gap-2">
-      <select value={d || ""} onChange={e => update(y, m, Number(e.target.value))} className={`${sel} flex-1`}>
-        <option value="">Zi</option>
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(n => (
-          <option key={n} value={n}>{n}</option>
-        ))}
-      </select>
-      <select value={m || ""} onChange={e => update(y, Number(e.target.value), d)} className={`${sel} flex-[1.7]`}>
-        <option value="">Lună</option>
-        {MONTHS_RO.map((name, i) => (
-          <option key={i + 1} value={i + 1}>{name}</option>
-        ))}
-      </select>
-      <select value={y || ""} onChange={e => update(Number(e.target.value), m, d)} className={`${sel} flex-[1.3]`}>
-        <option value="">An</option>
-        {years.map(yr => (
-          <option key={yr} value={yr}>{yr}</option>
-        ))}
-      </select>
+      <PickerDropdown
+        value={selD} placeholder="Zi" options={dayOpts} narrow
+        onChange={d => { setSelD(d); emit(selY, selM, d); }}
+      />
+      <PickerDropdown
+        value={selM} placeholder="Lună" options={monthOpts}
+        onChange={m => { setSelM(m); emit(selY, m, selD); }}
+      />
+      <PickerDropdown
+        value={selY} placeholder="An" options={yearOpts}
+        onChange={y => { setSelY(y); emit(y, selM, selD); }}
+      />
     </div>
   );
 }
