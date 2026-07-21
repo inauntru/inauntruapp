@@ -38,8 +38,10 @@ export default function Navbar() {
   const isHomePage = pathname === "/";
   const { user, profile, signOut } = useAuth();
 
-  const userInitials = [profile?.first_name?.[0], profile?.last_name?.[0]].filter(Boolean).join("").toUpperCase() || (user?.email?.[0] ?? "U").toUpperCase();
-  const userName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || user?.email?.split("@")[0] || "";
+  const firstName = profile?.first_name || user?.user_metadata?.first_name || "";
+  const lastName = profile?.last_name || user?.user_metadata?.last_name || "";
+  const userInitials = ([firstName?.[0], lastName?.[0]].filter(Boolean).join("") || user?.email?.[0] || "U").toUpperCase();
+  const userName = [firstName, lastName].filter(Boolean).join(" ") || user?.email?.split("@")[0] || "";
 
   useEffect(() => {
     setMobileOpen(false);

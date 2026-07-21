@@ -44,7 +44,7 @@ type PracticeItem = { id: number; title: string; facilitator: string; duration: 
 type SessionItem = { title: string; facilitator: string; date: string; spotsTotal: number; spotsLeft: number; };
 
 export default function DashboardPage() {
-  const { profile } = useAuth();
+  const { profile, user: authUser } = useAuth();
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
@@ -52,10 +52,10 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ streak: 0, minutesPracticed: 0, checkInsCount: 0 });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const firstName = profile?.first_name || "acolo";
-  const lastName = profile?.last_name || "";
-  const initials = [profile?.first_name?.[0], profile?.last_name?.[0]].filter(Boolean).join("").toUpperCase() || "U";
-  const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Utilizator";
+  const firstName = profile?.first_name || authUser?.user_metadata?.first_name || "acolo";
+  const lastName = profile?.last_name || authUser?.user_metadata?.last_name || "";
+  const initials = ([firstName?.[0], lastName?.[0]].filter(Boolean).join("") || "U").toUpperCase();
+  const fullName = [firstName, lastName].filter(Boolean).join(" ").replace(" acolo", "") || "Utilizator";
   const planLabel = profile?.plan === "premium" ? "Premium" : profile?.plan === "standard" ? "Standard" : "Gratuit";
 
   useEffect(() => {
