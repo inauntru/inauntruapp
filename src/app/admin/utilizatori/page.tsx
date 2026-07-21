@@ -118,6 +118,53 @@ function DeleteModal({ user, onClose, onDeleted }: { user: RealUser; onClose: ()
   );
 }
 
+// ── Confirm email ──────────────────────────────────────────────────────────
+
+function ConfirmEmailCard({ user, onConfirmed }: { user: RealUser; onConfirmed: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleConfirm() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/users/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Eroare necunoscută");
+      onConfirmed();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Eroare");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="card bg-white p-5 border border-amber-100">
+      <div className="flex items-center gap-2 mb-1">
+        <EnvelopeSimple size={15} className="text-amber-600" weight="fill" />
+        <h3 className="font-body font-semibold text-body-md text-amber-700">Email neconfirmat</h3>
+      </div>
+      <p className="font-body text-label-xs text-secondary-text mb-4">
+        Utilizatorul nu a confirmat emailul. Poți face asta manual în locul lui.
+      </p>
+      {error && <div className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-xl font-body text-label-xs text-red-600">{error}</div>}
+      <button
+        onClick={handleConfirm}
+        disabled={loading}
+        className="w-full h-9 rounded-full bg-amber-500 text-white font-ui font-semibold text-label-xs uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-amber-600 transition-colors disabled:opacity-50"
+      >
+        {loading ? <CircleNotch size={13} className="animate-spin" /> : <ShieldCheck size={13} weight="bold" />}
+        {loading ? "Se confirmă..." : "Confirmă contul"}
+      </button>
+    </div>
+  );
+}
+
 // ── Update plan ────────────────────────────────────────────────────────────
 
 function PlanCard({ user, onSaved }: { user: RealUser; onSaved: (plan: UserPlan) => void }) {
@@ -209,7 +256,7 @@ function RoleCard({ user, onSaved }: { user: RealUser; onSaved: (role: UserRole)
 
 // ── Detail view ────────────────────────────────────────────────────────────
 
-function UserDetail({ user, onBack, onDelete, onRoleUpdate, onPlanUpdate }: { user: RealUser; onBack: () => void; onDelete: () => void; onRoleUpdate: (role: UserRole) => void; onPlanUpdate: (plan: UserPlan) => void }) {
+function UserDetail({ user, onBack, onDelete, onRoleUpdate, onPlanUpdate, onEmailConfirmed }: { user: RealUser; onBack: () => void; onDelete: () => void; onRoleUpdate: (role: UserRole) => void; onPlanUpdate: (plan: UserPlan) => void; onEmailConfirmed: () => void }) {
   return (
     <motion.div key="detail" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.25 }}>
       {/* Top bar */}
@@ -269,6 +316,10 @@ function UserDetail({ user, onBack, onDelete, onRoleUpdate, onPlanUpdate }: { us
           <PlanCard user={user} onSaved={onPlanUpdate} />
 
           <RoleCard user={user} onSaved={onRoleUpdate} />
+
+          {!user.email_confirmed && (
+            <ConfirmEmailCard user={user} onConfirmed={onEmailConfirmed} />
+          )}
 
           {/* Danger zone */}
           <div className="card bg-white p-5 border border-red-100">
@@ -576,6 +627,10 @@ export default function AdminUsersPage() {
             onPlanUpdate={(plan) => {
               setSelected((prev) => prev ? { ...prev, plan } : prev);
               setUsers((prev) => prev.map((u) => u.id === selected.id ? { ...u, plan } : u));
+            }}
+            onEmailConfirmed={() => {
+              setSelected((prev) => prev ? { ...prev, email_confirmed: true } : prev);
+              setUsers((prev) => prev.map((u) => u.id === selected.id ? { ...u, email_confirmed: true } : u));
             }}
           />
         )}
