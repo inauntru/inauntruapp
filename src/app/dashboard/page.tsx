@@ -34,10 +34,10 @@ function formatDate() {
 }
 
 const QUICK_ACCESS = [
-  { icon: BookOpen, label: "Bibliotecă", href: "/practici", color: "bg-light-green text-forest-green" },
-  { icon: Anchor, label: "Ancore", href: "/ancore", color: "bg-deep-green/8 text-deep-green" },
-  { icon: Notebook, label: "Jurnal", href: "/dashboard/jurnal", color: "bg-rose-powder/30 text-terracotta" },
-  { icon: VideoCamera, label: "Sesiuni live", href: "/sesiuni-live", color: "bg-secondary-container text-on-secondary-container" },
+  { icon: BookOpen,    label: "Bibliotecă",   href: "/practici",       iconCls: "bg-forest-green/20 text-forest-green", cardCls: "bg-light-green border-sage-border/40" },
+  { icon: Anchor,      label: "Ancore",        href: "/ancore",         iconCls: "bg-indigo/10 text-indigo",             cardCls: "bg-indigo-light border-indigo/10" },
+  { icon: Notebook,    label: "Jurnal",        href: "/dashboard/jurnal", iconCls: "bg-indigo-mid/15 text-indigo-mid",  cardCls: "bg-indigo-bg border-indigo/10" },
+  { icon: VideoCamera, label: "Sesiuni live",  href: "/sesiuni-live",   iconCls: "bg-deep-green/10 text-deep-green",    cardCls: "bg-light-green/60 border-sage-border/30" },
 ];
 
 type PracticeItem = { id: number; title: string; facilitator: string; duration: number; category: string; };
@@ -186,7 +186,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-8"
+            className="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-4 pb-8 bg-gradient-to-br from-light-green/80 via-light-green/20 to-transparent"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-4">
@@ -224,32 +224,31 @@ export default function DashboardPage() {
           </motion.div>
 
           {/* Stats row */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="bg-deep-green rounded-2xl mb-8 grid grid-cols-3 overflow-hidden shadow-modal"
+          >
             {[
-              { icon: Flame, label: "Zile consecutive", value: stats.streak },
-              { icon: Clock, label: "Minute practicate", value: stats.minutesPracticed },
-              { icon: VideoCamera, label: "Check-in-uri", value: stats.checkInsCount },
+              { icon: Flame,       label: "Zile consecutive",  value: stats.streak },
+              { icon: Clock,       label: "Minute practicate", value: stats.minutesPracticed },
+              { icon: VideoCamera, label: "Check-in-uri",      value: stats.checkInsCount },
             ].map((stat, i) => {
               const Icon = stat.icon;
               return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="card p-4 text-center"
-                >
-                  <div className="w-10 h-10 rounded-full bg-light-green flex items-center justify-center mx-auto mb-2">
-                    <Icon size={18} weight="fill" className="text-forest-green" />
+                <div key={stat.label} className={`text-center py-6 px-4 ${i < 2 ? "border-r border-white/10" : ""}`}>
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-3">
+                    <Icon size={18} weight="fill" className="text-sage-border" />
                   </div>
-                  <p className="font-heading text-2xl font-bold text-deep-green">
+                  <p className="font-heading text-3xl font-bold text-white">
                     <CountUp to={stat.value} />
                   </p>
-                  <p className="font-body text-label-xs text-secondary-text">{stat.label}</p>
-                </motion.div>
+                  <p className="font-body text-label-xs text-white/50 mt-1">{stat.label}</p>
+                </div>
               );
             })}
-          </div>
+          </motion.div>
 
           {/* Main grid */}
           <div className="grid lg:grid-cols-3 gap-6">
@@ -260,30 +259,36 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="card overflow-hidden"
+                className="rounded-2xl overflow-hidden shadow-modal"
               >
-                <div className="relative aspect-video sm:aspect-[21/9] bg-gradient-to-br from-deep-green to-forest-green overflow-hidden">
+                <div className="relative aspect-video sm:aspect-[21/9] overflow-hidden" style={{ background: "linear-gradient(135deg, #0F2E1A 0%, #1a4a2a 50%, #2B8C5C 100%)" }}>
+                  {/* Ambient glow */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <motion.div
-                      animate={{ scale: [1, 1.06, 1], opacity: [0.3, 0.6, 0.3] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="w-40 h-40 rounded-full"
-                      style={{ background: "radial-gradient(circle, rgba(149,212,177,0.4) 0%, transparent 70%)" }}
+                      animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.5, 0.2] }}
+                      transition={{ duration: 5, repeat: Infinity }}
+                      className="w-56 h-56 rounded-full"
+                      style={{ background: "radial-gradient(circle, rgba(168,223,192,0.35) 0%, transparent 70%)" }}
                     />
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                      <p className="font-body text-label-xs text-white/70 mb-1">Recomandat pentru tine azi</p>
-                      <p className="font-heading text-lg text-white font-bold">Respirație 4-7-8 pentru anxietate</p>
-                      <p className="font-body text-label-xs text-white/60 mt-1">10 min · Dr. Ana Ionescu</p>
+                  <motion.div
+                    animate={{ scale: [1, 1.08, 1], opacity: [0.1, 0.3, 0.1] }}
+                    transition={{ duration: 7, repeat: Infinity, delay: 1 }}
+                    className="absolute top-4 right-8 w-32 h-32 rounded-full"
+                    style={{ background: "radial-gradient(circle, rgba(168,223,192,0.25) 0%, transparent 70%)" }}
+                  />
+                  {/* Content overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4" style={{ background: "linear-gradient(to top, rgba(15,46,26,0.85) 0%, transparent 100%)" }}>
+                    <div className="px-1 pb-1">
+                      <p className="font-body text-label-xs text-sage-border/80 mb-1 uppercase tracking-wider">Recomandat pentru tine azi</p>
+                      <p className="font-heading text-xl text-white font-bold leading-tight">Respirație 4-7-8 pentru anxietate</p>
+                      <p className="font-body text-label-xs text-white/50 mt-1">10 min · Dr. Ana Ionescu</p>
                     </div>
                   </div>
                 </div>
-                <div className="p-5 flex items-center justify-between">
-                  <div>
-                    <p className="font-body text-body-sm text-secondary-text">Bazat pe check-in-ul tău</p>
-                  </div>
-                  <Link href="/practici" className="btn btn-primary btn-sm">
+                <div className="p-5 flex items-center justify-between bg-white">
+                  <p className="font-body text-body-sm text-secondary-text">Bazat pe check-in-ul tău</p>
+                  <Link href="/practici" className="btn btn-primary btn-sm shadow-button">
                     <Play size={14} weight="fill" />
                     Începe acum
                   </Link>
@@ -294,16 +299,16 @@ export default function DashboardPage() {
               <div>
                 <h2 className="font-heading text-h3 text-deep-green mb-4">Acces rapid</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {QUICK_ACCESS.map((item, i) => {
+                  {QUICK_ACCESS.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Link
                         key={item.label}
                         href={item.href}
-                        className="card card-lift p-4 text-center flex flex-col items-center gap-2 hover:border-forest-green transition-colors"
+                        className={`rounded-2xl p-4 text-center flex flex-col items-center gap-2.5 border transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 ${item.cardCls}`}
                       >
-                        <div className={`w-10 h-10 rounded-xl ${item.color} flex items-center justify-center`}>
-                          <Icon size={18} weight="regular" />
+                        <div className={`w-11 h-11 rounded-xl ${item.iconCls} flex items-center justify-center`}>
+                          <Icon size={20} weight="fill" />
                         </div>
                         <span className="font-body text-label-xs font-semibold text-on-surface">{item.label}</span>
                       </Link>
@@ -324,7 +329,7 @@ export default function DashboardPage() {
                   {recentPractices.length === 0 ? (
                     <p className="font-body text-body-sm text-secondary-text py-4 text-center">Nicio practică încă</p>
                   ) : recentPractices.map((p) => (
-                    <Link key={p.id} href={`/practici/${p.id}`} className="card p-4 flex items-center gap-4 hover:border-forest-green transition-colors cursor-pointer">
+                    <Link key={p.id} href={`/practici/${p.id}`} className="rounded-2xl bg-white border border-sage-border/30 p-4 flex items-center gap-4 hover:border-forest-green hover:shadow-card-hover transition-all cursor-pointer">
                       <div className="w-12 h-12 rounded-xl bg-light-green flex items-center justify-center flex-shrink-0">
                         <Play size={18} weight="fill" className="text-forest-green" />
                       </div>
@@ -345,7 +350,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className="font-heading text-h3 text-deep-green mb-4">Sesiune Live</h2>
                 {upcomingSession ? (
-                  <div className="card p-5">
+                  <div className="rounded-2xl bg-white border border-sage-border/30 p-5 shadow-card" style={{ borderTop: "3px solid #2B8C5C" }}>
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-2 h-2 rounded-full bg-forest-green animate-live-pulse" />
                       <span className="font-body text-label-xs text-forest-green uppercase tracking-wider">Urmează</span>
@@ -390,32 +395,32 @@ export default function DashboardPage() {
               {/* Progress summary */}
               <div>
                 <h2 className="font-heading text-h3 text-deep-green mb-4">Progresul tău</h2>
-                <div className="card p-5 space-y-4">
+                <div className="rounded-2xl bg-white border border-sage-border/30 p-5 space-y-4 shadow-card">
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center justify-between mb-2">
                       <span className="font-body text-label-xs text-secondary-text">Practici completate</span>
-                      <span className="font-body text-label-xs font-semibold text-deep-green">23/30</span>
+                      <span className="font-body text-label-xs font-bold text-deep-green">23/30</span>
                     </div>
-                    <div className="h-2 bg-light-green rounded-full overflow-hidden">
+                    <div className="h-3 bg-light-green rounded-full overflow-hidden">
                       <div className="h-full bg-forest-green rounded-full" style={{ width: "77%" }} />
                     </div>
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center justify-between mb-2">
                       <span className="font-body text-label-xs text-secondary-text">Obiectiv săptămânal</span>
-                      <span className="font-body text-label-xs font-semibold text-deep-green">5/7 zile</span>
+                      <span className="font-body text-label-xs font-bold text-deep-green">5/7 zile</span>
                     </div>
-                    <div className="h-2 bg-light-green rounded-full overflow-hidden">
+                    <div className="h-3 bg-light-green rounded-full overflow-hidden">
                       <div className="h-full bg-forest-green rounded-full" style={{ width: "71%" }} />
                     </div>
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center justify-between mb-2">
                       <span className="font-body text-label-xs text-secondary-text">Check-in-uri</span>
-                      <span className="font-body text-label-xs font-semibold text-deep-green">12/14 zile</span>
+                      <span className="font-body text-label-xs font-bold text-deep-green">12/14 zile</span>
                     </div>
-                    <div className="h-2 bg-rose-powder/40 rounded-full overflow-hidden">
-                      <div className="h-full bg-terracotta rounded-full" style={{ width: "86%" }} />
+                    <div className="h-3 bg-indigo-light rounded-full overflow-hidden">
+                      <div className="h-full bg-indigo rounded-full" style={{ width: "86%" }} />
                     </div>
                   </div>
                   <Link href="/dashboard/progres" className="font-body text-label-xs text-forest-green hover:underline flex items-center gap-1">
