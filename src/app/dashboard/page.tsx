@@ -26,6 +26,8 @@ import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDailyQuote, type ZodiacSign } from "@/lib/quotes";
+import { getDailyInfluences } from "@/lib/zodiac-influences";
+import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
 
 const ZODIAC_EMOJI: Record<ZodiacSign, string> = {
   Berbec: "♈", Taur: "♉", Gemeni: "♊", Rac: "♋", Leu: "♌", Fecioară: "♍",
@@ -54,6 +56,7 @@ export default function DashboardPage() {
   const { profile, user: authUser } = useAuth();
   const dateOfBirth = authUser?.user_metadata?.date_of_birth as string | undefined;
   const { quote: dailyQuote, sign: zodiacSign } = getDailyQuote(dateOfBirth);
+  const dailyInfluences = dateOfBirth ? getDailyInfluences(dateOfBirth) : null;
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
@@ -361,6 +364,17 @@ export default function DashboardPage() {
 
             {/* Right column - 1/3 */}
             <div className="space-y-6">
+              {/* Daily zodiac influence */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                {dailyInfluences
+                  ? <DailyInfluence influences={dailyInfluences} />
+                  : <DailyInfluencePlaceholder />}
+              </motion.div>
+
               {/* Upcoming session */}
               <div>
                 <h2 className="font-heading text-h3 text-deep-green mb-4">Sesiune Live</h2>
