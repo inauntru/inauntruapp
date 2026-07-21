@@ -25,6 +25,7 @@ import {
 import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { getDailyQuote } from "@/lib/quotes";
 function formatDate() {
   return new Date().toLocaleDateString("ro-RO", {
     weekday: "long",
@@ -46,6 +47,7 @@ type SessionItem = { title: string; facilitator: string; date: string; spotsTota
 
 export default function DashboardPage() {
   const { profile, user: authUser } = useAuth();
+  const dailyQuote = getDailyQuote();
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
@@ -457,11 +459,17 @@ export default function DashboardPage() {
                       {stats.journalCount > 0 ? `${stats.journalCount} ${stats.journalCount === 1 ? "notă" : "note"}` : "Azi"}
                     </span>
                   </div>
-                  <p className="font-body text-body-sm text-on-surface mb-4">
+                  <p className="font-body text-body-sm text-on-surface mb-3">
                     {checkInDone
                       ? "Ai completat check-in-ul. Dacă vrei, notează câteva gânduri despre cum te simți acum."
                       : "Un moment de reflecție scrisă poate clarifica mult din ce simți."}
                   </p>
+                  <blockquote className="border-l-2 border-terracotta/40 pl-3 mb-4">
+                    <p className="font-body text-label-xs text-secondary-text italic leading-relaxed">
+                      &ldquo;{dailyQuote.text}&rdquo;
+                    </p>
+                    <p className="font-body text-label-xs text-terracotta/70 mt-1">— {dailyQuote.author}</p>
+                  </blockquote>
                   <Link href="/dashboard/jurnal" className="w-full h-9 rounded-full bg-terracotta/90 hover:bg-terracotta text-white font-ui font-semibold text-label-xs uppercase tracking-wide flex items-center justify-center gap-2 transition-colors">
                     <PencilSimple size={13} weight="bold" />
                     Deschide jurnalul
