@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,8 @@ import {
   Anchor,
   SquaresFour,
   SignOut,
+  CaretDown,
+  Gear,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -34,6 +36,8 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isHomePage = pathname === "/";
   const { user, profile, signOut } = useAuth();
@@ -55,6 +59,16 @@ export default function Navbar() {
     }
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    if (userMenuOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [userMenuOpen]);
 
   useEffect(() => {
     if (!isHomePage) { setScrolled(true); return; }
@@ -136,25 +150,68 @@ export default function Navbar() {
             {/* CTA buttons */}
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className={`btn btn-sm transition-all duration-500 ${
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setUserMenuOpen(p => !p)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
                       glass
-                        ? "text-white/90 border border-white/30 hover:bg-white/10 bg-transparent"
-                        : "btn-ghost"
+                        ? "bg-white/10 border border-white/20 hover:bg-white/20"
+                        : "bg-light-green border border-sage-border hover:border-forest-green/50"
                     }`}
                   >
-                    <SquaresFour size={16} weight="regular" />
-                    Dashboard
-                  </Link>
-                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-500 ${glass ? "bg-white/10 border border-white/20" : "bg-light-green border border-sage-border"}`}>
-                    <div className="w-7 h-7 rounded-full bg-forest-green flex items-center justify-center">
-                      <span className={`text-xs font-bold ${glass ? "text-white" : "text-white"}`}>{userInitials}</span>
+                    <div className="w-7 h-7 rounded-full bg-forest-green flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-bold text-white">{userInitials}</span>
                     </div>
-                    <span className={`font-body text-label-xs font-semibold max-w-[100px] truncate ${glass ? "text-white/90" : "text-deep-green"}`}>{userName}</span>
-                  </div>
-                </>
+                    <span className={`font-body text-label-xs font-semibold max-w-[110px] truncate ${glass ? "text-white/90" : "text-deep-green"}`}>
+                      {userName}
+                    </span>
+                    <CaretDown
+                      size={11}
+                      weight="bold"
+                      className={`flex-shrink-0 transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""} ${glass ? "text-white/60" : "text-secondary-text"}`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-[calc(100%+8px)] right-0 w-52 rounded-2xl border border-sage-border/50 bg-white shadow-modal overflow-hidden z-50"
+                      >
+                        <div className="p-1.5">
+                          <Link
+                            href="/dashboard"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-light-green text-deep-green font-body text-body-sm transition-colors"
+                          >
+                            <SquaresFour size={16} weight="regular" className="text-forest-green flex-shrink-0" />
+                            Dashboard
+                          </Link>
+                          <Link
+                            href="/dashboard/cont"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-light-green text-deep-green font-body text-body-sm transition-colors"
+                          >
+                            <Gear size={16} weight="regular" className="text-forest-green flex-shrink-0" />
+                            Contul meu
+                          </Link>
+                        </div>
+                        <div className="border-t border-sage-border/40 p-1.5">
+                          <button
+                            onClick={() => { signOut(); setUserMenuOpen(false); }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-secondary-text hover:text-red-500 font-body text-body-sm transition-colors"
+                          >
+                            <SignOut size={16} weight="regular" className="flex-shrink-0" />
+                            Deconectare
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
                 <>
                   <Link
