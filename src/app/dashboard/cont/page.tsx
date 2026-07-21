@@ -75,6 +75,7 @@ const ZODIAC_EMOJI: Record<string, string> = {
 };
 
 function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>["profile"]; authUser: ReturnType<typeof useAuth>["user"] }) {
+  const { refreshUser } = useAuth();
   const fn = profile?.first_name || authUser?.user_metadata?.first_name || "";
   const ln = profile?.last_name  || authUser?.user_metadata?.last_name  || "";
   const savedDob = (authUser?.user_metadata?.date_of_birth as string | undefined) ?? "";
@@ -99,7 +100,13 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
       body: JSON.stringify({ first_name: pFirst, last_name: pLast, date_of_birth: pDob || null }),
     });
     const data = await res.json();
-    if (!res.ok) { setError(data.error ?? "Eroare"); } else { setOk(true); setTimeout(() => setOk(false), 3000); }
+    if (!res.ok) {
+      setError(data.error ?? "Eroare");
+    } else {
+      await refreshUser();
+      setOk(true);
+      setTimeout(() => setOk(false), 3000);
+    }
     setSaving(false);
   }
 
