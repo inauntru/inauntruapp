@@ -1143,8 +1143,16 @@ function SiteTextTab() {
   const [content, setContent] = useState<Record<string, Record<string, string>>>(DEFAULT_SITE_CONTENT);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [deploying, setDeploying] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 4000);
+    setTimeout(() => setToast(null), 4500);
+  }
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -1179,13 +1187,11 @@ function SiteTextTab() {
       body: JSON.stringify({ key: "site_content", value: content }),
     });
     setSaving(false);
-    setSaved(true);
+    showToast("Textele salvate — site-ul se actualizează în ~2 minute.");
 
     setDeploying(true);
     await fetch("/api/admin/deploy", { method: "POST" });
     setDeploying(false);
-
-    setTimeout(() => setSaved(false), 8000);
   }
 
   const activePage_ = SITE_SCHEMA.find((p) => p.id === activePage)!;
@@ -1195,10 +1201,15 @@ function SiteTextTab() {
 
   return (
     <div className="space-y-6">
-      {saved && (
-        <div className="flex items-center gap-2 p-3 bg-forest-green/10 border border-forest-green/20 rounded-xl text-forest-green font-body text-body-sm">
-          <Check size={16} weight="bold" />
-          {deploying ? "Textele salvate — site-ul se actualizează (~2 minute)..." : "Textele salvate și deploy pornit. Site-ul se va actualiza în ~2 minute."}
+      {/* Toast notification */}
+      {toast && (
+        <div
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-deep-green text-white rounded-xl shadow-lg font-body text-body-sm transition-all duration-500 ${
+            toastVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+          }`}
+        >
+          <Check size={16} weight="bold" className="text-forest-green flex-shrink-0" />
+          {toast}
         </div>
       )}
 
