@@ -16,7 +16,10 @@ import {
   Newspaper,
   Info,
   Anchor,
+  Squares,
+  SignOut,
 } from "@phosphor-icons/react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const NAV_LINKS = [
   { href: "/practici", label: "Practici", icon: BookOpen },
@@ -33,6 +36,10 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === "/";
+  const { user, profile, signOut } = useAuth();
+
+  const userInitials = [profile?.first_name?.[0], profile?.last_name?.[0]].filter(Boolean).join("").toUpperCase() || (user?.email?.[0] ?? "U").toUpperCase();
+  const userName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || user?.email?.split("@")[0] || "";
 
   useEffect(() => {
     setMobileOpen(false);
@@ -126,20 +133,44 @@ export default function Navbar() {
 
             {/* CTA buttons */}
             <div className="hidden lg:flex items-center gap-3">
-              <Link
-                href="/login"
-                className={`btn btn-sm transition-all duration-500 ${
-                  glass
-                    ? "text-white/90 border border-white/30 hover:bg-white/10 bg-transparent"
-                    : "btn-ghost"
-                }`}
-              >
-                <User size={16} weight="regular" />
-                Spațiul meu
-              </Link>
-              <Link href="/register" className="btn btn-indigo btn-sm">
-                Începe călătoria
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className={`btn btn-sm transition-all duration-500 ${
+                      glass
+                        ? "text-white/90 border border-white/30 hover:bg-white/10 bg-transparent"
+                        : "btn-ghost"
+                    }`}
+                  >
+                    <Squares size={16} weight="regular" />
+                    Dashboard
+                  </Link>
+                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-500 ${glass ? "bg-white/10 border border-white/20" : "bg-light-green border border-sage-border"}`}>
+                    <div className="w-7 h-7 rounded-full bg-forest-green flex items-center justify-center">
+                      <span className={`text-xs font-bold ${glass ? "text-white" : "text-white"}`}>{userInitials}</span>
+                    </div>
+                    <span className={`font-body text-label-xs font-semibold max-w-[100px] truncate ${glass ? "text-white/90" : "text-deep-green"}`}>{userName}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className={`btn btn-sm transition-all duration-500 ${
+                      glass
+                        ? "text-white/90 border border-white/30 hover:bg-white/10 bg-transparent"
+                        : "btn-ghost"
+                    }`}
+                  >
+                    <User size={16} weight="regular" />
+                    Spațiul meu
+                  </Link>
+                  <Link href="/register" className="btn btn-indigo btn-sm">
+                    Începe călătoria
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile hamburger */}
@@ -211,13 +242,37 @@ export default function Navbar() {
                 })}
               </nav>
               <div className="p-4 border-t border-sage-border space-y-3">
-                <Link href="/login" className="btn btn-ghost w-full">
-                  <User size={18} weight="regular" />
-                  Spațiul meu
-                </Link>
-                <Link href="/register" className="btn btn-indigo w-full">
-                  Începe călătoria
-                </Link>
+                {user ? (
+                  <>
+                    <div className="flex items-center gap-3 px-4 py-2 bg-light-green rounded-xl">
+                      <div className="w-8 h-8 rounded-full bg-forest-green flex items-center justify-center">
+                        <span className="text-xs font-bold text-white">{userInitials}</span>
+                      </div>
+                      <div>
+                        <p className="font-body text-body-sm font-semibold text-deep-green">{userName}</p>
+                        <p className="font-body text-label-xs text-secondary-text">{user.email}</p>
+                      </div>
+                    </div>
+                    <Link href="/dashboard" className="btn btn-primary w-full">
+                      <Squares size={18} weight="regular" />
+                      Dashboard
+                    </Link>
+                    <button onClick={() => signOut()} className="btn btn-ghost w-full text-secondary-text">
+                      <SignOut size={18} weight="regular" />
+                      Deconectare
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login" className="btn btn-ghost w-full">
+                      <User size={18} weight="regular" />
+                      Spațiul meu
+                    </Link>
+                    <Link href="/register" className="btn btn-indigo w-full">
+                      Începe călătoria
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.div>
           </>

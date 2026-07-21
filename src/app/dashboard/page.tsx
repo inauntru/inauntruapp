@@ -16,6 +16,10 @@ import {
   CalendarBlank,
   ArrowRight,
   Check,
+  List,
+  X,
+  Anchor,
+  PencilSimple,
 } from "@phosphor-icons/react";
 import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
@@ -31,8 +35,8 @@ function formatDate() {
 
 const QUICK_ACCESS = [
   { icon: BookOpen, label: "Bibliotecă", href: "/practici", color: "bg-light-green text-forest-green" },
+  { icon: Anchor, label: "Ancore", href: "/ancore", color: "bg-deep-green/8 text-deep-green" },
   { icon: Notebook, label: "Jurnal", href: "/dashboard/jurnal", color: "bg-rose-powder/30 text-terracotta" },
-  { icon: ChartLine, label: "Progresul meu", href: "/dashboard/progres", color: "bg-sage-border text-forest-green" },
   { icon: VideoCamera, label: "Sesiuni live", href: "/sesiuni-live", color: "bg-secondary-container text-on-secondary-container" },
 ];
 
@@ -46,6 +50,7 @@ export default function DashboardPage() {
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
   const [checkInDone, setCheckInDone] = useState(false);
   const [stats, setStats] = useState({ streak: 0, minutesPracticed: 0, checkInsCount: 0 });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const firstName = profile?.first_name || "acolo";
   const lastName = profile?.last_name || "";
@@ -91,60 +96,91 @@ export default function DashboardPage() {
       {/* Check-in modal */}
       <CheckInModal isOpen={checkInOpen} onClose={handleCheckInClose} canSkip />
 
-      {/* Sidebar (desktop) + Main content */}
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 bg-deep-green border-r border-white/10 py-8 z-40">
-          {/* Logo */}
-          <div className="px-6 mb-8">
-            <Link href="/">
-              <Image src="/logo-orizontal-alb.png" alt="WithIn" width={100} height={28} className="object-contain" priority />
-            </Link>
-          </div>
+      {/* Sidebar overlay backdrop */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
-          {/* Nav */}
-          <nav className="flex-1 px-3 space-y-1">
-            {[
-              { icon: ChartLine, label: "Dashboard", href: "/dashboard", active: true },
-              { icon: BookOpen, label: "Bibliotecă", href: "/practici" },
-              { icon: VideoCamera, label: "Sesiuni Live", href: "/sesiuni-live" },
-              { icon: Notebook, label: "Jurnal", href: "/dashboard/jurnal" },
-              { icon: ChartLine, label: "Progresul meu", href: "/dashboard/progres" },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-body text-body-sm ${
-                    item.active
-                      ? "bg-forest-green/30 text-white"
-                      : "text-white/50 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  <Icon size={18} weight="regular" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+      {/* Sidebar */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.aside
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="fixed left-0 top-0 h-screen w-64 bg-deep-green border-r border-white/10 py-8 z-50 flex flex-col"
+          >
+            {/* Close + Logo */}
+            <div className="px-4 mb-8 flex items-center justify-between">
+              <Link href="/" onClick={() => setSidebarOpen(false)}>
+                <Image src="/logo-orizontal-alb.png" alt="WithIn" width={90} height={25} className="object-contain" priority />
+              </Link>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+              >
+                <X size={16} weight="bold" />
+              </button>
+            </div>
 
-          {/* User */}
-          <div className="px-3 pt-6 border-t border-white/10">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-forest-green flex items-center justify-center">
-                <span className="text-white text-xs font-bold">{initials}</span>
-              </div>
-              <div>
-                <p className="font-body text-body-sm font-semibold text-white">{fullName}</p>
-                <p className="font-body text-label-xs text-white/40">{planLabel}</p>
+            {/* Nav */}
+            <nav className="flex-1 px-3 space-y-1">
+              {[
+                { icon: ChartLine, label: "Dashboard", href: "/dashboard", active: true },
+                { icon: BookOpen, label: "Bibliotecă", href: "/practici" },
+                { icon: Anchor, label: "Ancore", href: "/ancore" },
+                { icon: VideoCamera, label: "Sesiuni Live", href: "/sesiuni-live" },
+                { icon: Notebook, label: "Jurnal", href: "/dashboard/jurnal" },
+                { icon: ChartLine, label: "Progresul meu", href: "/dashboard/progres" },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-body text-body-sm ${
+                      item.active
+                        ? "bg-forest-green/30 text-white"
+                        : "text-white/60 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <Icon size={18} weight="regular" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* User */}
+            <div className="px-3 pt-6 border-t border-white/10">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-forest-green flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">{initials}</span>
+                </div>
+                <div>
+                  <p className="font-body text-body-sm font-semibold text-white">{fullName}</p>
+                  <p className="font-body text-label-xs text-white/40">{planLabel}</p>
+                </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
-        {/* Main content */}
-        <main className="lg:ml-64 flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
+      {/* Main content */}
+      <div className="flex">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
           {/* Welcome header */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -153,11 +189,20 @@ export default function DashboardPage() {
             className="mb-8"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h1 className="font-heading text-h1 text-deep-green">
-                  Bună, {firstName} 🌿
-                </h1>
-                <p className="font-body text-body-md text-secondary-text capitalize">{formatDate()}</p>
+              <div className="flex items-start gap-4">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="mt-1.5 w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-sage-border text-deep-green hover:bg-light-green hover:border-forest-green transition-colors flex-shrink-0 shadow-sm"
+                  aria-label="Meniu"
+                >
+                  <List size={18} weight="bold" />
+                </button>
+                <div>
+                  <h1 className="font-heading text-h1 text-deep-green">
+                    Bună, {firstName} 🌿
+                  </h1>
+                  <p className="font-body text-body-md text-secondary-text capitalize">{formatDate()}</p>
+                </div>
               </div>
 
               {/* Check-in status */}
@@ -378,6 +423,31 @@ export default function DashboardPage() {
                   </Link>
                 </div>
               </div>
+
+              {/* Journal reminder */}
+              <div>
+                <h2 className="font-heading text-h3 text-deep-green mb-4">Jurnal</h2>
+                <div className="card p-5 bg-rose-powder/10 border-rose-powder/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-rose-powder/40 flex items-center justify-center">
+                      <PencilSimple size={15} weight="fill" className="text-terracotta" />
+                    </div>
+                    <span className="font-body text-label-xs text-terracotta font-semibold uppercase tracking-wider">Azi</span>
+                  </div>
+                  <p className="font-body text-body-sm text-on-surface mb-1">
+                    {checkInDone
+                      ? "Ai completat check-in-ul. Scrie câteva gânduri despre cum te simți."
+                      : "Un moment de reflecție scrisă poate clarifica mult din ce simți."}
+                  </p>
+                  <p className="font-body text-label-xs text-secondary-text italic mb-4">
+                    &ldquo;Scrisul este cel mai aproape putem ajunge de mintea altcuiva.&rdquo;
+                  </p>
+                  <Link href="/dashboard/jurnal" className="w-full h-9 rounded-full bg-terracotta/90 hover:bg-terracotta text-white font-ui font-semibold text-label-xs uppercase tracking-wide flex items-center justify-center gap-2 transition-colors">
+                    <PencilSimple size={13} weight="bold" />
+                    Deschide jurnalul
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -385,3 +455,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
