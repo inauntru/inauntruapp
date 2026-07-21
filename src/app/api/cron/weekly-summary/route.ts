@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   }
 
   let sent = 0;
-  for (const [userId, count] of byUser.entries()) {
+  for (const [userId, count] of Array.from(byUser.entries())) {
     try {
       const { data: profile } = await (supabase as any)
         .from("profiles")
