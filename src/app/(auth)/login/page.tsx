@@ -39,6 +39,7 @@ export default function LoginPage() {
       setLoginError("Email sau parolă incorectă.");
       setLoginLoading(false);
     } else {
+      setLoginLoading(false);
       router.push("/dashboard");
     }
   };
