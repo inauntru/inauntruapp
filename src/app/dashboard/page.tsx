@@ -302,9 +302,9 @@ export default function DashboardPage() {
                       <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                         <Icon size={13} weight="fill" className="text-sage-border" />
                       </div>
-                      <div className="flex items-baseline gap-1.5 sm:block">
-                        <p className="font-heading text-lg font-bold text-white leading-tight"><CountUp to={stat.value} /></p>
-                        <p className="font-body text-[10px] text-white/50">{stat.label}</p>
+                      <div className="flex items-baseline gap-1.5">
+                        <p className="font-heading text-lg font-bold text-white leading-none"><CountUp to={stat.value} /></p>
+                        <p className="font-body text-[11px] text-white/50 leading-none">{stat.label}</p>
                       </div>
                     </div>
                   );

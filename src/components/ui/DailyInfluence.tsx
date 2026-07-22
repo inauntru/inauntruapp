@@ -6,11 +6,6 @@ import { motion } from "framer-motion";
 import { type ZodiacSign } from "@/lib/quotes";
 import { type InfluenceLevel, getDailyInfluences } from "@/lib/zodiac-influences";
 
-const ZODIAC_EMOJI: Record<string, string> = {
-  Berbec:"♈", Taur:"♉", Gemeni:"♊", Rac:"♋", Leu:"♌", Fecioară:"♍",
-  Balanță:"♎", Scorpion:"♏", Săgetător:"♐", Capricorn:"♑", Vărsător:"♒", Pești:"♓",
-};
-
 const LEVEL_CONFIG: Record<InfluenceLevel, { label: string; bar: string; text: string; bg: string }> = {
   favorabil:  { label: "Favorabil",  bar: "bg-forest-green",   text: "text-forest-green",   bg: "bg-forest-green/8" },
   echilibrat: { label: "Echilibrat", bar: "bg-secondary-text", text: "text-secondary-text", bg: "bg-light-green/40" },
@@ -66,7 +61,7 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
 
   const today = new Date().toLocaleDateString("ro-RO", { day: "numeric", month: "short" });
 
-  if (loading) return <DailyInfluenceSkeleton sign={sign} />;
+  if (loading) return <DailyInfluenceSkeleton />;
   if (error || !data) return null;
 
   return (
@@ -75,14 +70,7 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
       <div className="px-5 pt-5 pb-4 border-b border-sage-border/30">
         <div className="flex items-start justify-between">
           <div>
-            <p className="font-body text-label-xs text-secondary-text uppercase tracking-widest mb-1">
-              Influențele zilei
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="font-heading text-h3 text-deep-green">
-                {ZODIAC_EMOJI[sign]} {sign}
-              </span>
-            </div>
+            <p className="font-heading text-h3 text-deep-green">Influențele zilei</p>
             {data.context && (
               <p className="font-body text-label-xs text-secondary-text mt-1">
                 {data.context.moon} · {data.context.dayRuler} · ☀ în {data.context.sunSign}
@@ -129,23 +117,16 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
         })}
       </div>
 
-      {/* Footer */}
-      <div className="px-5 py-3 border-t border-sage-border/30 bg-light-green/20">
-        <p className="font-body text-label-xs text-secondary-text text-center">
-          Generat cu AI · Bazat pe tranzitele de azi · Se reîmprospătează zilnic
-        </p>
-      </div>
     </div>
   );
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
-function DailyInfluenceSkeleton({ sign }: { sign: ZodiacSign }) {
+function DailyInfluenceSkeleton() {
   return (
     <div className="rounded-2xl border border-sage-border/40 bg-white overflow-hidden shadow-card">
       <div className="px-5 pt-5 pb-4 border-b border-sage-border/30">
-        <p className="font-body text-label-xs text-secondary-text uppercase tracking-widest mb-1">Influențele zilei</p>
-        <p className="font-heading text-h3 text-deep-green">{ZODIAC_EMOJI[sign]} {sign}</p>
+        <p className="font-heading text-h3 text-deep-green">Influențele zilei</p>
         <p className="font-body text-label-xs text-secondary-text mt-1 animate-pulse">Se calculează tranzitele...</p>
       </div>
       <div className="divide-y divide-sage-border/20">
