@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarBlank, Users, Clock, Video, Lock, ArrowRight, Play, Star, CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { CalendarBlank, Users, Clock, Video, Lock, ArrowRight, Play, Star, CaretLeft, CaretRight, Check } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { LIVE_SESSIONS, PAST_RECORDINGS } from "@/lib/mockData";
+import { useAuth } from "@/contexts/AuthContext";
 
 const WEEK_DAYS = ["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"];
 
@@ -21,8 +22,10 @@ interface Props { siteContent: Record<string, string>; }
 
 export default function SesiuniLiveClient({ siteContent }: Props) {
   const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { user } = useAuth();
   const [sessions, setSessions] = useState(LIVE_SESSIONS);
   const [selectedDay, setSelectedDay] = useState(0);
+  const [reserved, setReserved] = useState<number[]>([]);
 
   useEffect(() => {
     fetch("/api/sessions")
@@ -30,6 +33,21 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
       .then((data) => { if (Array.isArray(data) && data.length > 0) setSessions(data); })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    try {
+      setReserved(JSON.parse(localStorage.getItem("sessions-reserved") || "[]"));
+    } catch { /* ignore */ }
+  }, []);
+
+  function reserve(id: number) {
+    setReserved(prev => {
+      const next = [...prev, id];
+      localStorage.setItem("sessions-reserved", JSON.stringify(next));
+      return next;
+    });
+    setSessions(prev => prev.map(s => s.id === id ? { ...s, spotsLeft: Math.max(0, s.spotsLeft - 1) } : s));
+  }
 
   const featured = sessions[0];
   const upcoming = sessions.slice(1);
@@ -64,7 +82,17 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                 <p className="font-body text-label-xs text-white/40 mt-1">{spotsPercent(featured)}% ocupat</p>
               </div>
               <div className="flex gap-4">
-                <Link href="/register" className="btn btn-rose">Rezervă locul tău <ArrowRight size={16} weight="bold" /></Link>
+                {!user ? (
+                  <Link href="/register" className="btn btn-rose">Rezervă locul tău <ArrowRight size={16} weight="bold" /></Link>
+                ) : reserved.includes(featured.id) ? (
+                  <span className="btn bg-white/15 text-white border border-white/25 cursor-default">
+                    <Check size={16} weight="bold" /> Loc rezervat
+                  </span>
+                ) : (
+                  <button onClick={() => reserve(featured.id)} className="btn btn-rose">
+                    Rezervă locul tău <ArrowRight size={16} weight="bold" />
+                  </button>
+                )}
                 <span className="flex items-center gap-2 font-body text-body-sm text-white/50"><Video size={16} weight="regular" />{featured.type}</span>
               </div>
             </AnimateIn>
@@ -130,7 +158,19 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                     </div>
                   </div>
                   <div className="flex-shrink-0">
-                    {session.isPremium ? <button className="btn btn-ghost btn-sm gap-2"><Lock size={14} weight="fill" /> Premium</button> : <Link href="/register" className="btn btn-primary btn-sm">Rezervă <ArrowRight size={14} weight="bold" /></Link>}
+                    {session.isPremium ? (
+                      <button className="btn btn-ghost btn-sm gap-2"><Lock size={14} weight="fill" /> Premium</button>
+                    ) : !user ? (
+                      <Link href="/register" className="btn btn-primary btn-sm">Rezervă <ArrowRight size={14} weight="bold" /></Link>
+                    ) : reserved.includes(session.id) ? (
+                      <span className="btn btn-sm bg-light-green text-forest-green border border-sage-border cursor-default gap-1.5">
+                        <Check size={14} weight="bold" /> Rezervat
+                      </span>
+                    ) : (
+                      <button onClick={() => reserve(session.id)} className="btn btn-primary btn-sm">
+                        Rezervă <ArrowRight size={14} weight="bold" />
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-sage-border/40">
