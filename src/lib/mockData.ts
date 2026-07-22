@@ -263,12 +263,24 @@ export const PRACTICES = [
   },
 ];
 
+// Datele demo sunt generate relativ la ziua curentă, ca sesiunile să fie mereu în viitor
+function upcomingDate(daysAhead: number, hour: number, minute = 0): string {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAhead);
+  d.setHours(hour, minute, 0, 0);
+  return d.toISOString();
+}
+
+function minutesFromNow(minutes: number): string {
+  return new Date(Date.now() + minutes * 60 * 1000).toISOString();
+}
+
 export const LIVE_SESSIONS = [
   {
     id: 1,
     title: "Reglare somatică de grup — reducerea stresului",
     facilitator: "Dr. Ana Ionescu",
-    date: "2026-05-06T18:00:00",
+    date: minutesFromNow(120), // peste 2 ore — anularea e permisă (test)
     duration: 60,
     spotsTotal: 25,
     spotsLeft: 8,
@@ -281,7 +293,7 @@ export const LIVE_SESSIONS = [
     id: 2,
     title: "Yoga somatică — dimineața corpului",
     facilitator: "Mihai Pop",
-    date: "2026-05-07T07:30:00",
+    date: upcomingDate(2, 7, 30),
     duration: 45,
     spotsTotal: 20,
     spotsLeft: 12,
@@ -294,7 +306,7 @@ export const LIVE_SESSIONS = [
     id: 3,
     title: "Q&A — Trauma și corpul (live)",
     facilitator: "Elena Stan",
-    date: "2026-05-08T19:00:00",
+    date: minutesFromNow(10), // peste 10 min — în fereastra de 20 min, anularea e blocată (test)
     duration: 90,
     spotsTotal: 50,
     spotsLeft: 23,
@@ -307,7 +319,7 @@ export const LIVE_SESSIONS = [
     id: 4,
     title: "Respirație holotropică — eliberare profundă",
     facilitator: "Cristian Dima",
-    date: "2026-05-10T15:00:00",
+    date: upcomingDate(5, 15, 0),
     duration: 120,
     spotsTotal: 15,
     spotsLeft: 3,
