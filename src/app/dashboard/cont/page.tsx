@@ -207,6 +207,16 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
   const [saving, setSaving]   = useState(false);
   const [error,  setError]    = useState<string | null>(null);
   const [ok,     setOk]       = useState(false);
+  const [touched, setTouched] = useState(false);
+
+  // Datele de profil pot sosi după montarea formularului — sincronizează
+  // câmpurile cât timp utilizatorul nu a început să scrie
+  useEffect(() => {
+    if (touched) return;
+    if (fn) setPFirst(fn);
+    if (ln) setPLast(ln);
+    if (savedDob) setPDob(savedDob);
+  }, [fn, ln, savedDob, touched]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -235,8 +245,8 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div><label className={labelCls}>Prenume</label><input className="input w-full" value={pFirst} onChange={e => setPFirst(e.target.value)} placeholder="Ana" required /></div>
-        <div><label className={labelCls}>Nume</label><input className="input w-full" value={pLast} onChange={e => setPLast(e.target.value)} placeholder="Popescu" required /></div>
+        <div><label className={labelCls}>Prenume</label><input className="input w-full" value={pFirst} onChange={e => { setTouched(true); setPFirst(e.target.value); }} placeholder="Ana" required /></div>
+        <div><label className={labelCls}>Nume</label><input className="input w-full" value={pLast} onChange={e => { setTouched(true); setPLast(e.target.value); }} placeholder="Popescu" required /></div>
       </div>
 
       <div>
@@ -247,7 +257,7 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
 
       <div>
         <label className={labelCls}>Data nașterii</label>
-        <DatePicker value={pDob} onChange={setPDob} />
+        <DatePicker value={pDob} onChange={v => { setTouched(true); setPDob(v); }} />
         <p className="font-body text-label-xs text-secondary-text mt-1.5">
           Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine.
         </p>
