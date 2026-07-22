@@ -71,6 +71,32 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
     } catch { /* offline — rămâne optimist */ }
   }
 
+  // Anularea e permisă doar până cu 20 min înainte de start
+  function canCancel(dateStr: string) {
+    return Date.now() < new Date(dateStr).getTime() - 20 * 60 * 1000;
+  }
+
+  async function cancelReservation(id: number) {
+    setReserved(prev => prev.filter(r => r !== id));
+    setSessions(prev => prev.map(s => s.id === id ? { ...s, spotsLeft: Math.min(s.spotsTotal, s.spotsLeft + 1) } : s));
+    try {
+      const local: number[] = JSON.parse(localStorage.getItem("sessions-reserved") || "[]");
+      localStorage.setItem("sessions-reserved", JSON.stringify(local.filter(r => r !== id)));
+    } catch { /* ignore */ }
+    try {
+      const res = await fetch("/api/sessions/reserve", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: id }),
+      });
+      if (res.status === 403) {
+        // Prea târziu — serverul a refuzat, restaurăm rezervarea
+        setReserved(prev => Array.from(new Set([...prev, id])));
+        setSessions(prev => prev.map(s => s.id === id ? { ...s, spotsLeft: Math.max(0, s.spotsLeft - 1) } : s));
+      }
+    } catch { /* offline — rămâne anulat local */ }
+  }
+
   const featured = sessions[0];
   const upcoming = sessions.slice(1);
   const spotsPercent = (s: typeof featured) => Math.round(((s.spotsTotal - s.spotsLeft) / s.spotsTotal) * 100);
@@ -107,9 +133,23 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                 {!user ? (
                   <Link href="/register" className="btn btn-rose">Rezervă locul tău <ArrowRight size={16} weight="bold" /></Link>
                 ) : reserved.includes(featured.id) ? (
-                  <span className="btn bg-white/15 text-white border border-white/25 cursor-default">
-                    <Check size={16} weight="bold" /> Loc rezervat
-                  </span>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <span className="btn bg-white/15 text-white border border-white/25 cursor-default">
+                      <Check size={16} weight="bold" /> Loc rezervat
+                    </span>
+                    {canCancel(featured.date) ? (
+                      <button
+                        onClick={() => cancelReservation(featured.id)}
+                        className="font-body text-label-xs text-white/50 hover:text-white underline underline-offset-2 transition-colors pl-1"
+                      >
+                        Anulează rezervarea
+                      </button>
+                    ) : (
+                      <span className="font-body text-label-xs text-white/40 pl-1">
+                        Nu se mai poate anula — sesiunea începe în curând
+                      </span>
+                    )}
+                  </div>
                 ) : (
                   <button onClick={() => reserve(featured.id)} className="btn btn-rose">
                     Rezervă locul tău <ArrowRight size={16} weight="bold" />
@@ -185,9 +225,21 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                     ) : !user ? (
                       <Link href="/register" className="btn btn-primary btn-sm">Rezervă <ArrowRight size={14} weight="bold" /></Link>
                     ) : reserved.includes(session.id) ? (
-                      <span className="btn btn-sm bg-light-green text-forest-green border border-sage-border cursor-default gap-1.5">
-                        <Check size={14} weight="bold" /> Rezervat
-                      </span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="btn btn-sm bg-light-green text-forest-green border border-sage-border cursor-default gap-1.5">
+                          <Check size={14} weight="bold" /> Rezervat
+                        </span>
+                        {canCancel(session.date) ? (
+                          <button
+                            onClick={() => cancelReservation(session.id)}
+                            className="font-body text-[11px] text-secondary-text hover:text-terracotta underline underline-offset-2 transition-colors"
+                          >
+                            Anulează
+                          </button>
+                        ) : (
+                          <span className="font-body text-[10px] text-secondary-text/60">Nu se mai poate anula</span>
+                        )}
+                      </div>
                     ) : (
                       <button onClick={() => reserve(session.id)} className="btn btn-primary btn-sm">
                         Rezervă <ArrowRight size={14} weight="bold" />

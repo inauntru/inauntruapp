@@ -75,3 +75,53 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, spotsLeft: updated?.spots_left ?? session.spots_left - 1 });
 }
+
+// DELETE /api/sessions/reserve { sessionId } — anulează rezervarea
+// Regula: anularea e permisă doar până cu 20 de minute înainte de start
+const CANCEL_CUTOFF_MS = 20 * 60 * 1000;
+
+export async function DELETE(req: NextRequest) {
+  const user = await getSessionUser();
+  if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
+
+  const { sessionId } = await req.json();
+  if (!sessionId) return NextResponse.json({ error: "Lipsește sessionId" }, { status: 400 });
+
+  const service = createServiceClient() as any;
+
+  const { data: session, error: sessErr } = await service
+    .from("live_sessions")
+    .select("id, scheduled_at, spots_left, spots_total")
+    .eq("id", sessionId)
+    .single();
+
+  if (sessErr || !session) {
+    return NextResponse.json({ error: "Sesiunea nu există" }, { status: 404 });
+  }
+
+  if (Date.now() > new Date(session.scheduled_at).getTime() - CANCEL_CUTOFF_MS) {
+    return NextResponse.json(
+      { error: "Rezervarea nu mai poate fi anulată cu mai puțin de 20 de minute înainte de începere" },
+      { status: 403 }
+    );
+  }
+
+  const { data: deleted, error: delErr } = await service
+    .from("session_registrations")
+    .delete()
+    .eq("session_id", sessionId)
+    .eq("user_id", user.id)
+    .select();
+
+  if (delErr) return NextResponse.json({ error: delErr.message }, { status: 500 });
+
+  // Eliberează locul doar dacă exista într-adevăr o rezervare
+  if (deleted && deleted.length > 0) {
+    await service
+      .from("live_sessions")
+      .update({ spots_left: Math.min(session.spots_total, session.spots_left + 1) })
+      .eq("id", sessionId);
+  }
+
+  return NextResponse.json({ ok: true });
+}
