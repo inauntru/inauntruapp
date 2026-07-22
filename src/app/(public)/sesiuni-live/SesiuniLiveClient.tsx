@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarBlank, Users, Clock, Video, Lock, ArrowRight, Play, Star, CaretLeft, CaretRight, Check } from "@phosphor-icons/react";
+import { CalendarBlank, Users, Clock, Video, Lock, ArrowRight, Play, Star, CaretLeft, CaretRight, Check, CaretDown, X } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { LIVE_SESSIONS, PAST_RECORDINGS } from "@/lib/mockData";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,8 +26,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
   const [sessions, setSessions] = useState(LIVE_SESSIONS);
   const [selectedDay, setSelectedDay] = useState(0);
   const [reserved, setReserved] = useState<number[]>([]);
-  const [confirmCancel, setConfirmCancel] = useState<number | null>(null);
-  const [cutoffNotice, setCutoffNotice] = useState<number | null>(null);
+  const [cancelMenuFor, setCancelMenuFor] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/sessions")
@@ -78,21 +77,14 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
     return Date.now() < new Date(dateStr).getTime() - 20 * 60 * 1000;
   }
 
-  // Primul click pe "Rezervat" → butonul devine "Anulează rezervarea"; al doilea → anulează
-  function handleReservedClick(id: number, dateStr: string) {
-    if (confirmCancel === id) {
-      setConfirmCancel(null);
-      cancelReservation(id);
-      return;
+  // Click pe "Rezervat" deschide un mic meniu cu opțiunea de anulare
+  useEffect(() => {
+    function close(e: MouseEvent) {
+      if (!(e.target as HTMLElement).closest("[data-cancel-menu]")) setCancelMenuFor(null);
     }
-    if (!canCancel(dateStr)) {
-      setCutoffNotice(id);
-      setTimeout(() => setCutoffNotice(prev => (prev === id ? null : prev)), 2500);
-      return;
-    }
-    setConfirmCancel(id);
-    setTimeout(() => setConfirmCancel(prev => (prev === id ? null : prev)), 4000);
-  }
+    if (cancelMenuFor !== null) document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [cancelMenuFor]);
 
   async function cancelReservation(id: number) {
     setReserved(prev => prev.filter(r => r !== id));
@@ -151,25 +143,39 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                 {!user ? (
                   <Link href="/register" className="btn btn-rose">Rezervă locul tău <ArrowRight size={16} weight="bold" /></Link>
                 ) : reserved.includes(featured.id) ? (
-                  <div className="flex flex-col items-start gap-1.5">
+                  <div className="relative" data-cancel-menu>
                     <button
-                      onClick={() => handleReservedClick(featured.id, featured.date)}
-                      className={`btn transition-all duration-200 ${
-                        confirmCancel === featured.id
-                          ? "bg-terracotta text-white border border-terracotta hover:bg-terracotta/90"
-                          : "bg-white/15 text-white border border-white/25 hover:bg-white/25"
-                      }`}
+                      onClick={() => setCancelMenuFor(p => p === featured.id ? null : featured.id)}
+                      className="btn bg-white/15 text-white border border-white/25 hover:bg-white/25 transition-colors gap-2"
                     >
-                      {confirmCancel === featured.id
-                        ? <>Anulează rezervarea</>
-                        : <><Check size={16} weight="bold" /> Loc rezervat</>}
+                      <Check size={16} weight="bold" /> Loc rezervat
+                      <CaretDown size={12} weight="bold"
+                        className={`transition-transform duration-200 ${cancelMenuFor === featured.id ? "rotate-180" : ""}`} />
                     </button>
-                    {cutoffNotice === featured.id && (
-                      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        className="font-body text-label-xs text-white/50 pl-1">
-                        Nu se mai poate anula — sesiunea începe în curând
-                      </motion.span>
-                    )}
+                    <AnimatePresence>
+                      {cancelMenuFor === featured.id && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute top-[calc(100%+6px)] left-0 z-30 min-w-[230px] rounded-xl bg-white shadow-modal border border-sage-border/50 overflow-hidden"
+                        >
+                          {canCancel(featured.date) ? (
+                            <button
+                              onClick={() => { setCancelMenuFor(null); cancelReservation(featured.id); }}
+                              className="w-full flex items-center gap-2.5 px-4 py-3 font-body text-body-sm text-terracotta hover:bg-red-50 transition-colors text-left"
+                            >
+                              <X size={15} weight="bold" /> Anulează rezervarea
+                            </button>
+                          ) : (
+                            <p className="px-4 py-3 font-body text-label-xs text-secondary-text">
+                              Nu se mai poate anula — sesiunea începe în mai puțin de 20 de minute.
+                            </p>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ) : (
                   <button onClick={() => reserve(featured.id)} className="btn btn-rose">
@@ -246,25 +252,39 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                     ) : !user ? (
                       <Link href="/register" className="btn btn-primary btn-sm">Rezervă <ArrowRight size={14} weight="bold" /></Link>
                     ) : reserved.includes(session.id) ? (
-                      <div className="flex flex-col items-end gap-1">
+                      <div className="relative" data-cancel-menu>
                         <button
-                          onClick={() => handleReservedClick(session.id, session.date)}
-                          className={`btn btn-sm gap-1.5 transition-all duration-200 ${
-                            confirmCancel === session.id
-                              ? "bg-terracotta text-white border border-terracotta hover:bg-terracotta/90"
-                              : "bg-light-green text-forest-green border border-sage-border hover:border-forest-green/50"
-                          }`}
+                          onClick={() => setCancelMenuFor(p => p === session.id ? null : session.id)}
+                          className="btn btn-sm gap-1.5 bg-light-green text-forest-green border border-sage-border hover:border-forest-green/50 transition-colors"
                         >
-                          {confirmCancel === session.id
-                            ? <>Anulează?</>
-                            : <><Check size={14} weight="bold" /> Rezervat</>}
+                          <Check size={14} weight="bold" /> Rezervat
+                          <CaretDown size={11} weight="bold"
+                            className={`transition-transform duration-200 ${cancelMenuFor === session.id ? "rotate-180" : ""}`} />
                         </button>
-                        {cutoffNotice === session.id && (
-                          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                            className="font-body text-[10px] text-secondary-text/60">
-                            Nu se mai poate anula
-                          </motion.span>
-                        )}
+                        <AnimatePresence>
+                          {cancelMenuFor === session.id && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute top-[calc(100%+6px)] right-0 z-30 min-w-[210px] rounded-xl bg-white shadow-modal border border-sage-border/50 overflow-hidden"
+                            >
+                              {canCancel(session.date) ? (
+                                <button
+                                  onClick={() => { setCancelMenuFor(null); cancelReservation(session.id); }}
+                                  className="w-full flex items-center gap-2.5 px-4 py-3 font-body text-body-sm text-terracotta hover:bg-red-50 transition-colors text-left"
+                                >
+                                  <X size={14} weight="bold" /> Anulează rezervarea
+                                </button>
+                              ) : (
+                                <p className="px-4 py-3 font-body text-label-xs text-secondary-text">
+                                  Nu se mai poate anula — sesiunea începe în mai puțin de 20 de minute.
+                                </p>
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     ) : (
                       <button onClick={() => reserve(session.id)} className="btn btn-primary btn-sm">
