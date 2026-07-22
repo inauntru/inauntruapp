@@ -25,6 +25,7 @@ export async function GET() {
     duration: p.duration,
     level: p.level,
     isPremium: p.is_premium,
+    tier: (p as Practice & { tier?: string }).tier ?? (p.is_premium ? "premium" : "gratuit"),
     mediaType: p.media_type ?? "audio",
     image: p.image_url ?? "",
     thumbnail: p.thumbnail_url ?? p.image_url ?? "",

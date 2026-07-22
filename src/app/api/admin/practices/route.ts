@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const { title, category, level, duration, facilitator_name, facilitator_slug,
-    is_premium, media_type, image_url, thumbnail_url, description, long_description, tags, status } = body;
+    is_premium, tier, media_type, image_url, thumbnail_url, description, long_description, tags, status } = body;
 
   if (!title || !category) {
     return NextResponse.json({ error: "title și category sunt obligatorii" }, { status: 400 });
@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
     facilitator_name: facilitator_name ?? null,
     facilitator_slug: facilitator_slug ?? null,
     is_premium: is_premium ?? false,
+    tier: ["gratuit", "standard", "premium"].includes(tier) ? tier : "gratuit",
     media_type: media_type ?? "audio",
     image_url: image_url ?? null,
     thumbnail_url: thumbnail_url ?? null,

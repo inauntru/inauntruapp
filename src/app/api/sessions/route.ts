@@ -25,6 +25,7 @@ export async function GET() {
     spotsLeft: s.spots_left,
     type: "Grup",
     isPremium: s.is_premium,
+    tier: (s as LiveSession & { tier?: string }).tier ?? (s.is_premium ? "premium" : "gratuit"),
     zoomLink: s.meeting_url ?? "#",
     description: "",
     tags: s.tags ?? [],

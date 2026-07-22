@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { title, facilitator_name, scheduled_at, duration, spots_total, is_premium, meeting_url } = body;
+  const { title, facilitator_name, scheduled_at, duration, spots_total, is_premium, tier, meeting_url } = body;
 
   if (!title || !scheduled_at) {
     return NextResponse.json({ error: "title și scheduled_at sunt obligatorii" }, { status: 400 });
@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
     spots_total: spots_total ?? 25,
     spots_left: spots_total ?? 25,
     is_premium: is_premium ?? false,
+    tier: ["gratuit", "standard", "premium"].includes(tier) ? tier : "gratuit",
     meeting_url: meeting_url ?? null,
     tags: [],
     status: "upcoming",

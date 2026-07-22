@@ -13,6 +13,7 @@ interface LiveSession {
   spots_total: number;
   spots_left: number;
   is_premium: boolean;
+  tier?: "gratuit" | "standard" | "premium";
   meeting_url: string | null;
   status: string;
 }
@@ -31,7 +32,7 @@ const EMPTY_FORM = {
   time: "",
   duration: 60,
   spots_total: 25,
-  is_premium: false,
+  tier: "gratuit" as "gratuit" | "standard" | "premium",
   meeting_url: "",
 };
 
@@ -85,7 +86,7 @@ export default function AdminSessionsPage() {
       time: dt.toTimeString().slice(0, 5),
       duration: s.duration,
       spots_total: s.spots_total,
-      is_premium: s.is_premium,
+      tier: s.tier ?? (s.is_premium ? "premium" : "gratuit"),
       meeting_url: s.meeting_url ?? "",
     });
     setError("");
@@ -107,7 +108,8 @@ export default function AdminSessionsPage() {
       duration: Number(form.duration),
       spots_total: Number(form.spots_total),
       spots_left: editTarget ? editTarget.spots_left : Number(form.spots_total),
-      is_premium: form.is_premium,
+      tier: form.tier,
+      is_premium: form.tier !== "gratuit",
       meeting_url: form.meeting_url || null,
     };
 
@@ -303,15 +305,18 @@ export default function AdminSessionsPage() {
                     onChange={(e) => setForm({ ...form, meeting_url: e.target.value })}
                   />
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 accent-forest-green"
-                    checked={form.is_premium}
-                    onChange={(e) => setForm({ ...form, is_premium: e.target.checked })}
-                  />
-                  <span className="font-body text-body-sm text-on-surface">Doar pentru abonați Premium</span>
-                </label>
+                <div>
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Acces</label>
+                  <select
+                    className="input w-full"
+                    value={form.tier}
+                    onChange={(e) => setForm({ ...form, tier: e.target.value as "gratuit" | "standard" | "premium" })}
+                  >
+                    <option value="gratuit">Gratuit — vizibil pentru toți</option>
+                    <option value="standard">Standard — necesită abonament Standard sau Premium</option>
+                    <option value="premium">Premium — doar abonații Premium</option>
+                  </select>
+                </div>
               </div>
 
               {error && (

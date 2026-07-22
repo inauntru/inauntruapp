@@ -29,6 +29,7 @@ type NormalizedPractice = {
   duration: number;
   level: string;
   isPremium: boolean;
+  tier?: "gratuit" | "standard" | "premium";
   mediaType: string;
   image: string;
   tags: string[];
@@ -64,6 +65,7 @@ async function getPractice(id: number): Promise<NormalizedPractice | null> {
         duration: p.duration,
         level: p.level,
         isPremium: p.is_premium,
+        tier: ((p as Practice & { tier?: string }).tier ?? (p.is_premium ? "premium" : "gratuit")) as NormalizedPractice["tier"],
         mediaType: p.media_type ?? "audio",
         image: p.image_url ?? "",
         tags: p.tags ?? [],
@@ -213,6 +215,7 @@ export default async function PracticeDetailPage({ params }: { params: { id: str
               title={practice.title}
               duration={practice.duration}
               isPremium={practice.isPremium}
+              tier={practice.tier}
               mediaType={practice.mediaType as "audio" | "video"}
               practiceId={practice.id}
             />
@@ -237,7 +240,7 @@ export default async function PracticeDetailPage({ params }: { params: { id: str
           {/* Right: CTA + Facilitator + Quick info */}
           <div className="space-y-5">
             {/* CTA card — se adaptează la planul utilizatorului */}
-            <AccessCard isPremium={practice.isPremium} />
+            <AccessCard isPremium={practice.isPremium} tier={practice.tier} />
 
             {/* Quick info */}
             <div className="card p-5 space-y-3">

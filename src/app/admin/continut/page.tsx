@@ -19,6 +19,7 @@ interface Practice {
   duration: number;
   level: string;
   is_premium: boolean;
+  tier?: "gratuit" | "standard" | "premium";
   media_type: string | null;
   image_url: string | null;
   description: string | null;
@@ -34,7 +35,7 @@ const EMPTY_FORM = {
   duration: 10,
   facilitator_name: "",
   facilitator_slug: "",
-  is_premium: false,
+  tier: "gratuit" as "gratuit" | "standard" | "premium",
   media_type: "audio",
   image_url: "",
   description: "",
@@ -92,7 +93,7 @@ export default function AdminContentPage() {
       duration: p.duration,
       facilitator_name: p.facilitator_name ?? "",
       facilitator_slug: p.facilitator_slug ?? "",
-      is_premium: p.is_premium,
+      tier: p.tier ?? (p.is_premium ? "premium" : "gratuit"),
       media_type: p.media_type ?? "audio",
       image_url: p.image_url ?? "",
       description: p.description ?? "",
@@ -112,6 +113,8 @@ export default function AdminContentPage() {
       duration: Number(form.duration),
       tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
       facilitator_slug: form.facilitator_slug || null,
+      // is_premium rămâne sincronizat cu tier pentru compatibilitate
+      is_premium: form.tier !== "gratuit",
     };
     const url = editTarget ? `/api/admin/practices/${editTarget.id}` : "/api/admin/practices";
     const method = editTarget ? "PUT" : "POST";
@@ -383,15 +386,18 @@ export default function AdminContentPage() {
                   />
                 </div>
                 <div className="flex items-center gap-6">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 accent-forest-green"
-                      checked={form.is_premium}
-                      onChange={(e) => setForm({ ...form, is_premium: e.target.checked })}
-                    />
-                    <span className="font-body text-body-sm text-on-surface">Premium</span>
-                  </label>
+                  <div className="flex-1">
+                    <label className="font-body text-label-sm text-on-surface mb-1.5 block">Acces</label>
+                    <select
+                      className="input w-full"
+                      value={form.tier}
+                      onChange={(e) => setForm({ ...form, tier: e.target.value as "gratuit" | "standard" | "premium" })}
+                    >
+                      <option value="gratuit">Gratuit — vizibil pentru toți</option>
+                      <option value="standard">Standard — necesită abonament Standard sau Premium</option>
+                      <option value="premium">Premium — doar abonații Premium</option>
+                    </select>
+                  </div>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
