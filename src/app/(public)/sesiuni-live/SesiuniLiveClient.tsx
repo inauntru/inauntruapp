@@ -26,6 +26,8 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
   const [sessions, setSessions] = useState(LIVE_SESSIONS);
   const [selectedDay, setSelectedDay] = useState(0);
   const [reserved, setReserved] = useState<number[]>([]);
+  const [confirmCancel, setConfirmCancel] = useState<number | null>(null);
+  const [cutoffNotice, setCutoffNotice] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/sessions")
@@ -74,6 +76,22 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
   // Anularea e permisă doar până cu 20 min înainte de start
   function canCancel(dateStr: string) {
     return Date.now() < new Date(dateStr).getTime() - 20 * 60 * 1000;
+  }
+
+  // Primul click pe "Rezervat" → butonul devine "Anulează rezervarea"; al doilea → anulează
+  function handleReservedClick(id: number, dateStr: string) {
+    if (confirmCancel === id) {
+      setConfirmCancel(null);
+      cancelReservation(id);
+      return;
+    }
+    if (!canCancel(dateStr)) {
+      setCutoffNotice(id);
+      setTimeout(() => setCutoffNotice(prev => (prev === id ? null : prev)), 2500);
+      return;
+    }
+    setConfirmCancel(id);
+    setTimeout(() => setConfirmCancel(prev => (prev === id ? null : prev)), 4000);
   }
 
   async function cancelReservation(id: number) {
@@ -134,20 +152,23 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                   <Link href="/register" className="btn btn-rose">Rezervă locul tău <ArrowRight size={16} weight="bold" /></Link>
                 ) : reserved.includes(featured.id) ? (
                   <div className="flex flex-col items-start gap-1.5">
-                    <span className="btn bg-white/15 text-white border border-white/25 cursor-default">
-                      <Check size={16} weight="bold" /> Loc rezervat
-                    </span>
-                    {canCancel(featured.date) ? (
-                      <button
-                        onClick={() => cancelReservation(featured.id)}
-                        className="font-body text-label-xs text-white/50 hover:text-white underline underline-offset-2 transition-colors pl-1"
-                      >
-                        Anulează rezervarea
-                      </button>
-                    ) : (
-                      <span className="font-body text-label-xs text-white/40 pl-1">
+                    <button
+                      onClick={() => handleReservedClick(featured.id, featured.date)}
+                      className={`btn transition-all duration-200 ${
+                        confirmCancel === featured.id
+                          ? "bg-terracotta text-white border border-terracotta hover:bg-terracotta/90"
+                          : "bg-white/15 text-white border border-white/25 hover:bg-white/25"
+                      }`}
+                    >
+                      {confirmCancel === featured.id
+                        ? <>Anulează rezervarea</>
+                        : <><Check size={16} weight="bold" /> Loc rezervat</>}
+                    </button>
+                    {cutoffNotice === featured.id && (
+                      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className="font-body text-label-xs text-white/50 pl-1">
                         Nu se mai poate anula — sesiunea începe în curând
-                      </span>
+                      </motion.span>
                     )}
                   </div>
                 ) : (
@@ -226,18 +247,23 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                       <Link href="/register" className="btn btn-primary btn-sm">Rezervă <ArrowRight size={14} weight="bold" /></Link>
                     ) : reserved.includes(session.id) ? (
                       <div className="flex flex-col items-end gap-1">
-                        <span className="btn btn-sm bg-light-green text-forest-green border border-sage-border cursor-default gap-1.5">
-                          <Check size={14} weight="bold" /> Rezervat
-                        </span>
-                        {canCancel(session.date) ? (
-                          <button
-                            onClick={() => cancelReservation(session.id)}
-                            className="font-body text-[11px] text-secondary-text hover:text-terracotta underline underline-offset-2 transition-colors"
-                          >
-                            Anulează
-                          </button>
-                        ) : (
-                          <span className="font-body text-[10px] text-secondary-text/60">Nu se mai poate anula</span>
+                        <button
+                          onClick={() => handleReservedClick(session.id, session.date)}
+                          className={`btn btn-sm gap-1.5 transition-all duration-200 ${
+                            confirmCancel === session.id
+                              ? "bg-terracotta text-white border border-terracotta hover:bg-terracotta/90"
+                              : "bg-light-green text-forest-green border border-sage-border hover:border-forest-green/50"
+                          }`}
+                        >
+                          {confirmCancel === session.id
+                            ? <>Anulează?</>
+                            : <><Check size={14} weight="bold" /> Rezervat</>}
+                        </button>
+                        {cutoffNotice === session.id && (
+                          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                            className="font-body text-[10px] text-secondary-text/60">
+                            Nu se mai poate anula
+                          </motion.span>
                         )}
                       </div>
                     ) : (
