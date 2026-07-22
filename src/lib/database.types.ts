@@ -8,6 +8,7 @@ export interface Database {
           id: string;
           first_name: string | null;
           last_name: string | null;
+          phone: string | null;
           avatar_url: string | null;
           plan: "gratuit" | "standard" | "premium";
           role: "user" | "moderator" | "admin" | "super_admin";

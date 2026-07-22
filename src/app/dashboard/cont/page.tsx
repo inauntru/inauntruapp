@@ -201,9 +201,11 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
   const fn = profile?.first_name || authUser?.user_metadata?.first_name || "";
   const ln = profile?.last_name  || authUser?.user_metadata?.last_name  || "";
   const savedDob = (authUser?.user_metadata?.date_of_birth as string | undefined) ?? "";
+  const savedPhone = ((profile as { phone?: string | null } | null)?.phone ?? authUser?.user_metadata?.phone ?? "") as string;
   const [pFirst, setPFirst]   = useState(fn);
   const [pLast,  setPLast]    = useState(ln);
   const [pDob,   setPDob]     = useState(savedDob);
+  const [pPhone, setPPhone]   = useState(savedPhone);
   const [saving, setSaving]   = useState(false);
   const [error,  setError]    = useState<string | null>(null);
   const [ok,     setOk]       = useState(false);
@@ -216,7 +218,8 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
     if (fn) setPFirst(fn);
     if (ln) setPLast(ln);
     if (savedDob) setPDob(savedDob);
-  }, [fn, ln, savedDob, touched]);
+    if (savedPhone) setPPhone(savedPhone);
+  }, [fn, ln, savedDob, savedPhone, touched]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -224,7 +227,7 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
     const res = await fetch("/api/user/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ first_name: pFirst, last_name: pLast, date_of_birth: pDob || null }),
+      body: JSON.stringify({ first_name: pFirst, last_name: pLast, date_of_birth: pDob || null, phone: pPhone || null }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -253,6 +256,21 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
         <label className={labelCls}>Email</label>
         <input className="input w-full bg-light-green/40 text-secondary-text cursor-not-allowed" value={authUser?.email || ""} readOnly />
         <p className="font-body text-label-xs text-secondary-text mt-1.5">Adresa de email nu poate fi modificată momentan.</p>
+      </div>
+
+      <div>
+        <label className={labelCls}>Număr de telefon</label>
+        <input
+          type="tel"
+          className="input w-full"
+          value={pPhone}
+          onChange={e => { setTouched(true); setPPhone(e.target.value); }}
+          placeholder="07XX XXX XXX"
+          autoComplete="tel"
+        />
+        <p className="font-body text-label-xs text-secondary-text mt-1.5">
+          Folosit pentru securitatea contului și asistență personalizată.
+        </p>
       </div>
 
       <div>

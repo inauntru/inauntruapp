@@ -18,15 +18,21 @@ export async function PATCH(req: Request) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
 
-  const { first_name, last_name, date_of_birth } = await req.json();
+  const { first_name, last_name, date_of_birth, phone } = await req.json();
   if (!first_name?.trim() || !last_name?.trim())
     return NextResponse.json({ error: "Prenumele și numele sunt obligatorii" }, { status: 400 });
+
+  const normalizedPhone = typeof phone === "string"
+    ? phone.replace(/[\s.-]/g, "").replace(/^07/, "+407")
+    : null;
+  if (normalizedPhone && !/^\+407\d{8}$/.test(normalizedPhone))
+    return NextResponse.json({ error: "Număr de telefon invalid" }, { status: 400 });
 
   const service = createServiceClient();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error: profileError } = await (service.from("profiles") as any)
-    .update({ first_name: first_name.trim(), last_name: last_name.trim() })
+    .update({ first_name: first_name.trim(), last_name: last_name.trim(), phone: normalizedPhone })
     .eq("id", user.id);
 
   if (profileError) return NextResponse.json({ error: profileError.message }, { status: 500 });
@@ -36,6 +42,7 @@ export async function PATCH(req: Request) {
       first_name: first_name.trim(),
       last_name: last_name.trim(),
       date_of_birth: date_of_birth ?? null,
+      phone: normalizedPhone,
     },
   });
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User, Check, Leaf, Cake } from "@phosphor-icons/react";
+import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User, Check, Leaf, Cake, Phone } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const PLANS = [
@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("gratuit");
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,11 @@ export default function RegisterPage() {
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const normalizedPhone = phone.replace(/[\s.-]/g, "");
+    if (!/^(\+4)?07\d{8}$/.test(normalizedPhone)) {
+      setError("Te rugăm să introduci un număr de telefon valid (ex: 07XX XXX XXX).");
+      return;
+    }
     setStep(2);
   };
 
@@ -40,7 +46,8 @@ export default function RegisterPage() {
     const firstName = nameParts[0] ?? "";
     const lastName = nameParts.slice(1).join(" ") || "";
 
-    const { error: signUpError } = await signUp(email, password, firstName, lastName, dateOfBirth || undefined);
+    const normalizedPhone = phone.replace(/[\s.-]/g, "").replace(/^07/, "+407");
+    const { error: signUpError } = await signUp(email, password, firstName, lastName, dateOfBirth || undefined, normalizedPhone || undefined);
 
     if (signUpError) {
       setError(signUpError);
@@ -160,6 +167,25 @@ export default function RegisterPage() {
                     {showPassword ? <EyeSlash size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+              </div>
+
+              <div>
+                <label className="font-body text-label-sm text-on-surface mb-1.5 block">Număr de telefon</label>
+                <div className="relative">
+                  <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text pointer-events-none" />
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="07XX XXX XXX"
+                    autoComplete="tel"
+                    className="input pl-10 w-full"
+                    required
+                  />
+                </div>
+                <p className="font-body text-label-xs text-secondary-text mt-1.5">
+                  Folosit pentru securitatea contului și pentru a te putea asista personalizat.
+                </p>
               </div>
 
               <div>
