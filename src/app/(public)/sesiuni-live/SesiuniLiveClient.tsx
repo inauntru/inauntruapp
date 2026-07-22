@@ -35,18 +35,40 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
   }, []);
 
   useEffect(() => {
-    try {
-      setReserved(JSON.parse(localStorage.getItem("sessions-reserved") || "[]"));
-    } catch { /* ignore */ }
-  }, []);
+    let fromApi: number[] = [];
+    let fromLocal: number[] = [];
+    try { fromLocal = JSON.parse(localStorage.getItem("sessions-reserved") || "[]"); } catch { /* ignore */ }
+    if (!user) { setReserved(fromLocal); return; }
+    fetch("/api/sessions/reserve")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.reserved) fromApi = d.reserved;
+        setReserved(Array.from(new Set([...fromApi, ...fromLocal])));
+      })
+      .catch(() => setReserved(fromLocal));
+  }, [user]);
 
-  function reserve(id: number) {
-    setReserved(prev => {
-      const next = [...prev, id];
-      localStorage.setItem("sessions-reserved", JSON.stringify(next));
-      return next;
-    });
+  async function reserve(id: number) {
+    // Optimist: marchează imediat, API-ul confirmă în fundal
+    setReserved(prev => [...prev, id]);
     setSessions(prev => prev.map(s => s.id === id ? { ...s, spotsLeft: Math.max(0, s.spotsLeft - 1) } : s));
+
+    try {
+      const res = await fetch("/api/sessions/reserve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: id }),
+      });
+      if (res.status === 404) {
+        // Sesiune demo (nu e în DB) — păstrează rezervarea local
+        const local = JSON.parse(localStorage.getItem("sessions-reserved") || "[]");
+        localStorage.setItem("sessions-reserved", JSON.stringify(Array.from(new Set([...local, id]))));
+      } else if (!res.ok) {
+        // Rollback dacă rezervarea a eșuat (ex: nu mai sunt locuri)
+        setReserved(prev => prev.filter(r => r !== id));
+        setSessions(prev => prev.map(s => s.id === id ? { ...s, spotsLeft: s.spotsLeft + 1 } : s));
+      }
+    } catch { /* offline — rămâne optimist */ }
   }
 
   const featured = sessions[0];

@@ -17,6 +17,13 @@ interface LiveSession {
   status: string;
 }
 
+interface Participant {
+  name: string;
+  email: string;
+  plan: string;
+  registeredAt: string;
+}
+
 const EMPTY_FORM = {
   title: "",
   facilitator_name: "",
@@ -37,6 +44,20 @@ export default function AdminSessionsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [participantsFor, setParticipantsFor] = useState<LiveSession | null>(null);
+  const [participants, setParticipants] = useState<Participant[] | null>(null);
+
+  async function openParticipants(s: LiveSession) {
+    setParticipantsFor(s);
+    setParticipants(null);
+    const res = await fetch(`/api/admin/sessions/${s.id}/registrations`);
+    if (res.ok) {
+      const data = await res.json();
+      setParticipants(data.participants ?? []);
+    } else {
+      setParticipants([]);
+    }
+  }
 
   async function fetchSessions() {
     setLoading(true);
@@ -163,7 +184,13 @@ export default function AdminSessionsPage() {
                   <div className="flex items-center gap-4 font-body text-label-xs text-secondary-text">
                     <span className="flex items-center gap-1"><CalendarBlank size={12} />{dt.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" })}</span>
                     <span className="flex items-center gap-1"><Clock size={12} />{dt.toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" })} · {s.duration} min</span>
-                    <span className="flex items-center gap-1"><Users size={12} />{booked}/{s.spots_total} locuri</span>
+                    <button
+                      onClick={() => openParticipants(s)}
+                      className="flex items-center gap-1 hover:text-forest-green transition-colors underline decoration-dotted underline-offset-2"
+                      title="Vezi participanții"
+                    >
+                      <Users size={12} />{booked}/{s.spots_total} înscriși
+                    </button>
                     {s.facilitator_name && <span>{s.facilitator_name}</span>}
                   </div>
                 </div>
@@ -299,6 +326,72 @@ export default function AdminSessionsPage() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Participants modal */}
+      <AnimatePresence>
+        {participantsFor && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setParticipantsFor(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
+              className="relative bg-white rounded-2xl shadow-modal w-full max-w-md max-h-[80vh] flex flex-col"
+            >
+              <div className="flex items-center justify-between p-6 pb-4 border-b border-sage-border/40">
+                <div>
+                  <h3 className="font-heading text-h3 text-deep-green">Participanți</h3>
+                  <p className="font-body text-label-xs text-secondary-text line-clamp-1">{participantsFor.title}</p>
+                </div>
+                <button onClick={() => setParticipantsFor(null)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green flex-shrink-0"><X size={16} /></button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6 pt-4">
+                {participants === null ? (
+                  <p className="font-body text-body-sm text-secondary-text text-center py-8">Se încarcă...</p>
+                ) : participants.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 bg-light-green rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Users size={20} className="text-forest-green" />
+                    </div>
+                    <p className="font-body text-body-sm text-secondary-text">Nicio înscriere încă.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {participants.map((p, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-sage-border/40">
+                        <div className="w-9 h-9 rounded-full bg-forest-green flex items-center justify-center flex-shrink-0">
+                          <span className="text-white text-xs font-bold">
+                            {p.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body font-semibold text-body-sm text-deep-green truncate">{p.name}</p>
+                          <p className="font-body text-label-xs text-secondary-text truncate">{p.email}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <span className="tag tag-green text-[10px] capitalize">{p.plan}</span>
+                          <p className="font-body text-[10px] text-secondary-text mt-1">
+                            {new Date(p.registeredAt).toLocaleDateString("ro-RO", { day: "numeric", month: "short" })}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {participants !== null && participants.length > 0 && (
+                <div className="p-4 border-t border-sage-border/40 text-center">
+                  <p className="font-body text-label-xs text-secondary-text">
+                    {participants.length} {participants.length === 1 ? "participant înscris" : "participanți înscriși"} · {participantsFor.spots_left} locuri libere
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
