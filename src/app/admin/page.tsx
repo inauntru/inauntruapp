@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-heading text-h2 text-deep-green">Bine ai revenit</h1>
-        <p className="font-body text-body-sm text-secondary-text">Iată situația platformei INAUNTRU.</p>
+        <p className="font-body text-body-sm text-secondary-text">Iată situația platformei WithIn.</p>
       </div>
 
       {/* KPI cards */}

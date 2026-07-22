@@ -54,9 +54,9 @@ function SaveBar({ onSave }: { onSave: () => void }) {
 }
 
 const DEFAULT_PLATFORM = {
-  name: "INAUNTRU",
+  name: "WithIn",
   tagline: "Primul ecosistem de terapie somatică din România",
-  description: "INAUNTRU este platforma care îți oferă acces la practici somatice ghidate, sesiuni LIVE și suport pentru bunăstarea ta.",
+  description: "WithIn este platforma care îți oferă acces la practici somatice ghidate, sesiuni LIVE și suport pentru bunăstarea ta.",
   email_support: "suport@inauntru.ro",
   email_billing: "facturare@inauntru.ro",
   cui: "",
@@ -311,13 +311,13 @@ function EmailTab() {
           <div className="space-y-4">
             <div>
               <label className="font-body text-label-sm text-on-surface mb-1.5 block">Subiect email</label>
-              <input type="text" className="input w-full" defaultValue={`[INAUNTRU] ${EMAIL_TEMPLATES.find((t) => t.id === selected)?.label}`} />
+              <input type="text" className="input w-full" defaultValue={`[WithIn] ${EMAIL_TEMPLATES.find((t) => t.id === selected)?.label}`} />
             </div>
             <div>
               <label className="font-body text-label-sm text-on-surface mb-1.5 block">Conținut (HTML)</label>
               <textarea
                 className="input w-full min-h-[120px] font-mono text-xs"
-                defaultValue={`<h1>Bun venit la INAUNTRU!</h1>\n<p>Dragă {{name}},</p>\n<p>Suntem bucuroși că ești alături de noi...</p>`}
+                defaultValue={`<h1>Bun venit la WithIn!</h1>\n<p>Dragă {{name}},</p>\n<p>Suntem bucuroși că ești alături de noi...</p>`}
               />
             </div>
             <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
@@ -771,7 +771,7 @@ const SITE_SCHEMA: PageSchema[] = [
         ],
       },
       {
-        title: "Platforma INAUNTRU — titlu + 4 functionalitati",
+        title: "Platforma WithIn — titlu + 4 functionalitati",
         fields: [
           f("platform_title", "Titlu sectiune"),
           f("platform_subtitle", "Subtitlu", "textarea"),
@@ -1051,8 +1051,8 @@ const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
     faq2_a: "Nu. Platforma este conceputa pentru toate nivelurile, de la absolute beginner la practicieni cu experienta. Fiecare sesiune indica nivelul recomandat.",
     faq3_q: "Cat timp dureaza o practica?",
     faq3_a: "Practicile variaza de la 5 minute (tehnici rapide de ancorare) la 30+ minute (sesiuni profunde de corp). Majoritatea utilizatorilor practica 10-20 de minute pe zi.",
-    faq4_q: "Poate inlocui INAUNTRU terapia clasica?",
-    faq4_a: "INAUNTRU este un instrument de suport, nu un substitut pentru psihoterapie. Daca ai nevoie de suport terapeutic individual, te incurajam sa lucrezi si cu un terapeut calificat.",
+    faq4_q: "Poate inlocui WithIn terapia clasica?",
+    faq4_a: "WithIn este un instrument de suport, nu un substitut pentru psihoterapie. Daca ai nevoie de suport terapeutic individual, te incurajam sa lucrezi si cu un terapeut calificat.",
     faq5_q: "Cum functioneaza perioada gratuita de 14 zile?",
     faq5_a: "Primele 14 zile sunt complet gratuite si iti ofera acces la planul Premium pentru a testa experienta. Nu ai nevoie de card pentru a incepe.",
     faq6_q: "Pot descarca practicile pentru utilizare offline?",
@@ -1091,13 +1091,13 @@ const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
   despre_noi: {
     label: "Despre noi",
     title: "Cultivam echilibrul prin stiinta somatizarii si caldura comunitatii.",
-    body: "INAUNTRU s-a nascut din convingerea ca fiecare persoana din Romania merita acces la practici de reglare somatica de calitate - disponibile oricand, oriunde.",
+    body: "WithIn s-a nascut din convingerea ca fiecare persoana din Romania merita acces la practici de reglare somatica de calitate - disponibile oricand, oriunde.",
     founder_label: "Povestea fondatorului",
-    founder_title: "De ce am creat INAUNTRU",
+    founder_title: "De ce am creat WithIn",
     founder_body1: "",
     founder_body2: "",
     founder_body3: "",
-    founder_quote: "Am construit INAUNTRU pentru ca eu insami am cautat ani de zile un loc sigur sa ma vindec.",
+    founder_quote: "Am construit WithIn pentru ca eu insami am cautat ani de zile un loc sigur sa ma vindec.",
     founder_quote_author: "Sabina, Co-Founder",
     val1_title: "Compasiune", val1_desc: "Fiecare persoana merita acces la practici de bunastare, indiferent de context sau resurse.",
     val2_title: "Fundamentare", val2_desc: "Toate practicile sunt bazate pe cercetari validate in neurostiinta si psihoterapie somatica.",

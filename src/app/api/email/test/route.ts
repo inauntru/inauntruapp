@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     // Prepend [TEST] and inject a banner into the body
     const testSubject = `[TEST] ${subject ?? ""}`.trim();
     const testBanner = `<div style="background:#fef3c7;border:2px dashed #f59e0b;border-radius:10px;padding:10px 16px;margin-bottom:20px;font-family:sans-serif;font-size:13px;color:#92400e;">
-      ⚠️ <strong>Email de test</strong> — trimis din admin INAUNTRU. Nu este un email real.
+      ⚠️ <strong>Email de test</strong> — trimis din admin WithIn. Nu este un email real.
     </div>`;
     const testBody = body ? body.replace(/<body[^>]*>/, (m: string) => m).replace(/(<div[^>]*max-width[^>]*>)/, `$1${testBanner}`) : body;
 

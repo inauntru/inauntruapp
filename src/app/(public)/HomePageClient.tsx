@@ -131,7 +131,7 @@ export default function HomePageClient({ siteContent }: Props) {
                   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
                 ].map((src, i) => (
                   <div key={i} className="w-8 h-8 rounded-full border-2 border-white/40 overflow-hidden flex-shrink-0">
-                    <Image src={src} alt="Membru INAUNTRU" width={32} height={32} className="object-cover w-full h-full" />
+                    <Image src={src} alt="Membru WithIn" width={32} height={32} className="object-cover w-full h-full" />
                   </div>
                 ))}
               </div>

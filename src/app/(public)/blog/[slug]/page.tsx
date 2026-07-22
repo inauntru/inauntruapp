@@ -161,7 +161,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               <div className="bg-light-green border border-sage-border rounded-card p-6">
                 <p className="font-heading text-h3 text-forest-green mb-2">Notă importantă</p>
                 <p className="font-body text-body-sm text-secondary-text">
-                  Practicile de pe platforma INAUNTRU sunt instrumente de suport și nu înlocuiesc psihoterapia individuală. Dacă treci prin experiențe traumatice intense, te recomandăm să lucrezi cu un specialist calificat.
+                  Practicile de pe platforma WithIn sunt instrumente de suport și nu înlocuiesc psihoterapia individuală. Dacă treci prin experiențe traumatice intense, te recomandăm să lucrezi cu un specialist calificat.
                 </p>
               </div>
             </>
@@ -185,7 +185,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </div>
             <div>
               <p className="font-body font-semibold text-body-sm text-deep-green">{post.author}</p>
-              <p className="font-body text-label-xs text-secondary-text">{post.authorRole || "Facilitator"} la INAUNTRU</p>
+              <p className="font-body text-label-xs text-secondary-text">{post.authorRole || "Facilitator"} la WithIn</p>
             </div>
           </div>
         )}

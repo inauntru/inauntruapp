@@ -99,7 +99,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
             <div className="w-6 h-6 bg-forest-green rounded-full flex items-center justify-center">
               <span className="text-white text-[10px] font-bold">I</span>
             </div>
-            <span className="font-heading font-bold text-sm text-deep-green">INAUNTRU</span>
+            <span className="font-heading font-bold text-sm text-deep-green">WithIn</span>
           </div>
           <button onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green transition-colors">

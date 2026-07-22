@@ -6,7 +6,7 @@ export const TESTIMONIALS = [
     name: "Maria D.",
     city: "București",
     stars: 5,
-    quote: "Inauntru mi-a schimbat radical modul în care gestionez anxietatea. Exercițiile sunt scurte, dar extrem de puternice.",
+    quote: "WithIn mi-a schimbat radical modul în care gestionez anxietatea. Exercițiile sunt scurte, dar extrem de puternice.",
     weeks: 6,
     topics: ["Anxietate", "Respirație"],
   },
@@ -530,8 +530,8 @@ export const FAQ_ITEMS = [
     a: "Practicile variază de la 5 minute (tehnici rapide de ancorare) la 30+ minute (sesiuni profunde de corp). Majoritatea utilizatorilor practică 10-20 de minute pe zi.",
   },
   {
-    q: "Poate înlocui INAUNTRU terapia clasică?",
-    a: "INAUNTRU este un instrument de suport, nu un substitut pentru psihoterapie. Dacă ai nevoie de suport terapeutic individual, te încurajăm să lucrezi și cu un terapeut calificat.",
+    q: "Poate înlocui WithIn terapia clasică?",
+    a: "WithIn este un instrument de suport, nu un substitut pentru psihoterapie. Dacă ai nevoie de suport terapeutic individual, te încurajăm să lucrezi și cu un terapeut calificat.",
   },
   {
     q: "Cum funcționează perioada gratuită de 14 zile?",

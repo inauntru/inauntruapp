@@ -257,7 +257,7 @@ export default async function PracticeDetailPage({ params }: { params: { id: str
                 </div>
                 <h3 className="font-heading text-h4 text-deep-green mb-2">Practică gratuită</h3>
                 <p className="font-body text-body-sm text-secondary-text">
-                  Accesibilă tuturor utilizatorilor INAUNTRU.
+                  Accesibilă tuturor utilizatorilor WithIn.
                 </p>
               </div>
             )}

@@ -45,7 +45,7 @@ export default function AdminLogin() {
           <div className="w-12 h-12 bg-deep-green rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Leaf size={22} weight="fill" className="text-white" />
           </div>
-          <h1 className="font-heading text-2xl text-deep-green">INAUNTRU</h1>
+          <h1 className="font-heading text-2xl text-deep-green">WithIn</h1>
           <p className="font-body text-body-sm text-secondary-text mt-1">Panou de administrare</p>
         </div>
 
