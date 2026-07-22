@@ -4,6 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase";
+import { computeNatalChart, type NatalChart } from "@/lib/astro";
 
 // ── Calcule astronomice simple ────────────────────────────────────────────────
 
@@ -90,6 +91,42 @@ interface SignData {
   areas: { key: string; level: string; description: string }[];
 }
 
+// ── Prompt personalizat (profil natal complet) ───────────────────────────────
+
+function buildPersonalPrompt(
+  natal: NatalChart,
+  date: Date,
+  moon: ReturnType<typeof getMoonPhase>,
+  sunSign: string,
+  dayRuler: string,
+  dayName: string
+): string {
+  return `Ești un astrolog modern în stilul Co-Star. Scrii în română, direct, atmosferic, fără clișee.
+
+Profilul natal al persoanei:
+- Soare în ${natal.sunSign} (identitatea, direcția)
+- Ascendent în ${natal.ascendant} (cum întâlnește lumea, energia zilei)
+- Luna natală în ${natal.moonSign} (viața emoțională, nevoile profunde)
+
+Contextul astronomic de azi (${date.toISOString().split("T")[0]}, ${dayName}):
+- Conducătorul zilei: ${dayRuler}
+- Soarele tranzitează: ${sunSign}
+- Faza lunii: ${moon.label} (${moon.pct}% din ciclul lunar)
+
+Generează influențele zilei PENTRU ACEASTĂ PERSOANĂ, pe 4 domenii: corp, minte, relatii, energie.
+Ține cont de interacțiunea dintre tranzitele de azi și cele trei puncte natale —
+ascendentul colorează energia zilei, Luna natală filtrează emoțiile, Soarele natal dă direcția.
+
+Fiecare domeniu are:
+- "level": "favorabil" | "echilibrat" | "provocator"
+- "description": 20-28 de cuvinte în română, prezent, fără să începi cu "Azi", direct la subiect
+
+Distribuie nivelurile realist — nu totul favorabil, nu totul provocator.
+
+Returnează STRICT JSON valid:
+{"areas":[{"key":"corp","level":"...","description":"..."},{"key":"minte","level":"...","description":"..."},{"key":"relatii","level":"...","description":"..."},{"key":"energie","level":"...","description":"..."}]}`;
+}
+
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 export async function GET(req: NextRequest) {
@@ -107,8 +144,70 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const today = new Date();
-  const dateKey = `astro_daily_${today.toISOString().split("T")[0]}`;
+  const todayStr = today.toISOString().split("T")[0];
+  const dateKey = `astro_daily_${todayStr}`;
   const service = createServiceClient() as any;
+
+  // ── Profil natal complet? → conținut personalizat per utilizator ──────────
+  const dob = user.user_metadata?.date_of_birth as string | undefined;
+  const { data: prof } = await service
+    .from("profiles")
+    .select("birth_time, birth_city")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const natal = dob && prof?.birth_time && prof?.birth_city
+    ? computeNatalChart(dob, prof.birth_time, prof.birth_city)
+    : null;
+
+  if (natal) {
+    const userKey = `astro_user_${user.id}_${todayStr}`;
+    const moon = getMoonPhase(today);
+    const sunNow = getSunSign(today);
+    const dayIdx = today.getDay();
+    const context = { moon: moon.label, sunSign: sunNow, dayRuler: DAY_RULERS[dayIdx] };
+    const natalInfo = { sun: natal.sunSign, ascendant: natal.ascendant, moon: natal.moonSign };
+
+    try {
+      const { data: cached } = await service
+        .from("settings")
+        .select("value")
+        .eq("key", userKey)
+        .single();
+      if (cached?.value?.areas) {
+        return NextResponse.json({ sign, ...cached.value, cached: true, personalized: true, natal: natalInfo, context });
+      }
+    } catch { /* miss */ }
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 503 });
+    }
+
+    try {
+      const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const msg = await client.messages.create({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1024,
+        messages: [{
+          role: "user",
+          content: buildPersonalPrompt(natal, today, moon, sunNow, DAY_RULERS[dayIdx], DAY_NAMES[dayIdx]),
+        }],
+      });
+      const raw = (msg.content[0] as { type: string; text: string }).text;
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON in response");
+      const personal = JSON.parse(jsonMatch[0]) as SignData;
+
+      try {
+        await service.from("settings").upsert({ key: userKey, value: personal });
+      } catch { /* cache best-effort */ }
+
+      return NextResponse.json({ sign, ...personal, cached: false, personalized: true, natal: natalInfo, context });
+    } catch (err) {
+      console.error("Personal astro error:", err);
+      // Cade pe fluxul comun pe zodia solară de mai jos
+    }
+  }
 
   // Caută în cache (Supabase settings)
   try {
@@ -122,7 +221,11 @@ export async function GET(req: NextRequest) {
       const parsed = cached.value as Record<string, SignData>;
       const signData = parsed[sign];
       if (signData) {
-        return NextResponse.json({ sign, ...signData, cached: true });
+        const m = getMoonPhase(today);
+        return NextResponse.json({
+          sign, ...signData, cached: true,
+          context: { moon: m.label, sunSign: getSunSign(today), dayRuler: DAY_RULERS[today.getDay()] },
+        });
       }
     }
   } catch { /* miss — va genera */ }

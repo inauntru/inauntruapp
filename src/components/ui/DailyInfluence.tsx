@@ -22,6 +22,8 @@ interface AreaData { key: string; level: string; description: string }
 interface InfluenceData {
   areas: AreaData[];
   context?: { moon: string; sunSign: string; dayRuler: string };
+  personalized?: boolean;
+  natal?: { sun: string; ascendant: string; moon: string };
 }
 
 interface Props {
@@ -76,8 +78,20 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
                 {data.context.moon} · {data.context.dayRuler} · ☀ în {data.context.sunSign}
               </p>
             )}
+            {data.natal && (
+              <p className="font-body text-label-xs text-forest-green mt-0.5">
+                Profilul tău: ☀ {data.natal.sun} · Asc {data.natal.ascendant} · ☾ {data.natal.moon}
+              </p>
+            )}
           </div>
-          <p className="font-body text-label-xs text-secondary-text">{today}</p>
+          <div className="text-right">
+            <p className="font-body text-label-xs text-secondary-text">{today}</p>
+            {data.personalized && (
+              <span className="inline-block mt-1 font-body text-[10px] font-semibold text-forest-green bg-forest-green/10 px-2 py-0.5 rounded-full">
+                Personalizat
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

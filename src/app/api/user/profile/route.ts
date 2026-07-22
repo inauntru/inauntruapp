@@ -18,7 +18,7 @@ export async function PATCH(req: Request) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
 
-  const { first_name, last_name, date_of_birth, phone } = await req.json();
+  const { first_name, last_name, date_of_birth, phone, birth_time, birth_city } = await req.json();
   if (!first_name?.trim() || !last_name?.trim())
     return NextResponse.json({ error: "Prenumele și numele sunt obligatorii" }, { status: 400 });
 
@@ -31,11 +31,25 @@ export async function PATCH(req: Request) {
   if (!phoneOk)
     return NextResponse.json({ error: "Număr de telefon invalid" }, { status: 400 });
 
+  // Ora nașterii (HH:MM) și orașul — opționale, pentru profilul astral complet
+  const normalizedBirthTime = typeof birth_time === "string" && /^([01]?\d|2[0-3]):[0-5]\d$/.test(birth_time.trim())
+    ? birth_time.trim()
+    : null;
+  const normalizedBirthCity = typeof birth_city === "string" && birth_city.trim()
+    ? birth_city.trim().slice(0, 100)
+    : null;
+
   const service = createServiceClient();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error: profileError } = await (service.from("profiles") as any)
-    .update({ first_name: first_name.trim(), last_name: last_name.trim(), phone: normalizedPhone })
+    .update({
+      first_name: first_name.trim(),
+      last_name: last_name.trim(),
+      phone: normalizedPhone,
+      birth_time: normalizedBirthTime,
+      birth_city: normalizedBirthCity,
+    })
     .eq("id", user.id);
 
   if (profileError) return NextResponse.json({ error: profileError.message }, { status: 500 });

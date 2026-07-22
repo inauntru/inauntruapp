@@ -203,10 +203,14 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
   const ln = profile?.last_name  || authUser?.user_metadata?.last_name  || "";
   const savedDob = (authUser?.user_metadata?.date_of_birth as string | undefined) ?? "";
   const savedPhone = ((profile as { phone?: string | null } | null)?.phone ?? authUser?.user_metadata?.phone ?? "") as string;
+  const savedBirthTime = ((profile as { birth_time?: string | null } | null)?.birth_time ?? "") as string;
+  const savedBirthCity = ((profile as { birth_city?: string | null } | null)?.birth_city ?? "") as string;
   const [pFirst, setPFirst]   = useState(fn);
   const [pLast,  setPLast]    = useState(ln);
   const [pDob,   setPDob]     = useState(savedDob);
   const [pPhone, setPPhone]   = useState(savedPhone);
+  const [pBirthTime, setPBirthTime] = useState(savedBirthTime);
+  const [pBirthCity, setPBirthCity] = useState(savedBirthCity);
   const [saving, setSaving]   = useState(false);
   const [error,  setError]    = useState<string | null>(null);
   const [ok,     setOk]       = useState(false);
@@ -220,7 +224,9 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
     if (ln) setPLast(ln);
     if (savedDob) setPDob(savedDob);
     if (savedPhone) setPPhone(savedPhone);
-  }, [fn, ln, savedDob, savedPhone, touched]);
+    if (savedBirthTime) setPBirthTime(savedBirthTime);
+    if (savedBirthCity) setPBirthCity(savedBirthCity);
+  }, [fn, ln, savedDob, savedPhone, savedBirthTime, savedBirthCity, touched]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -228,7 +234,14 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
     const res = await fetch("/api/user/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ first_name: pFirst, last_name: pLast, date_of_birth: pDob || null, phone: pPhone || null }),
+      body: JSON.stringify({
+        first_name: pFirst,
+        last_name: pLast,
+        date_of_birth: pDob || null,
+        phone: pPhone || null,
+        birth_time: pBirthTime || null,
+        birth_city: pBirthCity || null,
+      }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -274,6 +287,40 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
           Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine.
         </p>
       </div>
+
+      {pDob && (
+        <div className="rounded-2xl bg-light-green/40 border border-sage-border/40 p-4">
+          <p className="font-body font-semibold text-body-sm text-deep-green mb-1">
+            ✨ Nou: profil astral complet
+          </p>
+          <p className="font-body text-label-xs text-secondary-text mb-4">
+            Cu ora și orașul nașterii îți calculăm ascendentul și zodia lunară, iar influențele
+            zilei devin cu adevărat personale — nu doar după zodia solară. Dacă nu le completezi,
+            rămânem la zodia solară.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelCls}>Ora nașterii</label>
+              <input
+                type="time"
+                className="input w-full"
+                value={pBirthTime}
+                onChange={e => { setTouched(true); setPBirthTime(e.target.value); }}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Orașul nașterii</label>
+              <input
+                type="text"
+                className="input w-full"
+                value={pBirthCity}
+                onChange={e => { setTouched(true); setPBirthCity(e.target.value); }}
+                placeholder="ex: București"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="pt-2 border-t border-sage-border/40">
         <label className={labelCls + " mb-3"}>Obiectivele tale</label>
