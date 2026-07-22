@@ -11,6 +11,7 @@ import {
   Export, SignOut, CaretDown,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
+import PhoneInput from "@/components/ui/PhoneInput";
 
 // ── Date picker ────────────────────────────────────────────────────────────
 
@@ -260,14 +261,7 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
 
       <div>
         <label className={labelCls}>Număr de telefon</label>
-        <input
-          type="tel"
-          className="input w-full"
-          value={pPhone}
-          onChange={e => { setTouched(true); setPPhone(e.target.value); }}
-          placeholder="07XX XXX XXX"
-          autoComplete="tel"
-        />
+        <PhoneInput value={pPhone} onChange={v => { setTouched(true); setPPhone(v); }} inputClassName="input" />
         <p className="font-body text-label-xs text-secondary-text mt-1.5">
           Folosit pentru securitatea contului și asistență personalizată.
         </p>
@@ -370,6 +364,14 @@ function NotificariTab() {
   });
   const [saving, setSaving] = useState(false);
   const [ok, setOk] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/user/preferences")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.prefs) setNotifs(prev => ({ ...prev, ...d.prefs })); })
+      .catch(() => {});
+  }, []);
 
   const items = [
     { key: "weeklyDigest",      label: "Rezumat săptămânal",         desc: "Progresul tău și recomandări personalizate" },
@@ -380,9 +382,17 @@ function NotificariTab() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    await new Promise(r => setTimeout(r, 600));
+    setSaving(true); setError(null);
+    const res = await fetch("/api/user/preferences", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(notifs),
+    });
     setSaving(false);
+    if (!res.ok) {
+      setError("Preferințele nu au putut fi salvate. Încearcă din nou.");
+      return;
+    }
     setOk(true);
     setTimeout(() => setOk(false), 3000);
   }
@@ -412,6 +422,7 @@ function NotificariTab() {
       </div>
 
       <p className="font-body text-label-xs text-secondary-text">Notificările push vor fi disponibile în versiunea mobilă.</p>
+      {error && <ErrorBox msg={error} />}
       {ok && <SuccessBox msg="Preferințele au fost salvate." />}
       <SaveBtn loading={saving} />
     </form>

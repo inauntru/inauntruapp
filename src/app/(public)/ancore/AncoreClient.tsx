@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check, Clock, X } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
+import { useAuth } from "@/contexts/AuthContext";
+import { recordAncoraCompletion } from "@/lib/ancore-sync";
 import {
   ANCORE_DATA, NIVEL_CONFIG, CATEGORIE_CONFIG,
   type AncoreExercise, type AncoreNivel, type AncoreCategorie,
@@ -77,6 +79,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
   onClose: () => void;
   onComplete?: () => void;
 }) {
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const total = 1 + ex.pasi.length + 1;
   const isIntro = step === 0;
@@ -162,12 +165,11 @@ function ExerciseModal({ ex, onClose, onComplete }: {
             </button>
           ) : (
             <button onClick={() => {
-              // Save completion to localStorage for journal progress
-              try {
-                const prev = JSON.parse(localStorage.getItem("ancore-completed") || "[]");
-                prev.push({ id: ex.id, name: ex.nume, categorie: ex.categorie, nivel: ex.nivel, completedAt: new Date().toISOString() });
-                localStorage.setItem("ancore-completed", JSON.stringify(prev));
-              } catch {}
+              // Logat → Supabase (sincronizat pe orice dispozitiv); vizitator → localStorage
+              recordAncoraCompletion(
+                { id: ex.id, name: ex.nume, categorie: ex.categorie, nivel: ex.nivel, completedAt: new Date().toISOString() },
+                !!user
+              );
               if (onComplete) onComplete(); else onClose();
             }} className="btn btn-primary flex-1 gap-2">
               <Check size={14} weight="bold" /> Gata

@@ -22,10 +22,13 @@ export async function PATCH(req: Request) {
   if (!first_name?.trim() || !last_name?.trim())
     return NextResponse.json({ error: "Prenumele și numele sunt obligatorii" }, { status: 400 });
 
-  const normalizedPhone = typeof phone === "string"
-    ? phone.replace(/[\s.-]/g, "").replace(/^07/, "+407")
+  // Numărul vine gata normalizat internațional (+40712..., +4930... etc.)
+  const normalizedPhone = typeof phone === "string" && phone.trim()
+    ? phone.replace(/[\s.-]/g, "")
     : null;
-  if (normalizedPhone && !/^\+407\d{8}$/.test(normalizedPhone))
+  const phoneOk = !normalizedPhone
+    || (normalizedPhone.startsWith("+40") ? /^\+407\d{8}$/.test(normalizedPhone) : /^\+\d{8,15}$/.test(normalizedPhone));
+  if (!phoneOk)
     return NextResponse.json({ error: "Număr de telefon invalid" }, { status: 400 });
 
   const service = createServiceClient();

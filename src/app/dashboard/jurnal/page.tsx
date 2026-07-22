@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { fetchAncoreCompletions } from "@/lib/ancore-sync";
 
 const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), { ssr: false });
 
@@ -92,11 +93,10 @@ export default function JurnalPage() {
       setLoading(false);
     }).catch(() => setLoading(false));
 
-    // Ancore completions from localStorage
-    try {
-      const saved = JSON.parse(localStorage.getItem("ancore-completed") || "[]") as AncoreEntry[];
-      setAncoreHistory(saved.slice().reverse()); // newest first
-    } catch {}
+    // Ancore din Supabase (migrează automat istoricul vechi din localStorage)
+    fetchAncoreCompletions(true)
+      .then(list => setAncoreHistory(list as AncoreEntry[]))
+      .catch(() => {});
   }, []);
 
   function openNew() {

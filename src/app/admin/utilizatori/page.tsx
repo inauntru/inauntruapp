@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MagnifyingGlass, ArrowLeft, X, Check, ShieldCheck,
   Warning, CircleNotch, Trash, Users, Plus,
-  EnvelopeSimple, CheckCircle, Clock,
+  EnvelopeSimple, CheckCircle, Clock, DownloadSimple,
 } from "@phosphor-icons/react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -470,6 +470,9 @@ function ListView({ users, loading, onSelect, onRefresh }: { users: RealUser[]; 
         </div>
         <div className="flex gap-2">
           <button onClick={onRefresh} className="btn btn-ghost btn-sm">Reîncarcă</button>
+          <a href="/api/admin/users/export" download className="btn btn-ghost btn-sm gap-1.5 border border-sage-border">
+            <DownloadSimple size={14} weight="bold" /> Export Excel
+          </a>
           <button onClick={() => setShowAddModal(true)} className="btn btn-primary btn-sm gap-1.5">
             <Plus size={14} weight="bold" /> Adaugă utilizator
           </button>

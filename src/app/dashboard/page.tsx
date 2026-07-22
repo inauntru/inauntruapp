@@ -14,6 +14,7 @@ import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDailyQuote } from "@/lib/quotes";
 import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
+import { fetchAncoreCompletions } from "@/lib/ancore-sync";
 
 function formatDate() {
   return new Date().toLocaleDateString("ro-RO", {
@@ -92,21 +93,29 @@ export default function DashboardPage() {
       if (Array.isArray(d) && d.length > 0) { setRecentPractices(d.slice(0, 3)); setAllPractices(d); }
     }).catch(() => {});
     fetch("/api/sessions").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setUpcomingSession(d[0]); }).catch(() => {});
-    fetch("/api/checkin").then(r => r.ok ? r.json() : null).then(d => {
-      if (d?.checkIn?.mood) setTodayMood(d.checkIn.mood);
-    }).catch(() => {});
   }, []);
 
   useEffect(() => {
-    const done = localStorage.getItem("checkin-today") === new Date().toDateString();
-    setCheckInDone(done);
-    if (!done) { const t = setTimeout(() => setCheckInOpen(true), 3000); return () => clearTimeout(t); }
+    // Starea check-in-ului vine din DB — sincronizată pe orice dispozitiv
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    fetch("/api/checkin")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (cancelled) return;
+        const done = !!d?.checkedIn;
+        setCheckInDone(done);
+        if (d?.checkIn?.mood) setTodayMood(d.checkIn.mood);
+        if (!done) timer = setTimeout(() => setCheckInOpen(true), 3000);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
   }, []);
 
   useEffect(() => {
-    const arr = JSON.parse(localStorage.getItem("ancore-completed") || "[]");
-    setAncoreCount(arr.length);
-  }, []);
+    if (!authUser) return;
+    fetchAncoreCompletions(true).then(list => setAncoreCount(list.length)).catch(() => {});
+  }, [authUser]);
 
   useEffect(() => {
     function close(e: MouseEvent) {
@@ -117,8 +126,8 @@ export default function DashboardPage() {
   }, [sessionExpanded]);
 
   function handleCheckInClose() {
+    // Check-in-ul e deja salvat în DB de modal — doar actualizăm starea locală
     setCheckInOpen(false); setCheckInDone(true);
-    localStorage.setItem("checkin-today", new Date().toDateString());
   }
 
   const recommended = pickRecommendation(allPractices, todayMood);
