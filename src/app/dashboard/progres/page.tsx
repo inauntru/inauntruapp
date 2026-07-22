@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, CircleNotch, Lightning, Timer, CalendarCheck, Flame,
+  ArrowLeft, CircleNotch, Lightning, Timer, CalendarCheck, Flame, Hourglass,
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import {
@@ -44,8 +44,16 @@ function StatCard({ icon: Icon, label, value, sub }: { icon: React.ElementType; 
   );
 }
 
+interface UsageDay { day: string; minutes: number }
+
+function fmtMinutes(m: number): string {
+  if (m >= 60) return `${Math.floor(m / 60)}h ${m % 60}m`;
+  return `${m} min`;
+}
+
 export default function ProgresPage() {
   const [data, setData] = useState<ProgressData | null>(null);
+  const [usage, setUsage] = useState<UsageDay[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,7 +61,28 @@ export default function ProgresPage() {
       .then((r) => r.json())
       .then((d) => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
+    fetch("/api/usage?days=14")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d?.days) setUsage(d.days); })
+      .catch(() => {});
   }, []);
+
+  // Serie completă pe 14 zile (zilele fără activitate = 0)
+  const usageMap = new Map(usage.map(u => [u.day, u.minutes]));
+  const usageSeries = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(Date.now() - (13 - i) * 86400000);
+    const key = d.toLocaleDateString("sv-SE");
+    return {
+      key,
+      label: d.toLocaleDateString("ro-RO", { weekday: "short", day: "numeric" }),
+      minutes: usageMap.get(key) ?? 0,
+      isToday: i === 13,
+    };
+  });
+  const todayMin   = usageSeries[13].minutes;
+  const yesterMin  = usageSeries[12].minutes;
+  const weekAgoMin = usageSeries[6].minutes;
+  const totalWeekMin = usageSeries.slice(7).reduce((s, u) => s + u.minutes, 0);
 
   const chartTooltipStyle = {
     backgroundColor: "white",
@@ -91,6 +120,49 @@ export default function ProgresPage() {
             <StatCard icon={Lightning} label="Practici completate" value={data.totalPractices} sub="total" />
             <StatCard icon={CalendarCheck} label="Check-in-uri" value={data.totalCheckIns} sub="total" />
           </div>
+
+          {/* Time in platform */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="card bg-white p-5">
+            <div className="flex items-start justify-between mb-1">
+              <div>
+                <h3 className="font-body font-semibold text-body-md text-deep-green flex items-center gap-2">
+                  <Hourglass size={16} className="text-forest-green" /> Timp în platformă
+                </h3>
+                <p className="font-body text-label-xs text-secondary-text">Ultimele 14 zile · total săptămâna asta: {fmtMinutes(totalWeekMin)}</p>
+              </div>
+            </div>
+
+            {/* Comparație rapidă */}
+            <div className="grid grid-cols-3 gap-3 my-4">
+              {[
+                { label: "Azi",            value: todayMin,   highlight: true },
+                { label: "Ieri",           value: yesterMin,  highlight: false },
+                { label: "Acum 7 zile",    value: weekAgoMin, highlight: false },
+              ].map(c => (
+                <div key={c.label} className={`rounded-xl p-3 text-center border ${c.highlight ? "bg-light-green border-forest-green/30" : "bg-white border-sage-border/40"}`}>
+                  <p className="font-body text-label-xs text-secondary-text uppercase tracking-wider mb-0.5">{c.label}</p>
+                  <p className={`font-heading text-lg font-bold ${c.highlight ? "text-forest-green" : "text-deep-green"}`}>{fmtMinutes(c.value)}</p>
+                </div>
+              ))}
+            </div>
+
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={usageSeries} barCategoryGap="25%">
+                <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 10, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} interval={1} />
+                <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: "#f0f5f1" }} formatter={(v: unknown): [string, string] => [fmtMinutes(Number(v ?? 0)), "Timp"]} />
+                <Bar dataKey="minutes" radius={[6, 6, 0, 0]}>
+                  {usageSeries.map((entry) => (
+                    <Cell key={entry.key} fill={entry.isToday ? "#2B8C5C" : CHART_COLOR} fillOpacity={entry.isToday ? 1 : 0.65} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <p className="font-body text-label-xs text-secondary-text text-center mt-2">
+              Timpul se contorizează automat cât ai platforma deschisă.
+            </p>
+          </motion.div>
 
           {/* Weekly practices chart */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card bg-white p-5">

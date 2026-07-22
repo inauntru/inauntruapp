@@ -126,7 +126,11 @@ export default function DashboardPage() {
   const progressRows = [
     { label: "Zile consecutive",      value: stats.streak,           max: 30,  pct: Math.min(100, stats.streak / 30 * 100),            bar: "bg-terracotta",   track: "bg-rose-powder/40", text: "text-terracotta",   icon: Flame,   hint: "Obiectiv: 30 de zile" },
     { label: "Minute practicate",     value: stats.minutesPracticed, max: 300, pct: Math.min(100, stats.minutesPracticed / 300 * 100), bar: "bg-forest-green", track: "bg-light-green",    text: "text-forest-green", icon: Clock,   hint: "Obiectiv: 300 min / lună" },
-    { label: "Check-in-uri (săpt.)", value: stats.checkInsThisWeek, max: 7,   pct: Math.round(stats.checkInsThisWeek / 7 * 100),      bar: "bg-indigo",       track: "bg-indigo-light",   text: "text-indigo",       icon: Check,   hint: `${7 - stats.checkInsThisWeek} ${7 - stats.checkInsThisWeek === 1 ? "zi rămasă" : "zile rămase"}` },
+    { label: "Check-in-uri (săpt.)", value: stats.checkInsThisWeek, max: 7,   pct: Math.round(stats.checkInsThisWeek / 7 * 100),      bar: "bg-indigo",       track: "bg-indigo-light",   text: "text-indigo",       icon: Check,   hint: (() => {
+      // Zile rămase din săptămâna calendaristică (luni–duminică), după ziua de azi
+      const left = 6 - ((new Date().getDay() + 6) % 7);
+      return left === 0 ? "Ultima zi din săptămână" : `Încă ${left} ${left === 1 ? "zi" : "zile"} din săptămâna asta`;
+    })() },
     { label: "Ancore completate",     value: ancoreCount,            max: 20,  pct: Math.min(100, ancoreCount / 20 * 100),             bar: "bg-deep-green",   track: "bg-light-green/60", text: "text-deep-green",   icon: Anchor,  hint: "Practici de reglare a sistemului nervos" },
   ];
 
