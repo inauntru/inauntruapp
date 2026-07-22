@@ -10,7 +10,6 @@ import {
   Bell, CreditCard, Shield, Question, ArrowRight,
   Export, SignOut, CaretDown,
 } from "@phosphor-icons/react";
-import { getDailyQuote, getZodiacSign } from "@/lib/quotes";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ── Date picker ────────────────────────────────────────────────────────────
@@ -197,11 +196,6 @@ const GOALS = [
   "Mindfulness zilnic",
 ];
 
-const ZODIAC_EMOJI: Record<string, string> = {
-  Berbec: "♈", Taur: "♉", Gemeni: "♊", Rac: "♋", Leu: "♌", Fecioară: "♍",
-  Balanță: "♎", Scorpion: "♏", Săgetător: "♐", Capricorn: "♑", Vărsător: "♒", Pești: "♓",
-};
-
 function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>["profile"]; authUser: ReturnType<typeof useAuth>["user"] }) {
   const { refreshUser } = useAuth();
   const fn = profile?.first_name || authUser?.user_metadata?.first_name || "";
@@ -213,11 +207,6 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
   const [saving, setSaving]   = useState(false);
   const [error,  setError]    = useState<string | null>(null);
   const [ok,     setOk]       = useState(false);
-
-  const zodiacSign = pDob ? (() => {
-    const d = new Date(pDob);
-    return !isNaN(d.getTime()) ? getZodiacSign(d.getMonth() + 1, d.getDate()) : null;
-  })() : null;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -259,16 +248,9 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
       <div>
         <label className={labelCls}>Data nașterii</label>
         <DatePicker value={pDob} onChange={setPDob} />
-        {zodiacSign ? (
-          <p className="font-body text-label-xs text-secondary-text mt-1.5 flex items-center gap-1.5">
-            Semnul tău zodiacal: <span className="font-semibold text-deep-green">{ZODIAC_EMOJI[zodiacSign]} {zodiacSign}</span>
-            <span className="text-secondary-text">— citatul zilei se personalizează pentru tine</span>
-          </p>
-        ) : (
-          <p className="font-body text-label-xs text-secondary-text mt-1.5">
-            Opțional. Folosim data nașterii doar pentru a personaliza citatul zilei cu semnul tău zodiacal.
-          </p>
-        )}
+        <p className="font-body text-label-xs text-secondary-text mt-1.5">
+          Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine.
+        </p>
       </div>
 
       <div className="pt-2 border-t border-sage-border/40">

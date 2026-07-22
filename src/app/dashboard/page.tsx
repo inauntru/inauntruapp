@@ -12,13 +12,8 @@ import {
 import { CountUp } from "@/components/ui/AnimateIn";
 import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { getDailyQuote, type ZodiacSign } from "@/lib/quotes";
+import { getDailyQuote } from "@/lib/quotes";
 import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
-
-const ZODIAC_EMOJI: Record<ZodiacSign, string> = {
-  Berbec:"♈", Taur:"♉", Gemeni:"♊", Rac:"♋", Leu:"♌", Fecioară:"♍",
-  Balanță:"♎", Scorpion:"♏", Săgetător:"♐", Capricorn:"♑", Vărsător:"♒", Pești:"♓",
-};
 
 function formatDate() {
   return new Date().toLocaleDateString("ro-RO", {
@@ -195,8 +190,8 @@ export default function DashboardPage() {
                   <List size={18} weight="bold" />
                 </button>
                 <div>
-                  <h1 className="font-heading text-h1 text-deep-green">Bună, {firstName} 🌿</h1>
-                  <p className="font-body text-body-md text-secondary-text capitalize">{formatDate()}</p>
+                  <h1 className="font-heading text-h2 text-deep-green">Bună, {firstName} 🌿</h1>
+                  <p className="font-body text-body-sm text-secondary-text capitalize">{formatDate()}</p>
                 </div>
               </div>
 
@@ -295,7 +290,7 @@ export default function DashboardPage() {
 
               {/* Stats bar — same width as the player below */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}
-                className="bg-deep-green rounded-2xl grid grid-cols-3 overflow-hidden shadow-modal">
+                className="bg-deep-green rounded-2xl grid grid-cols-3 overflow-hidden shadow-card">
                 {[
                   { icon: Flame,  label: "Zile consecutive",  value: stats.streak },
                   { icon: Clock,  label: "Minute practicate", value: stats.minutesPracticed },
@@ -303,12 +298,14 @@ export default function DashboardPage() {
                 ].map((stat, i) => {
                   const Icon = stat.icon;
                   return (
-                    <div key={stat.label} className={`text-center py-6 px-4 ${i < 2 ? "border-r border-white/10" : ""}`}>
-                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-3">
-                        <Icon size={18} weight="fill" className="text-sage-border" />
+                    <div key={stat.label} className={`flex items-center justify-center gap-3 py-3.5 px-4 ${i < 2 ? "border-r border-white/10" : ""}`}>
+                      <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Icon size={13} weight="fill" className="text-sage-border" />
                       </div>
-                      <p className="font-heading text-3xl font-bold text-white"><CountUp to={stat.value} /></p>
-                      <p className="font-body text-label-xs text-white/50 mt-1">{stat.label}</p>
+                      <div className="flex items-baseline gap-1.5 sm:block">
+                        <p className="font-heading text-lg font-bold text-white leading-tight"><CountUp to={stat.value} /></p>
+                        <p className="font-body text-[10px] text-white/50">{stat.label}</p>
+                      </div>
                     </div>
                   );
                 })}
@@ -466,11 +463,6 @@ export default function DashboardPage() {
                         : "Un moment de reflecție scrisă poate clarifica mult din ce simți."}
                     </p>
                     <blockquote className="border-l-2 border-terracotta/40 pl-3 mb-4">
-                      {zodiacSign && (
-                        <p className="font-body text-label-xs text-terracotta/60 uppercase tracking-widest mb-1.5">
-                          {ZODIAC_EMOJI[zodiacSign]} {zodiacSign}
-                        </p>
-                      )}
                       <p className="font-body text-label-xs text-secondary-text italic leading-relaxed">
                         &ldquo;{dailyQuote.text}&rdquo;
                       </p>

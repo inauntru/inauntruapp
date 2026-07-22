@@ -177,7 +177,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 <p className="font-body text-label-xs text-secondary-text mt-1.5">
-                  Folosim data nașterii doar pentru a personaliza citatul zilei cu semnul tău zodiacal. ✨
+                  Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine. ✨
                 </p>
               </div>
 
