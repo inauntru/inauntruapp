@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { verifyAdminToken } from "@/lib/admin-auth";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Admin routes — cookie-based auth
+  // Admin routes — signed token auth
   if (pathname.startsWith("/admin/login")) return NextResponse.next();
 
   if (pathname.startsWith("/admin")) {
-    const token = req.cookies.get("admin_token")?.value;
-    if (token !== "authenticated") {
+    const payload = await verifyAdminToken(req.cookies.get("admin_token")?.value);
+    if (!payload) {
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
     return NextResponse.next();

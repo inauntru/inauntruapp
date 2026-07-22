@@ -5,8 +5,8 @@ import { createServiceClient } from "@/lib/supabase";
 import { ANCORE_DATA } from "@/lib/ancore";
 
 async function requireAdmin() {
-  const cookieStore = await cookies();
-  return cookieStore.get("admin_token")?.value === "authenticated";
+  const { requireAdmin: check } = await import("@/lib/admin-auth");
+  return (await check()) !== null;
 }
 
 const SETTINGS_KEY = "ancore_exercises";

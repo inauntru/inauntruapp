@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase";
 
 async function requireAdmin() {
-  const cookieStore = await cookies();
-  return cookieStore.get("admin_token")?.value === "authenticated";
+  const { requireAdmin: check } = await import("@/lib/admin-auth");
+  return (await check()) !== null;
 }
 
 export async function POST(req: Request) {

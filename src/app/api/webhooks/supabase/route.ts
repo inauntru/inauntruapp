@@ -5,11 +5,12 @@ import { createServiceClient } from "@/lib/supabase";
 const WEBHOOK_SECRET = process.env.SUPABASE_WEBHOOK_SECRET;
 
 export async function POST(req: NextRequest) {
-  if (WEBHOOK_SECRET) {
-    const secret = req.headers.get("x-webhook-secret");
-    if (secret !== WEBHOOK_SECRET) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  // Fără secret configurat, ruta refuză tot — nu acceptă cereri nesemnate
+  if (!WEBHOOK_SECRET) {
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
+  }
+  if (req.headers.get("x-webhook-secret") !== WEBHOOK_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {

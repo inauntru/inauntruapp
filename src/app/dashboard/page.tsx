@@ -39,6 +39,27 @@ const QUICK_ACCESS = [
 type PracticeItem = { id: number; title: string; facilitator: string; duration: number; category: string };
 type SessionItem  = { title: string; facilitator: string; date: string; spotsTotal: number; spotsLeft: number };
 
+// Dispoziția din check-in → categoria de practici potrivită
+const MOOD_CATEGORY: Record<string, string> = {
+  epuizat:   "Odihnă",
+  tensionat: "Suflu",
+  ok:        "Prezență",
+  bine:      "Fluiditate",
+  excelent:  "Vitalitate",
+};
+
+function pickRecommendation(practices: PracticeItem[], mood: string | null): PracticeItem | null {
+  if (practices.length === 0) return null;
+  const targetCategory = mood ? MOOD_CATEGORY[mood] : undefined;
+  const pool = targetCategory
+    ? practices.filter(p => p.category === targetCategory)
+    : practices;
+  const list = pool.length > 0 ? pool : practices;
+  // Aceeași recomandare toată ziua, se schimbă la miezul nopții
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+  return list[dayOfYear % list.length];
+}
+
 export default function DashboardPage() {
   const { profile, user: authUser } = useAuth();
   const dateOfBirth = authUser?.user_metadata?.date_of_birth as string | undefined;
@@ -46,6 +67,8 @@ export default function DashboardPage() {
 
   const [checkInOpen,     setCheckInOpen]     = useState(false);
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
+  const [allPractices,    setAllPractices]    = useState<PracticeItem[]>([]);
+  const [todayMood,       setTodayMood]       = useState<string | null>(null);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
   const [checkInDone,     setCheckInDone]     = useState(false);
   const [stats,           setStats]           = useState({ streak: 0, minutesPracticed: 0, checkInsCount: 0, practicesCompleted: 0, checkInsThisWeek: 0, journalCount: 0 });
@@ -65,8 +88,13 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/practices").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setRecentPractices(d.slice(0, 3)); }).catch(() => {});
+    fetch("/api/practices").then(r => r.json()).then(d => {
+      if (Array.isArray(d) && d.length > 0) { setRecentPractices(d.slice(0, 3)); setAllPractices(d); }
+    }).catch(() => {});
     fetch("/api/sessions").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setUpcomingSession(d[0]); }).catch(() => {});
+    fetch("/api/checkin").then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.checkIn?.mood) setTodayMood(d.checkIn.mood);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -92,6 +120,8 @@ export default function DashboardPage() {
     setCheckInOpen(false); setCheckInDone(true);
     localStorage.setItem("checkin-today", new Date().toDateString());
   }
+
+  const recommended = pickRecommendation(allPractices, todayMood);
 
   const progressRows = [
     { label: "Zile consecutive",      value: stats.streak,           max: 30,  pct: Math.min(100, stats.streak / 30 * 100),            bar: "bg-terracotta",   track: "bg-rose-powder/40", text: "text-terracotta",   icon: Flame,   hint: "Obiectiv: 30 de zile" },
@@ -330,14 +360,20 @@ export default function DashboardPage() {
                     style={{ background: "linear-gradient(to top, rgba(15,46,26,0.85) 0%, transparent 100%)" }}>
                     <div className="px-1 pb-1">
                       <p className="font-body text-label-xs text-sage-border/80 mb-1 uppercase tracking-wider">Recomandat pentru tine azi</p>
-                      <p className="font-heading text-xl text-white font-bold leading-tight">Respirație 4-7-8 pentru anxietate</p>
-                      <p className="font-body text-label-xs text-white/50 mt-1">10 min · Dr. Ana Ionescu</p>
+                      <p className="font-heading text-xl text-white font-bold leading-tight">
+                        {recommended?.title ?? "Explorează biblioteca de practici"}
+                      </p>
+                      <p className="font-body text-label-xs text-white/50 mt-1">
+                        {recommended ? `${recommended.duration} min · ${recommended.facilitator}` : "Practici ghidate pentru fiecare stare"}
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="p-5 flex items-center justify-between bg-white">
-                  <p className="font-body text-body-sm text-secondary-text">Bazat pe check-in-ul tău</p>
-                  <Link href="/practici" className="btn btn-primary btn-sm shadow-button">
+                  <p className="font-body text-body-sm text-secondary-text">
+                    {todayMood ? "Bazat pe check-in-ul tău de azi" : "Recomandarea zilei"}
+                  </p>
+                  <Link href={recommended ? `/practici/${recommended.id}` : "/practici"} className="btn btn-primary btn-sm shadow-button">
                     <Play size={14} weight="fill" /> Începe acum
                   </Link>
                 </div>

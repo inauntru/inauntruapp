@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { requireAdmin } from "@/lib/admin-auth";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("admin_token")?.value;
-  if (token !== "authenticated") {
+  // Rolul și numele vin din tokenul semnat — nu din cookie-uri editabile
+  const admin = await requireAdmin();
+  if (!admin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const role = cookieStore.get("admin_role")?.value ?? "moderator";
-  const name = cookieStore.get("admin_name")?.value
-    ? decodeURIComponent(cookieStore.get("admin_name")!.value)
-    : "Admin";
-  return NextResponse.json({ role, name });
+  return NextResponse.json({ role: admin.role, name: admin.name });
 }

@@ -214,6 +214,7 @@ export default async function PracticeDetailPage({ params }: { params: { id: str
               duration={practice.duration}
               isPremium={practice.isPremium}
               mediaType={practice.mediaType as "audio" | "video"}
+              practiceId={practice.id}
             />
 
             <div>

@@ -15,9 +15,8 @@ function getProjectRef() {
 }
 
 async function requireAdmin() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("admin_token")?.value;
-  return token === "authenticated";
+  const { requireAdmin: check } = await import("@/lib/admin-auth");
+  return (await check()) !== null;
 }
 
 function mgmtHeaders() {

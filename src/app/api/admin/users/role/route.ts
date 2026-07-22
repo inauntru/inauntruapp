@@ -4,7 +4,14 @@ import type { Database } from "@/lib/database.types";
 
 type ProfileRole = Database["public"]["Tables"]["profiles"]["Row"]["role"];
 
+import { requireAdmin } from "@/lib/admin-auth";
+
 export async function POST(req: NextRequest) {
+  // Doar super_admin poate schimba roluri
+  const admin = await requireAdmin();
+  if (!admin || admin.role !== "super_admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const body = await req.json() as { userId: string; role: ProfileRole };
     const { userId, role } = body;

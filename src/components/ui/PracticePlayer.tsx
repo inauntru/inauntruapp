@@ -10,13 +10,15 @@ interface Props {
   duration: number;
   isPremium: boolean;
   mediaType?: "audio" | "video";
+  practiceId?: number;
 }
 
-export default function PracticePlayer({ title, duration, isPremium, mediaType = "audio" }: Props) {
+export default function PracticePlayer({ title, duration, isPremium, mediaType = "audio", practiceId }: Props) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(80);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const completedRef = useRef(false);
   const totalSeconds = duration * 60;
 
   useEffect(() => {
@@ -24,7 +26,19 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
       window.dispatchEvent(new Event("practiceplay"));
       intervalRef.current = setInterval(() => {
         setProgress((p) => {
-          if (p >= 100) { setPlaying(false); return 0; }
+          if (p >= 100) {
+            setPlaying(false);
+            // Înregistrează finalizarea o singură dată per sesiune de redare
+            if (practiceId && !completedRef.current) {
+              completedRef.current = true;
+              fetch("/api/practices/complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ practiceId, durationMinutes: duration }),
+              }).catch(() => {});
+            }
+            return 0;
+          }
           return p + 100 / totalSeconds;
         });
       }, 1000);
@@ -33,7 +47,7 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
       if (intervalRef.current) clearInterval(intervalRef.current);
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [playing, totalSeconds]);
+  }, [playing, totalSeconds, practiceId, duration]);
 
   const elapsed = Math.floor((progress / 100) * totalSeconds);
   const remaining = totalSeconds - elapsed;

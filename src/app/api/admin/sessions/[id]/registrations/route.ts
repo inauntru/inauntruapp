@@ -6,17 +6,8 @@ import { createServiceClient } from "@/lib/supabase";
 import type { Database } from "@/lib/database.types";
 
 async function requireAdmin() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
-  );
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data: profile } = await (supabase as any).from("profiles").select("role").eq("id", user.id).single() as { data: { role: string } | null };
-  if (!profile || !["admin", "super_admin"].includes(profile.role)) return null;
-  return user;
+  const { requireAdmin: check } = await import("@/lib/admin-auth");
+  return check();
 }
 
 // GET /api/admin/sessions/[id]/registrations — participanții unei sesiuni

@@ -5,8 +5,8 @@ import { createServiceClient } from "@/lib/supabase";
 import type { BlogPost } from "@/lib/database.types";
 
 async function requireAdmin() {
-  const cookieStore = await cookies();
-  return cookieStore.get("admin_token")?.value === "authenticated";
+  const { requireAdmin: check } = await import("@/lib/admin-auth");
+  return (await check()) !== null;
 }
 
 function slugify(title: string) {

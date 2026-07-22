@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 async function requireAdmin() {
-  const cookieStore = await cookies();
-  return cookieStore.get("admin_token")?.value === "authenticated";
+  const { requireAdmin: check } = await import("@/lib/admin-auth");
+  return (await check()) !== null;
 }
 
 export async function POST() {

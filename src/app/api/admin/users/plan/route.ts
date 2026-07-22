@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-auth";
 
 export async function POST(req: NextRequest) {
+  if (!await requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const { userId, plan } = await req.json() as { userId: string; plan: string };
     if (!userId || !plan) return NextResponse.json({ error: "userId și plan sunt obligatorii" }, { status: 400 });
