@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PRACTICES, FACILITATORS } from "@/lib/mockData";
 import { createServiceClient } from "@/lib/supabase";
 import type { Practice, Facilitator } from "@/lib/database.types";
-import PracticePlayer from "@/components/ui/PracticePlayer";
+import { GatedPlayer, AccessCard } from "@/components/ui/PracticeAccess";
 import {
   ArrowLeft,
   Clock,
@@ -209,7 +209,7 @@ export default async function PracticeDetailPage({ params }: { params: { id: str
 
           {/* Left: Player + Description + Tags */}
           <div className="lg:col-span-2 space-y-8">
-            <PracticePlayer
+            <GatedPlayer
               title={practice.title}
               duration={practice.duration}
               isPremium={practice.isPremium}
@@ -236,32 +236,8 @@ export default async function PracticeDetailPage({ params }: { params: { id: str
 
           {/* Right: CTA + Facilitator + Quick info */}
           <div className="space-y-5">
-            {/* CTA card */}
-            {practice.isPremium ? (
-              <div className="card p-6 text-center">
-                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
-                  <Lock size={22} weight="fill" className="text-amber-600" />
-                </div>
-                <h3 className="font-heading text-h4 text-deep-green mb-2">Conținut Premium</h3>
-                <p className="font-body text-body-sm text-secondary-text mb-5">
-                  Abonează-te pentru acces nelimitat la toate practicile premium.
-                </p>
-                <Link href="/preturi" className="btn btn-primary w-full">
-                  Accesează Premium
-                </Link>
-                <p className="font-ui text-label-xs text-secondary-text mt-3">14 zile gratuit · Fără card</p>
-              </div>
-            ) : (
-              <div className="card p-6 text-center bg-light-green border-forest-green/20">
-                <div className="w-12 h-12 rounded-full bg-forest-green/15 flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle size={24} weight="fill" className="text-forest-green" />
-                </div>
-                <h3 className="font-heading text-h4 text-deep-green mb-2">Practică gratuită</h3>
-                <p className="font-body text-body-sm text-secondary-text">
-                  Accesibilă tuturor utilizatorilor WithIn.
-                </p>
-              </div>
-            )}
+            {/* CTA card — se adaptează la planul utilizatorului */}
+            <AccessCard isPremium={practice.isPremium} />
 
             {/* Quick info */}
             <div className="card p-5 space-y-3">

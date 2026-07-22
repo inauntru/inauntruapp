@@ -8,6 +8,7 @@ import { CalendarBlank, Users, Clock, Video, Lock, ArrowRight, Play, Star, Caret
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { LIVE_SESSIONS, PAST_RECORDINGS } from "@/lib/mockData";
 import { useAuth } from "@/contexts/AuthContext";
+import { hasPremiumAccess } from "@/lib/plan";
 
 const WEEK_DAYS = ["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"];
 
@@ -22,7 +23,8 @@ interface Props { siteContent: Record<string, string>; }
 
 export default function SesiuniLiveClient({ siteContent }: Props) {
   const t = (key: string, fallback: string) => siteContent[key] || fallback;
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const unlocked = hasPremiumAccess(profile?.plan);
   const [sessions, setSessions] = useState(LIVE_SESSIONS);
   const [selectedDay, setSelectedDay] = useState(0);
   const [reserved, setReserved] = useState<number[]>([]);
@@ -142,6 +144,10 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
               <div className="flex gap-4">
                 {!user ? (
                   <Link href="/register" className="btn btn-rose">Rezervă locul tău <ArrowRight size={16} weight="bold" /></Link>
+                ) : featured.isPremium && !unlocked ? (
+                  <Link href="/preturi" className="btn bg-white/15 text-white border border-white/25 hover:bg-white/25 gap-2">
+                    <Lock size={16} weight="fill" /> Necesită abonament
+                  </Link>
                 ) : reserved.includes(featured.id) ? (
                   <div className="relative" data-cancel-menu>
                     <button
@@ -247,8 +253,10 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                     </div>
                   </div>
                   <div className="flex-shrink-0">
-                    {session.isPremium ? (
-                      <button className="btn btn-ghost btn-sm gap-2"><Lock size={14} weight="fill" /> Premium</button>
+                    {session.isPremium && !unlocked ? (
+                      <Link href={user ? "/preturi" : "/register"} className="btn btn-ghost btn-sm gap-2">
+                        <Lock size={14} weight="fill" /> Premium
+                      </Link>
                     ) : !user ? (
                       <Link href="/register" className="btn btn-primary btn-sm">Rezervă <ArrowRight size={14} weight="bold" /></Link>
                     ) : reserved.includes(session.id) ? (

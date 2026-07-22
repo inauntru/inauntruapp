@@ -7,6 +7,8 @@ import Image from "next/image";
 import { MagnifyingGlass, Lock, Play, Wind, PersonSimpleWalk, Moon, Lightning, Microphone, Star, Clock, SlidersHorizontal, X, CaretDown, Check } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { PRACTICES } from "@/lib/mockData";
+import { useAuth } from "@/contexts/AuthContext";
+import { hasPremiumAccess } from "@/lib/plan";
 
 type Practice = typeof PRACTICES[0];
 
@@ -46,6 +48,8 @@ interface Props { siteContent: Record<string, string>; }
 
 export default function PracticiClient({ siteContent }: Props) {
   const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { profile } = useAuth();
+  const unlocked = hasPremiumAccess(profile?.plan);
   const [practices, setPractices] = useState<Practice[]>(PRACTICES);
   const [category, setCategory] = useState("Toate");
   const [duration, setDuration] = useState("Durată");
@@ -133,7 +137,7 @@ export default function PracticiClient({ siteContent }: Props) {
                       <Image src={`${practice.image}?w=600&q=80`} alt={practice.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-deep-green/50 via-transparent to-transparent" />
                       <div className="absolute top-3 left-3"><span className="tag tag-green shadow-sm">{practice.category}</span></div>
-                      {practice.isPremium && <div className="absolute top-3 right-3"><div className="w-7 h-7 bg-deep-green/80 backdrop-blur rounded-full flex items-center justify-center"><Lock size={13} weight="fill" className="text-white" /></div></div>}
+                      {practice.isPremium && !unlocked && <div className="absolute top-3 right-3"><div className="w-7 h-7 bg-deep-green/80 backdrop-blur rounded-full flex items-center justify-center"><Lock size={13} weight="fill" className="text-white" /></div></div>}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="w-12 h-12 bg-forest-green rounded-full flex items-center justify-center shadow-button"><Play size={20} weight="fill" className="text-white ml-0.5" /></div>
                       </div>
@@ -146,7 +150,9 @@ export default function PracticiClient({ siteContent }: Props) {
                           <span className="flex items-center gap-1 font-body text-label-xs text-secondary-text"><Clock size={12} weight="regular" />{practice.duration} min</span>
                           <span className="tag tag-outline">{practice.level}</span>
                         </div>
-                        {practice.isPremium ? <span className="tag bg-secondary-container text-on-secondary-container border-0">Premium</span> : <span className="tag tag-green">Gratuit</span>}
+                        {practice.isPremium
+                          ? <span className={`tag border-0 ${unlocked ? "bg-forest-green/10 text-forest-green" : "bg-secondary-container text-on-secondary-container"}`}>{unlocked ? "✓ Premium" : "Premium"}</span>
+                          : <span className="tag tag-green">Gratuit</span>}
                       </div>
                     </div>
                   </Link>

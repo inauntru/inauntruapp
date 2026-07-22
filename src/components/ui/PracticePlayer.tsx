@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, SpeakerHigh, SpeakerLow, SpeakerNone, Headphones, VideoCamera } from "@phosphor-icons/react";
+import Link from "next/link";
+import { Play, Pause, SpeakerHigh, SpeakerLow, SpeakerNone, Headphones, VideoCamera, Lock } from "@phosphor-icons/react";
 
 const WAVEFORM = [30,45,60,40,72,55,80,48,35,62,75,50,42,68,85,60,44,70,52,38,63,82,56,72,46,34,60,50,78,42,55,30,48,65,80,55,40,70,52,36];
 
@@ -11,9 +12,10 @@ interface Props {
   isPremium: boolean;
   mediaType?: "audio" | "video";
   practiceId?: number;
+  locked?: boolean;
 }
 
-export default function PracticePlayer({ title, duration, isPremium, mediaType = "audio", practiceId }: Props) {
+export default function PracticePlayer({ title, duration, isPremium, mediaType = "audio", practiceId, locked = false }: Props) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(80);
@@ -78,6 +80,21 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
         <h3 className="font-heading text-lg text-white leading-snug">{title}</h3>
       </div>
 
+      {/* Conținut blocat — abonament necesar */}
+      {locked ? (
+        <div className="px-6 pb-8 pt-2 text-center">
+          <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
+            <Lock size={24} weight="fill" className="text-amber-300/90" />
+          </div>
+          <p className="font-body text-body-sm text-white/70 mb-5 max-w-xs mx-auto">
+            Această practică face parte din conținutul premium. Abonează-te pentru acces nelimitat.
+          </p>
+          <Link href="/preturi" className="btn btn-primary btn-sm shadow-button">
+            Vezi abonamentele
+          </Link>
+        </div>
+      ) : (
+      <>
       {/* Waveform */}
       <div className="px-6 pb-4">
         <div className="flex items-center gap-[3px] h-14">
@@ -159,6 +176,8 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
         {/* Spacer symmetric */}
         <div className="w-32" />
       </div>
+      </>
+      )}
     </div>
   );
 }
