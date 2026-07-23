@@ -10,7 +10,6 @@ import {
   CaretDown, Users,
 } from "@phosphor-icons/react";
 import { CountUp } from "@/components/ui/AnimateIn";
-import CheckInModal from "@/components/ui/CheckInModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDailyQuote } from "@/lib/quotes";
 import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
@@ -67,7 +66,6 @@ export default function DashboardPage() {
   const dateOfBirth = authUser?.user_metadata?.date_of_birth as string | undefined;
   const { quote: dailyQuote, sign: zodiacSign } = getDailyQuote(dateOfBirth);
 
-  const [checkInOpen,     setCheckInOpen]     = useState(false);
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
   const [allPractices,    setAllPractices]    = useState<PracticeItem[]>([]);
   const [todayMood,       setTodayMood]       = useState<string | null>(null);
@@ -96,39 +94,24 @@ export default function DashboardPage() {
     fetch("/api/sessions").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setUpcomingSession(d[0]); }).catch(() => {});
   }, []);
 
-  // ── Apariția check-in-ului ────────────────────────────────────────────────
-  // Doar pentru logați (dashboard): o apariție pe zi + max 2 reamintiri dacă
-  // e închis fără completare. După 3 închideri sau după completare — tăcere
-  // până a doua zi. Completarea stă în DB; închiderile sunt doar stare de UI.
-  const MAX_APPEARANCES = 3;
-  const REMINDER_DELAY_MS = 4 * 60 * 1000;
-  const completedNowRef = useRef(false);
-  const reminderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const dismissKey = () => `checkin-dismissals-${new Date().toDateString()}`;
-  const getDismissals = () => { try { return Number(localStorage.getItem(dismissKey()) || 0); } catch { return 0; } };
-
+  // Promptul de check-in e montat global (DailyCheckInPrompt în Providers).
+  // Aici citim doar starea "completat azi" pentru pastila din header și recomandare.
   useEffect(() => {
-    // Starea "completat azi" vine din DB — sincronizată pe orice dispozitiv
     let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
     fetch("/api/checkin")
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (cancelled) return;
-        const done = !!d?.checkedIn;
-        setCheckInDone(done);
+        setCheckInDone(!!d?.checkedIn);
         if (d?.checkIn?.mood) setTodayMood(d.checkIn.mood);
-        if (!done && getDismissals() < MAX_APPEARANCES) {
-          timer = setTimeout(() => setCheckInOpen(true), 3000);
-        }
       })
       .catch(() => {});
+    const completedHandler = () => setCheckInDone(true);
+    window.addEventListener("checkin:completed", completedHandler);
     return () => {
       cancelled = true;
-      if (timer) clearTimeout(timer);
-      if (reminderTimerRef.current) clearTimeout(reminderTimerRef.current);
+      window.removeEventListener("checkin:completed", completedHandler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -144,23 +127,6 @@ export default function DashboardPage() {
     return () => document.removeEventListener("mousedown", close);
   }, [sessionExpanded]);
 
-  function handleCheckInClose() {
-    setCheckInOpen(false);
-    if (completedNowRef.current) { setCheckInDone(true); return; }
-    // Închis fără completare → numărăm și, dacă mai avem voie, reamintim
-    try { localStorage.setItem(dismissKey(), String(getDismissals() + 1)); } catch { /* ignore */ }
-    if (getDismissals() < MAX_APPEARANCES) {
-      reminderTimerRef.current = setTimeout(() => {
-        if (!completedNowRef.current) setCheckInOpen(true);
-      }, REMINDER_DELAY_MS);
-    }
-  }
-
-  function handleCheckInCompleted() {
-    completedNowRef.current = true;
-    setCheckInDone(true);
-    if (reminderTimerRef.current) clearTimeout(reminderTimerRef.current);
-  }
 
   const recommended = pickRecommendation(allPractices, todayMood);
 
@@ -177,7 +143,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg-main">
-      <CheckInModal isOpen={checkInOpen} onClose={handleCheckInClose} onCompleted={handleCheckInCompleted} canSkip />
 
       {/* Sidebar backdrop */}
       <AnimatePresence>
@@ -374,7 +339,7 @@ export default function DashboardPage() {
                     <span className="font-body text-[11px] text-forest-green font-semibold">Check-in completat</span>
                   </div>
                 ) : (
-                  <button onClick={() => setCheckInOpen(true)}
+                  <button onClick={() => window.dispatchEvent(new Event("checkin:open"))}
                     className="flex items-center gap-2 bg-forest-green/10 border border-forest-green/30 rounded-full px-3 py-1.5 hover:bg-forest-green/20 transition-colors">
                     <Leaf size={13} weight="fill" className="text-forest-green" />
                     <span className="font-body text-[11px] text-forest-green font-semibold">Check-in zilnic ○</span>
