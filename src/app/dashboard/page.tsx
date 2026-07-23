@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Flame, Clock, VideoCamera, BookOpen, Notebook, ChartLine, Play, Leaf,
-  CalendarBlank, ArrowRight, Check, List, X, Anchor, PencilSimple, GearSix,
+  CalendarBlank, ArrowRight, Check, List, X, Anchor, PencilSimple, GearSix, SignOut, CaretUp,
   CaretDown, Users,
 } from "@phosphor-icons/react";
 import { CountUp } from "@/components/ui/AnimateIn";
@@ -62,7 +62,8 @@ function pickRecommendation(practices: PracticeItem[], mood: string | null): Pra
 }
 
 export default function DashboardPage() {
-  const { profile, user: authUser } = useAuth();
+  const { profile, user: authUser, signOut } = useAuth();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const dateOfBirth = authUser?.user_metadata?.date_of_birth as string | undefined;
   const { quote: dailyQuote, sign: zodiacSign } = getDailyQuote(dateOfBirth);
 
@@ -95,8 +96,19 @@ export default function DashboardPage() {
     fetch("/api/sessions").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setUpcomingSession(d[0]); }).catch(() => {});
   }, []);
 
+  // ── Apariția check-in-ului ────────────────────────────────────────────────
+  // Doar pentru logați (dashboard): o apariție pe zi + max 2 reamintiri dacă
+  // e închis fără completare. După 3 închideri sau după completare — tăcere
+  // până a doua zi. Completarea stă în DB; închiderile sunt doar stare de UI.
+  const MAX_APPEARANCES = 3;
+  const REMINDER_DELAY_MS = 4 * 60 * 1000;
+  const completedNowRef = useRef(false);
+  const reminderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dismissKey = () => `checkin-dismissals-${new Date().toDateString()}`;
+  const getDismissals = () => { try { return Number(localStorage.getItem(dismissKey()) || 0); } catch { return 0; } };
+
   useEffect(() => {
-    // Starea check-in-ului vine din DB — sincronizată pe orice dispozitiv
+    // Starea "completat azi" vine din DB — sincronizată pe orice dispozitiv
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     fetch("/api/checkin")
@@ -106,10 +118,17 @@ export default function DashboardPage() {
         const done = !!d?.checkedIn;
         setCheckInDone(done);
         if (d?.checkIn?.mood) setTodayMood(d.checkIn.mood);
-        if (!done) timer = setTimeout(() => setCheckInOpen(true), 3000);
+        if (!done && getDismissals() < MAX_APPEARANCES) {
+          timer = setTimeout(() => setCheckInOpen(true), 3000);
+        }
       })
       .catch(() => {});
-    return () => { cancelled = true; if (timer) clearTimeout(timer); };
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      if (reminderTimerRef.current) clearTimeout(reminderTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -126,8 +145,21 @@ export default function DashboardPage() {
   }, [sessionExpanded]);
 
   function handleCheckInClose() {
-    // Check-in-ul e deja salvat în DB de modal — doar actualizăm starea locală
-    setCheckInOpen(false); setCheckInDone(true);
+    setCheckInOpen(false);
+    if (completedNowRef.current) { setCheckInDone(true); return; }
+    // Închis fără completare → numărăm și, dacă mai avem voie, reamintim
+    try { localStorage.setItem(dismissKey(), String(getDismissals() + 1)); } catch { /* ignore */ }
+    if (getDismissals() < MAX_APPEARANCES) {
+      reminderTimerRef.current = setTimeout(() => {
+        if (!completedNowRef.current) setCheckInOpen(true);
+      }, REMINDER_DELAY_MS);
+    }
+  }
+
+  function handleCheckInCompleted() {
+    completedNowRef.current = true;
+    setCheckInDone(true);
+    if (reminderTimerRef.current) clearTimeout(reminderTimerRef.current);
   }
 
   const recommended = pickRecommendation(allPractices, todayMood);
@@ -145,7 +177,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg-main">
-      <CheckInModal isOpen={checkInOpen} onClose={handleCheckInClose} canSkip />
+      <CheckInModal isOpen={checkInOpen} onClose={handleCheckInClose} onCompleted={handleCheckInCompleted} canSkip />
 
       {/* Sidebar backdrop */}
       <AnimatePresence>
@@ -201,18 +233,45 @@ export default function DashboardPage() {
                 );
               })}
             </nav>
-            <div className="px-3 pt-6 border-t border-white/10">
-              <Link href="/dashboard/cont" onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors">
+            <div className="px-3 pt-6 border-t border-white/10 relative">
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute bottom-full left-3 right-3 mb-2 rounded-xl bg-[#1a4a2e] border border-white/15 overflow-hidden shadow-modal"
+                  >
+                    <Link
+                      href="/dashboard/cont"
+                      onClick={() => { setSidebarOpen(false); setUserMenuOpen(false); }}
+                      className="flex items-center gap-2.5 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 transition-colors font-body text-body-sm"
+                    >
+                      <GearSix size={15} /> Setări cont
+                    </Link>
+                    <button
+                      onClick={async () => { await signOut(); window.location.href = "/"; }}
+                      className="w-full flex items-center gap-2.5 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 transition-colors font-body text-body-sm text-left border-t border-white/10"
+                    >
+                      <SignOut size={15} /> Deconectare
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <button
+                onClick={() => setUserMenuOpen(p => !p)}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors"
+              >
                 <div className="w-8 h-8 rounded-full bg-forest-green flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs font-bold">{initials}</span>
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-left">
                   <p className="font-body text-body-sm font-semibold text-white truncate">{fullName}</p>
                   <p className="font-body text-label-xs text-white/40">{planLabel}</p>
                 </div>
-                <GearSix size={14} className="text-white/30 flex-shrink-0" />
-              </Link>
+                <CaretUp size={13} className={`text-white/40 flex-shrink-0 transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`} />
+              </button>
             </div>
           </motion.aside>
         )}

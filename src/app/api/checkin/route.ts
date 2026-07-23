@@ -54,6 +54,21 @@ export async function POST(req: NextRequest) {
   const { mood, body_zones, intensity, note } = await req.json();
   if (!mood) return NextResponse.json({ error: "mood required" }, { status: 400 });
 
+  // Un singur check-in pe zi — dacă există deja unul azi, nu inserăm altul
+  const dayStart = new Date();
+  dayStart.setHours(0, 0, 0, 0);
+  const { data: existing } = await supabase
+    .from("check_ins")
+    .select("id")
+    .eq("user_id", user.id)
+    .gte("created_at", dayStart.toISOString())
+    .limit(1)
+    .maybeSingle();
+
+  if (existing) {
+    return NextResponse.json({ ok: true, alreadyCheckedIn: true });
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any).from("check_ins").insert({
     user_id: user.id,

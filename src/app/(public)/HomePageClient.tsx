@@ -14,7 +14,6 @@ import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { TESTIMONIALS, PRICING_PLANS, FAQ_ITEMS, INTENT_CARDS } from "@/lib/mockData";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
 
-const CheckInModal = dynamic(() => import("@/components/ui/CheckInModal"), { ssr: false });
 
 const INTENT_ICONS: Record<string, React.ElementType> = {
   Leaf, Moon, Wind, Sun, Heartbeat, Sparkle,
@@ -28,18 +27,7 @@ export default function HomePageClient({ siteContent }: Props) {
   const [selectedIntent, setSelectedIntent] = useState<string | null>(null);
   const [billingAnnual, setBillingAnnual] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [checkInOpen, setCheckInOpen] = useState(false);
-
-  useEffect(() => {
-    const seen = sessionStorage.getItem("checkin-seen");
-    if (!seen) {
-      const timer = setTimeout(() => {
-        setCheckInOpen(true);
-        sessionStorage.setItem("checkin-seen", "1");
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+  // Check-in-ul zilnic apare doar în dashboard, pentru utilizatorii logați
 
   const intentCards = INTENT_CARDS.map((card, i) => ({
     ...card,
@@ -73,7 +61,6 @@ export default function HomePageClient({ siteContent }: Props) {
 
   return (
     <div style={{ overflowX: "clip" }}>
-      <CheckInModal isOpen={checkInOpen} onClose={() => setCheckInOpen(false)} canSkip={false} />
 
       {/* ── HERO ── */}
       <section className="relative sticky top-0 z-0 h-screen min-h-[640px] flex items-center overflow-hidden -mt-16 lg:-mt-20">

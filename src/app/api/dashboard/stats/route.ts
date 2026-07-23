@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import type { Database, UserPractice, CheckIn, Profile } from "@/lib/database.types";
+import type { Database, UserPractice, CheckIn } from "@/lib/database.types";
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -78,19 +78,19 @@ export async function GET() {
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id);
 
-  // Total check-ins from profile
-  const { data: profileRaw } = await (supabase as any)
-    .from("profiles")
-    .select("check_ins_count")
-    .eq("id", user.id)
-    .single();
-
-  const profile = profileRaw as Pick<Profile, "check_ins_count"> | null;
+  // Total check-in-uri = zile distincte cu check-in (nu rânduri, nu apariții de modal)
+  const totalCheckInDays = new Set(
+    checkIns.map((c) => {
+      const d = new Date(c.created_at);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    })
+  ).size;
 
   return NextResponse.json({
     streak,
     minutesPracticed,
-    checkInsCount: profile?.check_ins_count ?? checkIns.length,
+    checkInsCount: totalCheckInDays,
     practicesCompleted,
     checkInsThisWeek,
     journalCount: journalCount ?? 0,

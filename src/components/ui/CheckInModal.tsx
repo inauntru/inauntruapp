@@ -58,9 +58,11 @@ interface CheckInModalProps {
   isOpen: boolean;
   onClose: () => void;
   canSkip?: boolean;
+  /** Apelat când check-in-ul e trimis cu succes (separat de simpla închidere). */
+  onCompleted?: () => void;
 }
 
-export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckInModalProps) {
+export default function CheckInModal({ isOpen, onClose, canSkip = true, onCompleted }: CheckInModalProps) {
   const [step, setStep] = useState(1);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
@@ -93,6 +95,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true }: CheckI
 
   const handleComplete = async () => {
     setCompleted(true);
+    if (onCompleted) onCompleted();
     try {
       await fetch("/api/checkin", {
         method: "POST",
