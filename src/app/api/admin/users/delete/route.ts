@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
     const { error: deleteError } = await serviceClient.auth.admin.deleteUser(user.id);
     if (deleteError) throw deleteError;
 
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Ștergere utilizator", email);
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Eroare necunoscută";

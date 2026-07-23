@@ -16,6 +16,9 @@ export async function POST(req: NextRequest) {
     const { error } = await (serviceClient as any).from("profiles").update({ plan }).eq("id", userId);
     if (error) throw new Error(error.message);
 
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Schimbare plan utilizator", userId, { plan });
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Eroare necunoscută";

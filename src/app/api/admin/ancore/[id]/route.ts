@@ -54,6 +54,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     const filtered = exercises.filter((e: { id: string }) => e.id !== id);
     if (filtered.length === exercises.length) return NextResponse.json({ error: "Exercițiu negăsit" }, { status: 404 });
     await saveExercises(filtered);
+
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Ștergere ancoră", id);
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

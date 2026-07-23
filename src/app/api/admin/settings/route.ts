@@ -30,5 +30,9 @@ export async function POST(req: NextRequest) {
     .upsert({ key: body.key, value: body.value, updated_at: new Date().toISOString() }, { onConflict: "key" });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const { logAdminAction } = await import("@/lib/audit");
+  await logAdminAction("Salvare setări", body.key);
+
   return NextResponse.json({ ok: true });
 }

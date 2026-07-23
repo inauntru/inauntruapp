@@ -37,6 +37,11 @@ export async function POST(req: NextRequest) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
 
+  const { rateLimit } = await import("@/lib/admin-auth");
+  if (!rateLimit(`ancore:${user.id}`, 30, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: "Prea multe cereri. Încearcă mai târziu." }, { status: 429 });
+  }
+
   const body = await req.json();
   const entries = Array.isArray(body.entries) ? body.entries : [body];
 

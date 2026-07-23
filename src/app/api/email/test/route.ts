@@ -44,6 +44,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Trimitere email de test", to, { templateId });
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

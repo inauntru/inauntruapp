@@ -42,5 +42,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const { error } = await (serviceClient as any).from("live_sessions").delete().eq("id", Number(id));
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const { logAdminAction } = await import("@/lib/audit");
+  await logAdminAction("Ștergere sesiune", id);
+
   return NextResponse.json({ ok: true });
 }

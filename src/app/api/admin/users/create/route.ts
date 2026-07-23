@@ -38,6 +38,9 @@ export async function POST(req: NextRequest) {
       await (serviceClient as any).from("profiles").update(update).eq("id", data.user.id);
     }
 
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Creare utilizator", email, { plan: plan ?? "gratuit", role: role ?? "user" });
+
     return NextResponse.json({ ok: true, userId: data.user.id });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Eroare necunoscută";

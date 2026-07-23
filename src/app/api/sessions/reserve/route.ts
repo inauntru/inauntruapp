@@ -35,6 +35,11 @@ export async function POST(req: NextRequest) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
 
+  const { rateLimit } = await import("@/lib/admin-auth");
+  if (!rateLimit(`reserve:${user.id}`, 15, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: "Prea multe cereri. Încearcă mai târziu." }, { status: 429 });
+  }
+
   const { sessionId } = await req.json();
   if (!sessionId) return NextResponse.json({ error: "Lipsește sessionId" }, { status: 400 });
 

@@ -21,5 +21,8 @@ export async function POST() {
     return NextResponse.json({ error: "Vercel deploy failed" }, { status: 500 });
   }
 
+  const { logAdminAction } = await import("@/lib/audit");
+  await logAdminAction("Declanșare deploy");
+
   return NextResponse.json({ ok: true });
 }

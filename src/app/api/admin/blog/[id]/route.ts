@@ -41,5 +41,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const serviceClient = createServiceClient();
   const { error } = await (serviceClient as any).from("blog_posts").delete().eq("id", params.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const { logAdminAction } = await import("@/lib/audit");
+  await logAdminAction("Ștergere articol blog", params.id);
+
   return NextResponse.json({ ok: true });
 }

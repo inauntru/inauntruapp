@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
       .eq("id", userId);
 
     if (error) throw error;
+
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Schimbare rol utilizator", userId, { role });
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Eroare necunoscută";

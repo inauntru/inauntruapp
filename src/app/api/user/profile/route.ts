@@ -18,6 +18,11 @@ export async function PATCH(req: Request) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
 
+  const { rateLimit } = await import("@/lib/admin-auth");
+  if (!rateLimit(`profile:${user.id}`, 10, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: "Prea multe cereri. Încearcă mai târziu." }, { status: 429 });
+  }
+
   const { first_name, last_name, date_of_birth, phone, birth_time, birth_city } = await req.json();
   if (!first_name?.trim() || !last_name?.trim())
     return NextResponse.json({ error: "Prenumele și numele sunt obligatorii" }, { status: 400 });

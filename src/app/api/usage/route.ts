@@ -25,6 +25,12 @@ export async function POST(req: NextRequest) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
 
+  // Heartbeat-ul legitim e 1/minut — mai mult e abuz
+  const { rateLimit } = await import("@/lib/admin-auth");
+  if (!rateLimit(`usage:${user.id}`, 8, 5 * 60 * 1000)) {
+    return NextResponse.json({ error: "Prea multe cereri" }, { status: 429 });
+  }
+
   let minutes = 1;
   try {
     const body = await req.json();

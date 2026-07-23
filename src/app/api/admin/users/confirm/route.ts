@@ -17,6 +17,10 @@ export async function POST(req: Request) {
     const serviceClient = createServiceClient();
     const { error } = await serviceClient.auth.admin.updateUserById(userId, { email_confirm: true });
     if (error) throw error;
+
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Confirmare manuală email", userId);
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Eroare necunoscută";

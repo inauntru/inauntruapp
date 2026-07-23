@@ -143,6 +143,12 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Generarea AI costă bani — limităm cererile per utilizator
+  const { rateLimit } = await import("@/lib/admin-auth");
+  if (!rateLimit(`astro:${user.id}`, 20, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Prea multe cereri" }, { status: 429 });
+  }
+
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
   const dateKey = `astro_daily_${todayStr}`;

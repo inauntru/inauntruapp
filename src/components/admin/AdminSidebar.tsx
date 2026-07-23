@@ -18,6 +18,7 @@ import {
   EnvelopeSimple,
   Article,
   Anchor,
+  ShieldCheck,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   { icon: CreditCard, label: "Abonamente", href: "/admin/abonamente", id: "abonamente" },
   { icon: EnvelopeSimple, label: "Emailuri", href: "/admin/emailuri", id: "emailuri" },
   { icon: ChartLine, label: "Statistici", href: "/admin/statistici", id: "statistici" },
+  { icon: ShieldCheck, label: "Jurnal audit", href: "/admin/audit", id: "audit" },
   { icon: GearSix, label: "Setări", href: "/admin/setari", id: "setari" },
 ];
 

@@ -41,6 +41,11 @@ export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { rateLimit } = await import("@/lib/admin-auth");
+  if (!rateLimit(`journal:${user.id}`, 30, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: "Prea multe cereri. Încearcă mai târziu." }, { status: 429 });
+  }
+
   const { title, content, mood } = await req.json();
   if (!content) return NextResponse.json({ error: "Conținutul este obligatoriu" }, { status: 400 });
 

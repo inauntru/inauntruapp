@@ -51,6 +51,11 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { rateLimit } = await import("@/lib/admin-auth");
+  if (!rateLimit(`checkin:${user.id}`, 10, 10 * 60 * 1000)) {
+    return NextResponse.json({ error: "Prea multe cereri. Încearcă mai târziu." }, { status: 429 });
+  }
+
   const { mood, body_zones, intensity, note } = await req.json();
   if (!mood) return NextResponse.json({ error: "mood required" }, { status: 400 });
 
