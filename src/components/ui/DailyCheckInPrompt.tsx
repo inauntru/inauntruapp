@@ -8,17 +8,25 @@ import CheckInModal from "@/components/ui/CheckInModal";
  * Promptul zilnic de check-in — reguli unice, oriunde e montat:
  * - apare DOAR pentru utilizatori logați
  * - o apariție pe zi + max 2 reamintiri dacă e închis fără completare
- *   (numărate global pe zi, indiferent de pagină)
+ * - după fiecare închidere: pauză de 5 minute care persistă și dacă
+ *   schimbi pagina (snooze salvat în localStorage)
  * - după 3 închideri sau după completare — tăcere până a doua zi
  * - starea "completat" vine din DB (sincronizată între dispozitive)
  */
 
 const MAX_APPEARANCES = 3;
-const REMINDER_DELAY_MS = 4 * 60 * 1000;
+const SNOOZE_MS = 5 * 60 * 1000; // pauză după fiecare închidere
 
 const dismissKey = () => `checkin-dismissals-${new Date().toDateString()}`;
 const getDismissals = () => {
   try { return Number(localStorage.getItem(dismissKey()) || 0); } catch { return 0; }
+};
+const SNOOZE_KEY = "checkin-snooze-until";
+const getSnoozeUntil = () => {
+  try { return Number(localStorage.getItem(SNOOZE_KEY) || 0); } catch { return 0; }
+};
+const setSnooze = (ms: number) => {
+  try { localStorage.setItem(SNOOZE_KEY, String(Date.now() + ms)); } catch { /* ignore */ }
 };
 
 /**
@@ -33,7 +41,7 @@ export default function DailyCheckInPrompt() {
   const completedRef = useRef(false);
   const reminderRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Deschidere manuală de oriunde din aplicație
+  // Deschidere manuală de oriunde din aplicație (ignoră snooze-ul — e cerută explicit)
   useEffect(() => {
     const openHandler = () => setOpen(true);
     window.addEventListener("checkin:open", openHandler);
@@ -50,9 +58,15 @@ export default function DailyCheckInPrompt() {
         if (cancelled) return;
         const done = !!d?.checkedIn;
         if (done) completedRef.current = true;
-        if (!done && getDismissals() < MAX_APPEARANCES) {
-          timer = setTimeout(() => setOpen(true), 3000);
-        }
+        if (done || getDismissals() >= MAX_APPEARANCES) return;
+
+        // Respectă pauza de după închidere, chiar și după schimbarea paginii:
+        // dacă snooze-ul e activ, programează apariția abia la expirarea lui
+        const snoozeRemaining = getSnoozeUntil() - Date.now();
+        const delay = Math.max(3000, snoozeRemaining);
+        timer = setTimeout(() => {
+          if (!completedRef.current) setOpen(true);
+        }, delay);
       })
       .catch(() => {});
     return () => {
@@ -67,10 +81,11 @@ export default function DailyCheckInPrompt() {
     setOpen(false);
     if (completedRef.current) return;
     try { localStorage.setItem(dismissKey(), String(getDismissals() + 1)); } catch { /* ignore */ }
+    setSnooze(SNOOZE_MS);
     if (getDismissals() < MAX_APPEARANCES) {
       reminderRef.current = setTimeout(() => {
         if (!completedRef.current) setOpen(true);
-      }, REMINDER_DELAY_MS);
+      }, SNOOZE_MS);
     }
   }
 
