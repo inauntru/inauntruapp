@@ -55,3 +55,26 @@ export const EN: Record<string, string> = {
   ...EN_HOME,
   ...EN_AUTH,
 };
+
+/**
+ * Căutare tolerantă: textele editate din admin pot fi scrise fără diacritice
+ * sau cu spații ușor diferite. Normalizăm ambele părți ca să se potrivească.
+ */
+const normalize = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+
+const EN_NORMALIZED: Record<string, string> = {};
+for (const [k, v] of Object.entries(EN)) {
+  const nk = normalize(k);
+  if (!(nk in EN_NORMALIZED)) EN_NORMALIZED[nk] = v;
+}
+
+/** Traducerea unui text românesc: potrivire exactă, apoi normalizată. */
+export function translateEn(ro: string): string {
+  return EN[ro] ?? EN_NORMALIZED[normalize(ro)] ?? ro;
+}

@@ -10,7 +10,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { EN } from "@/lib/i18n/en";
+import { translateEn } from "@/lib/i18n/en";
 
 export type Locale = "ro" | "en";
 
@@ -48,7 +48,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     try { localStorage.setItem(STORAGE_KEY, l); } catch { /* ignore */ }
   }
 
-  const tr = (ro: string) => (locale === "en" ? EN[ro] ?? ro : ro);
+  const tr = (ro: string) => (locale === "en" ? translateEn(ro) : ro);
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale, tr }}>
