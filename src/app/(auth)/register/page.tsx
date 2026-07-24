@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User, Check, Leaf, Cake } from "@phosphor-icons/react";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const PLANS = [
   { id: "gratuit", name: "Gratuit", price: 0, description: "Acces limitat la practici și resurse de bază" },
@@ -15,6 +16,7 @@ const PLANS = [
 
 export default function RegisterPage() {
   const { signUp } = useAuth();
+  const { tr } = useLanguage();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -78,24 +80,24 @@ export default function RegisterPage() {
           <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-5">
             <Envelope size={28} weight="fill" className="text-forest-green" />
           </div>
-          <h1 className="font-heading text-h2 text-deep-green mb-3">Verifică emailul</h1>
+          <h1 className="font-heading text-h2 text-deep-green mb-3">{tr("Verifică emailul")}</h1>
           <p className="font-body text-body-sm text-secondary-text mb-2">
-            Am trimis un link de confirmare la
+            {tr("Am trimis un link de confirmare la")}
           </p>
           <p className="font-body font-semibold text-body-sm text-deep-green mb-5">{email}</p>
           <p className="font-body text-body-sm text-secondary-text mb-6">
-            Click pe link pentru a activa contul tău. Dacă nu găsești emailul, verifică și folderul Spam.
+            {tr("Click pe link pentru a activa contul tău. Dacă nu găsești emailul, verifică și folderul Spam.")}
           </p>
           <Link href="/login" className="btn btn-primary w-full justify-center">
-            Mergi la autentificare
+            {tr("Mergi la autentificare")}
           </Link>
           <p className="font-body text-label-xs text-secondary-text mt-4">
-            Nu ai primit emailul?{" "}
+            {tr("Nu ai primit emailul?")}{" "}
             <button
               onClick={() => { setDone(false); setStep(1); }}
               className="text-forest-green hover:underline"
             >
-              Încearcă din nou
+              {tr("Încearcă din nou")}
             </button>
           </p>
         </div>
@@ -116,8 +118,8 @@ export default function RegisterPage() {
           <div className="w-14 h-14 bg-light-green rounded-full flex items-center justify-center mx-auto mb-4">
             <Leaf size={24} weight="fill" className="text-forest-green" />
           </div>
-          <h1 className="font-heading text-h2 text-deep-green mb-1">Creează cont</h1>
-          <p className="font-body text-body-sm text-secondary-text">Pas {step} din 2</p>
+          <h1 className="font-heading text-h2 text-deep-green mb-1">{tr("Creează cont")}</h1>
+          <p className="font-body text-body-sm text-secondary-text">{tr("Pas")} {step} {tr("din 2")}</p>
         </div>
 
         {/* Progress */}
@@ -131,7 +133,7 @@ export default function RegisterPage() {
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl font-body text-label-xs text-red-600">
-            {error}
+            {tr(error)}
           </div>
         )}
 
@@ -147,24 +149,24 @@ export default function RegisterPage() {
               className="space-y-4"
             >
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">Nume complet</label>
+                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Nume complet")}</label>
                 <div className="relative">
                   <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Prenume Nume" required className="input pl-10" />
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={tr("Prenume Nume")} required className="input pl-10" />
                 </div>
               </div>
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">Email</label>
+                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Email")}</label>
                 <div className="relative">
                   <Envelope size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemplu.ro" required className="input pl-10" />
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={tr("email@exemplu.ro")} required className="input pl-10" />
                 </div>
               </div>
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">Parolă</label>
+                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Parolă")}</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minim 8 caractere" required minLength={8} className="input pl-10 pr-12" />
+                  <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={tr("Minim 8 caractere")} required minLength={8} className="input pl-10 pr-12" />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-forest-green transition-colors">
                     {showPassword ? <EyeSlash size={16} /> : <Eye size={16} />}
                   </button>
@@ -172,16 +174,16 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">Număr de telefon</label>
+                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Număr de telefon")}</label>
                 <PhoneInput value={phone} onChange={setPhone} inputClassName="input" />
                 <p className="font-body text-label-xs text-secondary-text mt-1.5">
-                  Folosit pentru securitatea contului și pentru a te putea asista personalizat.
+                  {tr("Folosit pentru securitatea contului și pentru a te putea asista personalizat.")}
                 </p>
               </div>
 
               <div>
                 <label className="font-body text-label-sm text-on-surface mb-1.5 block">
-                  Data nașterii <span className="text-secondary-text font-normal">(opțional)</span>
+                  {tr("Data nașterii")} <span className="text-secondary-text font-normal">{tr("(opțional)")}</span>
                 </label>
                 <div className="relative">
                   <Cake size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text pointer-events-none" />
@@ -194,19 +196,19 @@ export default function RegisterPage() {
                   />
                 </div>
                 <p className="font-body text-label-xs text-secondary-text mt-1.5">
-                  Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine. ✨
+                  {tr("Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine. ✨")}
                 </p>
               </div>
 
               <p className="font-body text-label-xs text-secondary-text">
-                Prin înregistrare, ești de acord cu{" "}
-                <Link href="/termeni" className="text-forest-green hover:underline">Termenii și condițiile</Link>{" "}
-                și{" "}
-                <Link href="/confidentialitate" className="text-forest-green hover:underline">Politica de confidențialitate</Link>.
+                {tr("Prin înregistrare, ești de acord cu")}{" "}
+                <Link href="/termeni" className="text-forest-green hover:underline">{tr("Termenii și condițiile")}</Link>{" "}
+                {tr("și")}{" "}
+                <Link href="/confidentialitate" className="text-forest-green hover:underline">{tr("Politica de confidențialitate")}</Link>.
               </p>
 
               <button type="submit" disabled={!name || !email || !password} className="btn btn-primary w-full disabled:opacity-50">
-                Continuă <ArrowRight size={16} weight="bold" />
+                {tr("Continuă")} <ArrowRight size={16} weight="bold" />
               </button>
             </motion.form>
           ) : (
@@ -221,7 +223,7 @@ export default function RegisterPage() {
             >
               <div>
                 <p className="font-body text-body-sm text-secondary-text mb-4">
-                  Alege planul tău (poți schimba oricând):
+                  {tr("Alege planul tău (poți schimba oricând):")}
                 </p>
                 <div className="space-y-3">
                   {PLANS.map((plan) => (
@@ -237,19 +239,19 @@ export default function RegisterPage() {
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-body font-semibold text-body-sm text-deep-green">{plan.name}</span>
+                          <span className="font-body font-semibold text-body-sm text-deep-green">{tr(plan.name)}</span>
                           {plan.isPopular && (
-                            <span className="tag tag-green">Popular</span>
+                            <span className="tag tag-green">{tr("Popular")}</span>
                           )}
                           {plan.id !== "gratuit" && (
-                            <span className="tag bg-amber-50 text-amber-700 border border-amber-200 text-[10px]">În curând</span>
+                            <span className="tag bg-amber-50 text-amber-700 border border-amber-200 text-[10px]">{tr("În curând")}</span>
                           )}
                         </div>
-                        <span className="font-body text-label-xs text-secondary-text">{plan.description}</span>
+                        <span className="font-body text-label-xs text-secondary-text">{tr(plan.description)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-heading text-lg font-bold text-deep-green">
-                          {plan.price === 0 ? "Gratuit" : `${plan.price} RON`}
+                          {plan.price === 0 ? tr("Gratuit") : `${plan.price} RON`}
                         </span>
                         {selectedPlan === plan.id && (
                           <div className="w-5 h-5 bg-forest-green rounded-full flex items-center justify-center">
@@ -262,21 +264,21 @@ export default function RegisterPage() {
                 </div>
                 {selectedPlan !== "gratuit" && (
                   <p className="font-body text-label-xs text-secondary-text mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                    Plata pentru planuri plătite va fi activată în curând. Contul tău va fi creat pe planul Gratuit și vei fi contactat pentru upgrade.
+                    {tr("Plata pentru planuri plătite va fi activată în curând. Contul tău va fi creat pe planul Gratuit și vei fi contactat pentru upgrade.")}
                   </p>
                 )}
               </div>
 
               <div className="flex gap-3 mt-2">
-                <button type="button" onClick={() => setStep(1)} className="btn btn-ghost flex-1">← Înapoi</button>
+                <button type="button" onClick={() => setStep(1)} className="btn btn-ghost flex-1">← {tr("Înapoi")}</button>
                 <button type="submit" disabled={loading} className="btn btn-primary flex-1">
                   {loading ? (
                     <span className="flex items-center gap-2">
                       <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                      Se creează...
+                      {tr("Se creează...")}
                     </span>
                   ) : (
-                    <>Creează cont <ArrowRight size={16} weight="bold" /></>
+                    <>{tr("Creează cont")} <ArrowRight size={16} weight="bold" /></>
                   )}
                 </button>
               </div>
@@ -285,9 +287,9 @@ export default function RegisterPage() {
         </AnimatePresence>
 
         <p className="text-center font-body text-body-sm text-secondary-text mt-6">
-          Ai deja cont?{" "}
+          {tr("Ai deja cont?")}{" "}
           <Link href="/login" className="text-forest-green font-semibold hover:underline">
-            Conectează-te
+            {tr("Conectează-te")}
           </Link>
         </p>
       </div>

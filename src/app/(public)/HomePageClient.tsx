@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import dynamic from "next/dynamic";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { TESTIMONIALS, PRICING_PLANS, FAQ_ITEMS, INTENT_CARDS } from "@/lib/mockData";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
 
@@ -22,7 +23,8 @@ const INTENT_ICONS: Record<string, React.ElementType> = {
 interface Props { siteContent: Record<string, string>; }
 
 export default function HomePageClient({ siteContent }: Props) {
-  const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { tr } = useLanguage();
+  const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
 
   const [selectedIntent, setSelectedIntent] = useState<string | null>(null);
   const [billingAnnual, setBillingAnnual] = useState(false);
@@ -99,10 +101,10 @@ export default function HomePageClient({ siteContent }: Props) {
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6 }} className="flex flex-col sm:flex-row gap-4">
               <Link href="/register" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-body font-semibold text-body-sm bg-white text-forest-green hover:bg-white/90 transition-colors shadow-md">
-                Vreau mai multă liniște <ArrowRight size={16} weight="bold" />
+                {tr("Vreau mai multă liniște")} <ArrowRight size={16} weight="bold" />
               </Link>
               <Link href="#cum-functioneaza" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-body font-semibold text-body-sm text-white border border-white/30 hover:bg-white/15 transition-colors backdrop-blur-sm">
-                <Play size={16} weight="fill" /> Cum funcționează?
+                <Play size={16} weight="fill" /> {tr("Cum funcționează?")}
               </Link>
             </motion.div>
 
@@ -118,7 +120,7 @@ export default function HomePageClient({ siteContent }: Props) {
                   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
                 ].map((src, i) => (
                   <div key={i} className="w-8 h-8 rounded-full border-2 border-white/40 overflow-hidden flex-shrink-0">
-                    <Image src={src} alt="Membru WithIn" width={32} height={32} className="object-cover w-full h-full" />
+                    <Image src={src} alt={tr("Membru WithIn")} width={32} height={32} className="object-cover w-full h-full" />
                   </div>
                 ))}
               </div>
@@ -163,7 +165,7 @@ export default function HomePageClient({ siteContent }: Props) {
           {selectedIntent && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mt-8 text-center">
               <Link href={`/practici?intent=${selectedIntent}`} className="btn btn-primary">
-                Arată practici pentru tine <ArrowRight size={18} weight="bold" />
+                {tr("Arată practici pentru tine")} <ArrowRight size={18} weight="bold" />
               </Link>
             </motion.div>
           )}
@@ -185,7 +187,7 @@ export default function HomePageClient({ siteContent }: Props) {
                 {t("problem_body", 'Multe dintre problemele noastre moderne nu sunt "doar in capul nostru". Ele sunt stocate in corp ca tensiune cronica, respiratie superficiala si oboseala persistenta.')}
               </p>
               <Link href="/despre-noi" className="btn btn-outline">
-                Descoperă cum funcționează <ArrowRight size={16} weight="bold" />
+                {tr("Descoperă cum funcționează")} <ArrowRight size={16} weight="bold" />
               </Link>
             </AnimateIn>
             <StaggerChildren once={false} className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch" childClassName="h-full" staggerDelay={0.1}>
@@ -253,7 +255,7 @@ export default function HomePageClient({ siteContent }: Props) {
                 </p>
               </div>
               <Link href="/practici" className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-white text-forest-green rounded-full font-body font-semibold text-body-sm hover:bg-white/90 transition-colors">
-                Explorează biblioteca <ArrowRight size={16} weight="bold" />
+                {tr("Explorează biblioteca")} <ArrowRight size={16} weight="bold" />
               </Link>
             </div>
           </AnimateIn>
@@ -340,7 +342,7 @@ export default function HomePageClient({ siteContent }: Props) {
             ))}
           </StaggerChildren>
           <div className="text-center mt-10">
-            <Link href="/facilitatori" className="btn btn-outline">Toți facilitatorii <ArrowRight size={16} weight="bold" /></Link>
+            <Link href="/facilitatori" className="btn btn-outline">{tr("Toți facilitatorii")} <ArrowRight size={16} weight="bold" /></Link>
           </div>
         </div>
       </section>
@@ -350,15 +352,15 @@ export default function HomePageClient({ siteContent }: Props) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
             <div className="text-center mb-10">
-              <p className="section-label">Investește în tine</p>
-              <h2 className="section-title">Planul potrivit pentru tine</h2>
+              <p className="section-label">{tr("Investește în tine")}</p>
+              <h2 className="section-title">{tr("Planul potrivit pentru tine")}</h2>
               <div className="flex items-center justify-center gap-4 mt-6">
-                <span className={`font-body text-body-sm ${!billingAnnual ? "text-deep-green font-semibold" : "text-secondary-text"}`}>Lunar</span>
+                <span className={`font-body text-body-sm ${!billingAnnual ? "text-deep-green font-semibold" : "text-secondary-text"}`}>{tr("Lunar")}</span>
                 <button onClick={() => setBillingAnnual(!billingAnnual)} className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${billingAnnual ? "bg-forest-green" : "bg-sage-border"}`}>
                   <motion.div animate={{ x: billingAnnual ? 28 : 4 }} transition={{ type: "spring", stiffness: 500, damping: 30 }} className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm" />
                 </button>
-                <span className={`font-body text-body-sm ${billingAnnual ? "text-deep-green font-semibold" : "text-secondary-text"}`}>Anual</span>
-                <span className="tag tag-green">Economisești 35%</span>
+                <span className={`font-body text-body-sm ${billingAnnual ? "text-deep-green font-semibold" : "text-secondary-text"}`}>{tr("Anual")}</span>
+                <span className="tag tag-green">{tr("Economisești 35%")}</span>
               </div>
             </div>
           </AnimateIn>
@@ -367,7 +369,7 @@ export default function HomePageClient({ siteContent }: Props) {
               <div key={plan.id} className={`relative rounded-2xl border p-5 sm:p-8 flex flex-col transition-all duration-200 ${plan.isPopular ? "bg-forest-green border-forest-green text-white shadow-[0_20px_60px_rgba(61,122,92,0.25)] md:scale-105" : "bg-white border-sage-border shadow-card hover:shadow-card-hover"}`}>
                 {plan.isPopular && (
                   <div className="absolute -top-4 right-6">
-                    <span className="bg-terracotta text-white text-label-xs font-bold px-4 py-1.5 rounded-full">RECOMANDAT</span>
+                    <span className="bg-terracotta text-white text-label-xs font-bold px-4 py-1.5 rounded-full">{tr("RECOMANDAT")}</span>
                   </div>
                 )}
                 <div className="mb-6">
@@ -381,10 +383,10 @@ export default function HomePageClient({ siteContent }: Props) {
                         {billingAnnual ? plan.priceAnnual : plan.price}
                       </motion.span>
                     </span>
-                    <span className={`font-body text-body-sm ${plan.isPopular ? "text-white/60" : "text-secondary-text"}`}>RON/lună</span>
+                    <span className={`font-body text-body-sm ${plan.isPopular ? "text-white/60" : "text-secondary-text"}`}>{tr("RON/lună")}</span>
                   </div>
                   {billingAnnual && plan.price > 0 && (
-                    <p className={`font-body text-label-xs mt-1 ${plan.isPopular ? "text-white/60" : "text-secondary-text"}`}>facturat anual ({plan.priceAnnual * 12} RON/an)</p>
+                    <p className={`font-body text-label-xs mt-1 ${plan.isPopular ? "text-white/60" : "text-secondary-text"}`}>{tr("facturat anual")} ({plan.priceAnnual * 12} {tr("RON/an")})</p>
                   )}
                 </div>
                 <ul className="space-y-2.5 mb-8 flex-1">
@@ -429,7 +431,7 @@ export default function HomePageClient({ siteContent }: Props) {
       <section className="py-16 lg:py-24 bg-surface-container-low">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn once={false} from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green text-center mb-8 lg:mb-14">Întrebări frecvente</h2>
+            <h2 className="font-heading text-h2 text-deep-green text-center mb-8 lg:mb-14">{tr("Întrebări frecvente")}</h2>
           </AnimateIn>
           <div className="space-y-0">
             {faqItems.map((item, i) => (
@@ -465,13 +467,13 @@ export default function HomePageClient({ siteContent }: Props) {
                 {t("cta_subtitle", "Începe să te simți mai bine imediat. Anulezi oricând, fără bătăi de cap.")}
               </p>
               <Link href="/register" className="inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 rounded-full bg-white text-forest-green font-body font-semibold text-body-md sm:text-body-lg hover:bg-white/90 transition-colors shadow-lg">
-                Începe acum <ArrowRight size={20} weight="bold" />
+                {tr("Începe acum")} <ArrowRight size={20} weight="bold" />
               </Link>
             </AnimateIn>
             <AnimateIn once={false} from="right" className="md:w-1/2 flex justify-center">
               <div className="relative w-full max-w-sm aspect-square">
                 <div className="w-full h-full rounded-full overflow-hidden relative" style={{ opacity: 0.7, mixBlendMode: "overlay" as const }}>
-                  <Image src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80" alt="Meditație somatică" fill className="object-cover" />
+                  <Image src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80" alt={tr("Meditație somatică")} fill className="object-cover" />
                 </div>
                 <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.4, 0.2] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 rounded-full border-2" style={{ borderColor: "rgba(255,255,255,0.2)" }} />
               </div>

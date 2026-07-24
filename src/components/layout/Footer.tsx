@@ -1,4 +1,6 @@
-﻿import Link from "next/link";
+﻿"use client";
+
+import Link from "next/link";
 import Image from "next/image";
 import {
   InstagramLogo,
@@ -7,9 +9,8 @@ import {
   TiktokLogo,
   ArrowRight,
   Phone,
-  Envelope,
-  MapPin,
-} from "@phosphor-icons/react/dist/ssr";
+} from "@phosphor-icons/react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FOOTER_LINKS = {
   Platformă: [
@@ -33,6 +34,7 @@ const FOOTER_LINKS = {
 };
 
 export default function Footer() {
+  const { tr } = useLanguage();
   return (
     <footer className="bg-deep-green text-white">
       {/* Main footer */}
@@ -44,7 +46,7 @@ export default function Footer() {
               <Image src="/logo-orizontal-alb.png" alt="WithIn" width={130} height={36} className="object-contain" />
             </div>
             <p className="font-body text-body-sm text-white/70 mb-6 leading-relaxed max-w-sm">
-              Practici bazate pe știință pentru echilibrul tău interior. Întoarce-te la tine în mai puțin de 2 minute.
+              {tr("Practici bazate pe știință pentru echilibrul tău interior. Întoarce-te la tine în mai puțin de 2 minute.")}
             </p>
 
             {/* Newsletter */}
@@ -55,7 +57,7 @@ export default function Footer() {
               <div className="flex gap-2">
                 <input
                   type="email"
-                  placeholder="Email-ul tău"
+                  placeholder={tr("Email-ul tău")}
                   className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-body-sm text-white placeholder-white/40 font-body focus:outline-none focus:border-forest-green transition-colors"
                 />
                 <button className="w-10 h-10 bg-forest-green rounded-full flex items-center justify-center flex-shrink-0 hover:bg-opacity-80 transition-colors">
@@ -88,7 +90,7 @@ export default function Footer() {
           {Object.entries(FOOTER_LINKS).map(([section, links]) => (
             <div key={section}>
               <h4 className="font-body text-label-sm text-white/50 uppercase tracking-widest mb-4">
-                {section}
+                {tr(section)}
               </h4>
               <ul className="space-y-2.5">
                 {links.map((link) => (
@@ -97,7 +99,7 @@ export default function Footer() {
                       href={link.href}
                       className="font-body text-body-sm text-white/70 hover:text-white transition-colors"
                     >
-                      {link.label}
+                      {tr(link.label)}
                     </Link>
                   </li>
                 ))}
@@ -113,12 +115,12 @@ export default function Footer() {
           <div className="flex items-start gap-3">
             <Phone size={16} weight="fill" className="text-rose-powder mt-0.5 flex-shrink-0" />
             <p className="font-body text-body-sm text-white/60">
-              <span className="text-rose-powder font-semibold">Linie de criză:</span>{" "}
-              Dacă ești în criză, nu folosi această platformă. Sună la{" "}
+              <span className="text-rose-powder font-semibold">{tr("Linie de criză:")}</span>{" "}
+              {tr("Dacă ești în criză, nu folosi această platformă. Sună la")}{" "}
               <a href="tel:0800801200" className="text-rose-powder font-semibold hover:underline">
                 0800 801 200
               </a>{" "}
-              (gratuit, 24/7)
+              {tr("(gratuit, 24/7)")}
             </p>
           </div>
         </div>
@@ -129,7 +131,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="font-body text-body-sm text-white/40">
-              © 2026 WithIn. Toate drepturile rezervate.
+              {tr("© 2026 WithIn. Toate drepturile rezervate.")}
             </p>
 
             {/* Badges */}

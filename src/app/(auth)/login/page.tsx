@@ -6,9 +6,11 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeSlash, ArrowRight, Envelope, Lock, User } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LoginPage() {
   const { signIn, signUp } = useAuth();
+  const { tr } = useLanguage();
   const router = useRouter();
   const [view, setView] = useState<"login" | "register">("login");
 
@@ -70,19 +72,19 @@ export default function LoginPage() {
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-sage-border/60"
           >
-            <h2 className="font-heading text-2xl text-deep-green mb-1">Conectare</h2>
-            <p className="font-body text-body-sm text-secondary-text mb-7">Reintoarce-te în spațiul tău de liniște.</p>
+            <h2 className="font-heading text-2xl text-deep-green mb-1">{tr("Conectare")}</h2>
+            <p className="font-body text-body-sm text-secondary-text mb-7">{tr("Reintoarce-te în spațiul tău de liniște.")}</p>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">Adresă de email</label>
+                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Adresă de email")}</label>
                 <div className="relative">
                   <Envelope size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
                   <input
                     type="email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="email@exemplu.ro"
+                    placeholder={tr("email@exemplu.ro")}
                     required
                     className="input pl-10"
                   />
@@ -91,9 +93,9 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest">Parolă</label>
+                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest">{tr("Parolă")}</label>
                   <Link href="/forgot-password" className="font-body text-label-xs text-secondary-text hover:text-forest-green transition-colors">
-                    Ai uitat parola?
+                    {tr("Ai uitat parola?")}
                   </Link>
                 </div>
                 <div className="relative">
@@ -117,7 +119,7 @@ export default function LoginPage() {
               </div>
 
               {loginError && (
-                <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-2 font-body">{loginError}</p>
+                <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-2 font-body">{tr(loginError)}</p>
               )}
               <button
                 type="submit"
@@ -127,7 +129,7 @@ export default function LoginPage() {
                 {loginLoading ? (
                   <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                 ) : (
-                  <>Intră în cont <ArrowRight size={16} weight="bold" /></>
+                  <>{tr("Intră în cont")} <ArrowRight size={16} weight="bold" /></>
                 )}
               </button>
             </form>
@@ -135,7 +137,7 @@ export default function LoginPage() {
             {/* Divider */}
             <div className="flex items-center gap-3 my-6">
               <div className="flex-1 h-px bg-sage-border" />
-              <span className="font-body text-label-xs text-secondary-text">Sau conectează-te cu</span>
+              <span className="font-body text-label-xs text-secondary-text">{tr("Sau conectează-te cu")}</span>
               <div className="flex-1 h-px bg-sage-border" />
             </div>
 
@@ -158,12 +160,12 @@ export default function LoginPage() {
 
             {/* Switch to register */}
             <p className="text-center font-body text-body-sm text-secondary-text mt-6">
-              Nu ai cont?{" "}
+              {tr("Nu ai cont?")}{" "}
               <button
                 onClick={() => setView("register")}
                 className="text-forest-green font-semibold hover:underline transition-colors"
               >
-                Creează unul gratuit
+                {tr("Creează unul gratuit")}
               </button>
             </p>
           </motion.div>
@@ -176,32 +178,32 @@ export default function LoginPage() {
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-sage-border/60"
           >
-            <h2 className="font-heading text-2xl text-deep-green mb-1">Înregistrare</h2>
-            <p className="font-body text-body-sm text-secondary-text mb-7">Începe călătoria ta către reglarea sistemului nervos.</p>
+            <h2 className="font-heading text-2xl text-deep-green mb-1">{tr("Înregistrare")}</h2>
+            <p className="font-body text-body-sm text-secondary-text mb-7">{tr("Începe călătoria ta către reglarea sistemului nervos.")}</p>
 
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">Prenume</label>
+                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Prenume")}</label>
                   <div className="relative">
                     <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
                     <input
                       type="text"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Ioan"
+                      placeholder={tr("Ioan")}
                       required
                       className="input pl-10"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">Nume</label>
+                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Nume")}</label>
                   <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Popescu"
+                    placeholder={tr("Popescu")}
                     required
                     className="input"
                   />
@@ -209,14 +211,14 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">Email</label>
+                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Email")}</label>
                 <div className="relative">
                   <Envelope size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
                   <input
                     type="email"
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="nume@email.com"
+                    placeholder={tr("nume@email.com")}
                     required
                     className="input pl-10"
                   />
@@ -224,14 +226,14 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">Parolă nouă</label>
+                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Parolă nouă")}</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
                   <input
                     type={showRegPassword ? "text" : "password"}
                     value={regPassword}
                     onChange={(e) => setRegPassword(e.target.value)}
-                    placeholder="Minim 8 caractere"
+                    placeholder={tr("Minim 8 caractere")}
                     required
                     minLength={8}
                     className="input pl-10 pr-12"
@@ -254,15 +256,15 @@ export default function LoginPage() {
                   className="mt-0.5 accent-forest-green w-4 h-4 flex-shrink-0"
                 />
                 <span className="font-body text-body-sm text-secondary-text">
-                  Sunt de acord cu{" "}
-                  <Link href="#" className="text-forest-green hover:underline">Termenii și Condițiile</Link>{" "}
-                  și{" "}
-                  <Link href="#" className="text-forest-green hover:underline">Politica de Confidențialitate</Link>.
+                  {tr("Sunt de acord cu")}{" "}
+                  <Link href="#" className="text-forest-green hover:underline">{tr("Termenii și Condițiile")}</Link>{" "}
+                  {tr("și")}{" "}
+                  <Link href="#" className="text-forest-green hover:underline">{tr("Politica de Confidențialitate")}</Link>.
                 </span>
               </label>
 
               {regError && (
-                <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-2 font-body">{regError}</p>
+                <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-2 font-body">{tr(regError)}</p>
               )}
 
               <button
@@ -273,29 +275,29 @@ export default function LoginPage() {
                 {regLoading ? (
                   <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                 ) : (
-                  <>Creează contul <ArrowRight size={16} weight="bold" /></>
+                  <>{tr("Creează contul")} <ArrowRight size={16} weight="bold" /></>
                 )}
               </button>
             </form>
 
             {regSuccess && (
               <div className="mt-4 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-center">
-                <p className="font-body text-body-sm text-green-700">Contul a fost creat! Verifică emailul pentru a-l confirma.</p>
+                <p className="font-body text-body-sm text-green-700">{tr("Contul a fost creat! Verifică emailul pentru a-l confirma.")}</p>
               </div>
             )}
 
             <p className="text-center font-body text-body-sm text-secondary-text/70 mt-5 italic">
-              "Fiecare respirație este un nou început."
+              {tr("\"Fiecare respirație este un nou început.\"")}
             </p>
 
             {/* Switch to login */}
             <p className="text-center font-body text-body-sm text-secondary-text mt-4">
-              Ai deja cont?{" "}
+              {tr("Ai deja cont?")}{" "}
               <button
                 onClick={() => setView("login")}
                 className="text-forest-green font-semibold hover:underline transition-colors"
               >
-                Conectează-te
+                {tr("Conectează-te")}
               </button>
             </p>
           </motion.div>

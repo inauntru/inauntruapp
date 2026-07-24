@@ -22,6 +22,7 @@ import {
   Gear,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const NAV_LINKS = [
   { href: "/practici", label: "Practici", icon: BookOpen },
@@ -41,6 +42,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
   const { user, profile, signOut } = useAuth();
+  const { locale, setLocale, tr } = useLanguage();
 
   const firstName = profile?.first_name || user?.user_metadata?.first_name || "";
   const lastName = profile?.last_name || user?.user_metadata?.last_name || "";
@@ -90,6 +92,25 @@ export default function Navbar() {
   // true = over hero video, show glass transparent
   const glass = isHomePage && !scrolled;
 
+  const langSwitch = (
+    <div className={`flex items-center rounded-full border overflow-hidden ${glass ? "border-white/25" : "border-sage-border"}`}>
+      {(["ro", "en"] as const).map(l => (
+        <button
+          key={l}
+          onClick={() => setLocale(l)}
+          aria-label={l === "ro" ? "Română" : "English"}
+          className={`px-2.5 py-1.5 font-ui text-[11px] font-bold uppercase transition-colors ${
+            locale === l
+              ? glass ? "bg-white/25 text-white" : "bg-deep-green text-white"
+              : glass ? "text-white/70 hover:text-white" : "text-secondary-text hover:text-deep-green"
+          }`}
+        >
+          {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <>
       <motion.header
@@ -135,7 +156,7 @@ export default function Navbar() {
                           : "text-secondary-text hover:text-deep-green hover:bg-light-green/60"
                     }`}
                   >
-                    {link.label}
+                    {tr(link.label)}
                     {isActive && !glass && (
                       <motion.span
                         layoutId="nav-indicator"
@@ -149,6 +170,7 @@ export default function Navbar() {
 
             {/* CTA buttons */}
             <div className="hidden lg:flex items-center gap-3">
+              {langSwitch}
               {user ? (
                 <div className="relative" ref={userMenuRef}>
                   <button
@@ -188,7 +210,7 @@ export default function Navbar() {
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-light-green text-deep-green font-body text-body-sm transition-colors"
                           >
                             <SquaresFour size={16} weight="regular" className="text-forest-green flex-shrink-0" />
-                            Dashboard
+                            {tr("Dashboard")}
                           </Link>
                           <Link
                             href="/dashboard/cont"
@@ -196,7 +218,7 @@ export default function Navbar() {
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-light-green text-deep-green font-body text-body-sm transition-colors"
                           >
                             <Gear size={16} weight="regular" className="text-forest-green flex-shrink-0" />
-                            Contul meu
+                            {tr("Contul meu")}
                           </Link>
                         </div>
                         <div className="border-t border-sage-border/40 p-1.5">
@@ -205,7 +227,7 @@ export default function Navbar() {
                             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-secondary-text hover:text-red-500 font-body text-body-sm transition-colors"
                           >
                             <SignOut size={16} weight="regular" className="flex-shrink-0" />
-                            Deconectare
+                            {tr("Deconectare")}
                           </button>
                         </div>
                       </motion.div>
@@ -223,15 +245,19 @@ export default function Navbar() {
                     }`}
                   >
                     <User size={16} weight="regular" />
-                    Spațiul meu
+                    {tr("Spațiul meu")}
                   </Link>
                   <Link href="/register" className="btn btn-indigo btn-sm">
-                    Începe călătoria
+                    {tr("Începe călătoria")}
                   </Link>
                 </>
               )}
             </div>
 
+            {/* Mobile: switcher limbă + hamburger */}
+            <div className="lg:hidden flex items-center gap-2">
+              {langSwitch}
+            </div>
             {/* Mobile hamburger */}
             <button
               className={`lg:hidden flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
@@ -294,7 +320,7 @@ export default function Navbar() {
                         }`}
                       >
                         <Icon size={20} weight="regular" />
-                        {link.label}
+                        {tr(link.label)}
                       </Link>
                     </motion.div>
                   );
@@ -314,21 +340,21 @@ export default function Navbar() {
                     </div>
                     <Link href="/dashboard" className="btn btn-primary w-full">
                       <SquaresFour size={18} weight="regular" />
-                      Dashboard
+                      {tr("Dashboard")}
                     </Link>
                     <button onClick={() => signOut()} className="btn btn-ghost w-full text-secondary-text">
                       <SignOut size={18} weight="regular" />
-                      Deconectare
+                      {tr("Deconectare")}
                     </button>
                   </>
                 ) : (
                   <>
                     <Link href="/login" className="btn btn-ghost w-full">
                       <User size={18} weight="regular" />
-                      Spațiul meu
+                      {tr("Spațiul meu")}
                     </Link>
                     <Link href="/register" className="btn btn-indigo w-full">
-                      Începe călătoria
+                      {tr("Începe călătoria")}
                     </Link>
                   </>
                 )}
