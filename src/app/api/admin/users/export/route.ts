@@ -37,6 +37,10 @@ export async function GET() {
     };
   });
 
+  {
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Export Excel utilizatori", String(rows.length) + " utilizatori");
+  }
   const ws = XLSX.utils.json_to_sheet(rows);
   // Lățimi de coloană lizibile
   ws["!cols"] = [

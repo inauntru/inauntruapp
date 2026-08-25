@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -35,19 +36,23 @@ type FacilitatorShape = {
 
 export default function FacilitatorPage({ params }: { params: { slug: string } }) {
   const [facilitator, setFacilitator] = useState<FacilitatorShape | null>(null);
+  const [missing, setMissing] = useState(false);
 
   useEffect(() => {
     fetch("/api/facilitators")
       .then((r) => r.json())
       .then((data: FacilitatorShape[]) => {
         const found = data.find((f) => f.slug === params.slug);
-        setFacilitator(found ?? (data[0] || null));
+        if (found) setFacilitator(found); else setMissing(true);
       })
       .catch(() => {
-        const mock = FACILITATORS.find((f) => f.slug === params.slug) ?? FACILITATORS[0];
-        setFacilitator(mock as FacilitatorShape);
+        const mock = FACILITATORS.find((f) => f.slug === params.slug);
+        if (mock) setFacilitator(mock as FacilitatorShape); else setMissing(true);
       });
   }, [params.slug]);
+
+  // Facilitator inexistent → 404, nu primul din listă
+  if (missing) notFound();
 
   if (!facilitator) {
     return (

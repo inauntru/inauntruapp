@@ -54,6 +54,10 @@ export async function POST(req: NextRequest) {
     exercises = [...exercises, newExercise];
 
     await serviceClient.from("settings").upsert({ key: SETTINGS_KEY, value: JSON.stringify(exercises) });
+  {
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Creare ancoră", newExercise?.nume ?? "");
+  }
     return NextResponse.json({ exercise: newExercise });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

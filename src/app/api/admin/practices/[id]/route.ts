@@ -28,6 +28,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  {
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Editare practică", id);
+  }
   return NextResponse.json(data);
 }
 

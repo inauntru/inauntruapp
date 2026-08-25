@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getDailyQuote } from "@/lib/quotes";
 import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
 import { fetchAncoreCompletions } from "@/lib/ancore-sync";
+import { canAccess, contentTier, TIER_LABEL, type ContentTier } from "@/lib/plan";
 
 function formatDate() {
   return new Date().toLocaleDateString("ro-RO", {
@@ -36,7 +37,7 @@ const QUICK_ACCESS = [
   { icon: Users,    label: "Sesiuni",     href: "/sesiuni-live",     iconCls: "bg-deep-green/10 text-deep-green",     cardCls: "bg-light-green/60 border-sage-border/30" },
 ];
 
-type PracticeItem = { id: number; title: string; facilitator: string; duration: number; category: string };
+type PracticeItem = { id: number; title: string; facilitator: string; duration: number; category: string; tier?: string; isPremium?: boolean };
 type SessionItem  = { title: string; facilitator: string; date: string; spotsTotal: number; spotsLeft: number };
 
 // Dispoziția din check-in → categoria de practici potrivită
@@ -48,13 +49,16 @@ const MOOD_CATEGORY: Record<string, string> = {
   excelent:  "Vitalitate",
 };
 
-function pickRecommendation(practices: PracticeItem[], mood: string | null): PracticeItem | null {
+function pickRecommendation(practices: PracticeItem[], mood: string | null, plan: string | null | undefined): PracticeItem | null {
   if (practices.length === 0) return null;
+  // Nu recomandăm conținut la care utilizatorul nu are acces
+  const accessible = practices.filter(p => canAccess(plan, contentTier(p)));
+  const base = accessible.length > 0 ? accessible : practices;
   const targetCategory = mood ? MOOD_CATEGORY[mood] : undefined;
   const pool = targetCategory
-    ? practices.filter(p => p.category === targetCategory)
-    : practices;
-  const list = pool.length > 0 ? pool : practices;
+    ? base.filter(p => p.category === targetCategory)
+    : base;
+  const list = pool.length > 0 ? pool : base;
   // Aceeași recomandare toată ziua, se schimbă la miezul nopții
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
   return list[dayOfYear % list.length];
@@ -67,6 +71,7 @@ export default function DashboardPage() {
   const { quote: dailyQuote, sign: zodiacSign } = getDailyQuote(dateOfBirth);
 
   const [recentPractices, setRecentPractices] = useState<PracticeItem[]>([]);
+  const [hasRealHistory, setHasRealHistory]   = useState(false);
   const [allPractices,    setAllPractices]    = useState<PracticeItem[]>([]);
   const [todayMood,       setTodayMood]       = useState<string | null>(null);
   const [upcomingSession, setUpcomingSession] = useState<SessionItem | null>(null);
@@ -89,7 +94,15 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetch("/api/practices").then(r => r.json()).then(d => {
-      if (Array.isArray(d) && d.length > 0) { setRecentPractices(d.slice(0, 3)); setAllPractices(d); }
+      if (Array.isArray(d) && d.length > 0) {
+        setAllPractices(d);
+        // Fallback dacă userul nu are încă istoric propriu
+        setRecentPractices(prev => (prev.length > 0 ? prev : d.slice(0, 3)));
+      }
+    }).catch(() => {});
+    // Istoricul real: ultimele practici finalizate de ACEST utilizator
+    fetch("/api/practices/complete").then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.practices?.length > 0) { setRecentPractices(d.practices); setHasRealHistory(true); }
     }).catch(() => {});
     fetch("/api/sessions").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setUpcomingSession(d[0]); }).catch(() => {});
   }, []);
@@ -128,7 +141,7 @@ export default function DashboardPage() {
   }, [sessionExpanded]);
 
 
-  const recommended = pickRecommendation(allPractices, todayMood);
+  const recommended = pickRecommendation(allPractices, todayMood, profile?.plan);
 
   const progressRows = [
     { label: "Zile consecutive",      value: stats.streak,           max: 30,  pct: Math.min(100, stats.streak / 30 * 100),            bar: "bg-terracotta",   track: "bg-rose-powder/40", text: "text-terracotta",   icon: Flame,   hint: "Obiectiv: 30 de zile" },
@@ -438,7 +451,9 @@ export default function DashboardPage() {
               {/* Recent practices */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-heading text-h3 text-deep-green">Continuă de unde ai rămas</h2>
+                  <h2 className="font-heading text-h3 text-deep-green">
+                    {hasRealHistory ? "Continuă de unde ai rămas" : "Descoperă practici"}
+                  </h2>
                   <Link href="/practici" className="font-body text-label-xs text-forest-green hover:underline">
                     Toate <ArrowRight size={12} weight="bold" className="inline" />
                   </Link>
@@ -456,7 +471,14 @@ export default function DashboardPage() {
                         <p className="font-body font-semibold text-body-sm text-deep-green line-clamp-1">{p.title}</p>
                         <p className="font-body text-label-xs text-secondary-text">{p.facilitator} · {p.duration} min</p>
                       </div>
-                      <span className="tag tag-green flex-shrink-0">{p.category}</span>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {!canAccess(profile?.plan, contentTier(p)) && (
+                          <span className="tag border-0 bg-secondary-container text-on-secondary-container">
+                            🔒 {TIER_LABEL[contentTier(p) as ContentTier]}
+                          </span>
+                        )}
+                        <span className="tag tag-green">{p.category}</span>
+                      </div>
                     </Link>
                   ))}
                 </div>

@@ -60,6 +60,15 @@ const MOOD_ICONS: Record<string, { icon: React.ElementType; label: string; color
   sad:     { icon: SmileySad,     label: "Trist",     color: "text-terracotta" },
 };
 
+// Stările din check-in-uri au propria taxonomie (cea din CheckInModal)
+const CHECKIN_MOODS: Record<string, { icon: React.ElementType; label: string; color: string }> = {
+  epuizat:   { icon: SmileySad,     label: "Epuizat",   color: "text-terracotta" },
+  tensionat: { icon: SmileyNervous, label: "Tensionat", color: "text-amber-500" },
+  ok:        { icon: SmileyMeh,     label: "Ok",        color: "text-secondary-text" },
+  bine:      { icon: Smiley,        label: "Bine",      color: "text-teal-600" },
+  excelent:  { icon: SmileyWink,    label: "Excelent",  color: "text-forest-green" },
+};
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" });
 }
@@ -241,7 +250,7 @@ export default function JurnalPage() {
           ) : (
             <div className="space-y-3">
               {checkIns.map((ci) => {
-                const MoodData = MOOD_ICONS[ci.mood];
+                const MoodData = CHECKIN_MOODS[ci.mood] ?? MOOD_ICONS[ci.mood];
                 const MoodIcon = MoodData?.icon ?? SmileyMeh;
                 return (
                   <div key={ci.id} className="card bg-white p-5">

@@ -11,9 +11,6 @@ import {
 const TABS = [
   { id: "platforma", label: "Platformă", icon: Gear },
   { id: "texte", label: "Texte site", icon: Article },
-  { id: "preturi", label: "Prețuri", icon: CreditCard },
-  { id: "email", label: "Email", icon: EnvelopeSimple },
-  { id: "integrari", label: "Integrări", icon: Link },
   { id: "gdpr", label: "GDPR", icon: Shield },
   { id: "admini", label: "Admini", icon: Users },
 ];
@@ -192,265 +189,37 @@ function PlatformTab() {
   );
 }
 
-function PricingTab() {
-  const [saved, setSaved] = useState(false);
-  const [annualDiscount, setAnnualDiscount] = useState(20);
-
-  const plans = [
-    { name: "Gratuit", monthly: 0, desc: "Acces limitat la practici și o sesiune LIVE/lună" },
-    { name: "Premium", monthly: 59, desc: "Acces complet la practici, 4 sesiuni LIVE/lună" },
-    { name: "Premium+", monthly: 89, desc: "Acces nelimitat, sesiuni prioritare, coaching 1:1" },
-  ];
-
-  return (
-    <div className="space-y-6">
-      {saved && (
-        <div className="flex items-center gap-2 p-3 bg-forest-green/10 border border-forest-green/20 rounded-xl text-forest-green font-body text-body-sm">
-          <Check size={16} weight="bold" /> Prețurile au fost actualizate.
-        </div>
-      )}
-
-      <div className="card bg-white p-5">
-        <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Planuri și prețuri</h3>
-        <p className="font-body text-label-xs text-secondary-text mb-4">Modificările intră în vigoare pentru abonamentele noi. Abonamentele existente nu sunt afectate.</p>
-        <div className="space-y-4">
-          {plans.map((p) => (
-            <div key={p.name} className="border border-sage-border rounded-xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h4 className="font-body font-semibold text-body-sm text-deep-green">{p.name}</h4>
-                  <p className="font-body text-label-xs text-secondary-text">{p.desc}</p>
-                </div>
-                {p.monthly > 0 && (
-                  <span className="tag tag-green">Activ</span>
-                )}
-              </div>
-              {p.monthly > 0 ? (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-body text-label-xs text-secondary-text mb-1 block">Preț lunar (RON)</label>
-                    <input type="number" defaultValue={p.monthly} className="input w-full" />
-                  </div>
-                  <div>
-                    <label className="font-body text-label-xs text-secondary-text mb-1 block">Preț anual (RON/an)</label>
-                    <input type="number" defaultValue={Math.round(p.monthly * 12 * (1 - annualDiscount / 100))} className="input w-full" />
-                  </div>
-                </div>
-              ) : (
-                <p className="font-body text-label-xs text-secondary-text">Planul gratuit nu are prețuri configurabile.</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="card bg-white p-5">
-        <h3 className="font-body font-semibold text-body-md text-deep-green mb-4">Reducere abonament anual</h3>
-        <div className="flex items-center gap-4">
-          <div className="flex-1 max-w-xs">
-            <label className="font-body text-label-sm text-on-surface mb-1.5 block">Procent reducere (%)</label>
-            <input
-              type="number"
-              value={annualDiscount}
-              onChange={(e) => setAnnualDiscount(Number(e.target.value))}
-              min={0}
-              max={50}
-              className="input w-full"
-            />
-          </div>
-          <div className="p-4 bg-light-green rounded-xl">
-            <p className="font-body text-label-xs text-secondary-text">Exemplu Premium</p>
-            <p className="font-heading text-xl font-bold text-deep-green">{Math.round(59 * 12 * (1 - annualDiscount / 100))} RON/an</p>
-            <p className="font-body text-label-xs text-forest-green">economisești {Math.round(59 * 12 * annualDiscount / 100)} RON</p>
-          </div>
-        </div>
-      </div>
-
-      <SaveBar onSave={() => { setSaved(true); setTimeout(() => setSaved(false), 2500); }} />
-    </div>
-  );
-}
-
-function EmailTab() {
-  const [selected, setSelected] = useState<string | null>(null);
-
-  return (
-    <div className="space-y-4">
-      <div className="card bg-white p-5">
-        <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Template-uri email</h3>
-        <p className="font-body text-label-xs text-secondary-text mb-4">Personalizează emailurile trimise automat utilizatorilor.</p>
-        <div className="space-y-2">
-          {EMAIL_TEMPLATES.map((t) => (
-            <div
-              key={t.id}
-              onClick={() => setSelected(selected === t.id ? null : t.id)}
-              className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${
-                selected === t.id ? "bg-light-green border border-sage-border" : "hover:bg-light-green/50"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <EnvelopeSimple size={16} className="text-forest-green flex-shrink-0" />
-                <span className="font-body text-body-sm text-on-surface">{t.label}</span>
-              </div>
-              <span className={`tag ${t.status === "active" ? "bg-forest-green/10 text-forest-green border-forest-green/20 border" : "tag-outline"}`}>
-                {t.status === "active" ? "Activ" : "Draft"}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {selected && (
-        <div className="card bg-white p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-body font-semibold text-body-md text-deep-green">
-              Editare: {EMAIL_TEMPLATES.find((t) => t.id === selected)?.label}
-            </h3>
-            <button onClick={() => setSelected(null)} className="font-body text-label-xs text-secondary-text hover:text-deep-green">Închide</button>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="font-body text-label-sm text-on-surface mb-1.5 block">Subiect email</label>
-              <input type="text" className="input w-full" defaultValue={`[WithIn] ${EMAIL_TEMPLATES.find((t) => t.id === selected)?.label}`} />
-            </div>
-            <div>
-              <label className="font-body text-label-sm text-on-surface mb-1.5 block">Conținut (HTML)</label>
-              <textarea
-                className="input w-full min-h-[120px] font-mono text-xs"
-                defaultValue={`<h1>Bun venit la WithIn!</h1>\n<p>Dragă {{name}},</p>\n<p>Suntem bucuroși că ești alături de noi...</p>`}
-              />
-            </div>
-            <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-              <Warning size={14} className="text-amber-600 flex-shrink-0" />
-              <p className="font-body text-label-xs text-amber-700">Variabile disponibile: {'{{name}}'}, {'{{email}}'}, {'{{plan}}'}, {'{{link}}'}</p>
-            </div>
-            <div className="flex gap-3">
-              <button className="btn btn-ghost btn-sm">Previzualizare</button>
-              <button className="btn btn-ghost btn-sm">Trimite test</button>
-              <button className="btn btn-primary btn-sm ml-auto">
-                <Check size={14} weight="bold" /> Salvează template
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function IntegrationsTab() {
-  const [showKey, setShowKey] = useState<Record<string, boolean>>({});
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {INTEGRATIONS.map((intg) => (
-          <div key={intg.name} className="card bg-white p-5">
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-10 h-10 ${intg.color} rounded-xl flex items-center justify-center`}>
-                <span className="font-body text-white font-bold text-xs">{intg.name.slice(0, 2)}</span>
-              </div>
-              <div className="flex-1">
-                <h4 className="font-body font-semibold text-body-sm text-deep-green">{intg.name}</h4>
-                <p className="font-body text-label-xs text-secondary-text">{intg.description}</p>
-              </div>
-              <span className={`tag ${intg.status === "connected" ? "bg-forest-green/10 text-forest-green border-forest-green/20 border" : "tag-outline"}`}>
-                {intg.status === "connected" ? "Conectat" : "Deconectat"}
-              </span>
-            </div>
-            {intg.status === "connected" ? (
-              <div className="space-y-2">
-                <div className="relative">
-                  <input
-                    type={showKey[intg.name] ? "text" : "password"}
-                    defaultValue="sk_live_xxxxxxxxxxxxxxxxxxxx"
-                    className="input w-full pr-10 text-xs"
-                    readOnly
-                  />
-                  <button
-                    onClick={() => setShowKey((prev) => ({ ...prev, [intg.name]: !prev[intg.name] }))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-text hover:text-deep-green"
-                  >
-                    {showKey[intg.name] ? <EyeSlash size={14} /> : <Eye size={14} />}
-                  </button>
-                </div>
-                <button className="font-body text-label-xs text-terracotta hover:underline">Deconectează</button>
-              </div>
-            ) : (
-              <button className="btn btn-ghost btn-sm w-full">
-                <Link size={14} /> Conectează
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function GdprTab() {
   return (
     <div className="space-y-6">
       <div className="card bg-white p-5">
-        <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Cereri GDPR</h3>
-        <p className="font-body text-label-xs text-secondary-text mb-4">Cereri de export sau ștergere a datelor de la utilizatori.</p>
-        <div className="overflow-x-auto">
-          <table className="w-full data-table">
-            <thead>
-              <tr>
-                <th>Utilizator</th>
-                <th>Tip cerere</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Acțiuni</th>
-              </tr>
-            </thead>
-            <tbody>
-              {GDPR_REQUESTS.map((r) => (
-                <tr key={r.id}>
-                  <td>
-                    <p className="font-body text-body-sm font-semibold text-deep-green">{r.user}</p>
-                    <p className="font-body text-[10px] text-secondary-text">{r.email}</p>
-                  </td>
-                  <td className="font-body text-body-sm text-on-surface">{r.type}</td>
-                  <td className="font-body text-body-sm text-secondary-text">{r.date}</td>
-                  <td>
-                    <span className={`tag ${r.status === "completed" ? "bg-forest-green/10 text-forest-green border-forest-green/20 border" : "bg-amber-50 text-amber-700 border-amber-200 border"}`}>
-                      {r.status === "completed" ? "Rezolvat" : "În așteptare"}
-                    </span>
-                  </td>
-                  <td>
-                    {r.status === "pending" && (
-                      <div className="flex gap-2">
-                        <button className="btn btn-ghost btn-sm text-xs py-1">Export</button>
-                        <button className="font-body text-label-xs text-terracotta hover:underline">Șterge</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="card bg-white p-5">
-        <h3 className="font-body font-semibold text-body-md text-deep-green mb-4">Politici și retenție date</h3>
-        <div className="space-y-4">
-          <div>
-            <label className="font-body text-label-sm text-on-surface mb-1.5 block">Retenție date utilizatori inactivi (luni)</label>
-            <input type="number" defaultValue={24} className="input w-full max-w-xs" />
+        <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Instrumente GDPR funcționale</h3>
+        <p className="font-body text-label-xs text-secondary-text mb-5">
+          Acțiunile reale disponibile azi pentru conformitate. Un sistem de cereri GDPR
+          automatizat va fi adăugat la lansare.
+        </p>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between p-4 rounded-xl border border-sage-border/40">
+            <div>
+              <p className="font-body font-semibold text-body-sm text-deep-green">Export date utilizatori</p>
+              <p className="font-body text-label-xs text-secondary-text">Fișier Excel cu toți utilizatorii și datele lor (acțiune înregistrată în Jurnalul de audit)</p>
+            </div>
+            <a href="/api/admin/users/export" download className="btn btn-ghost btn-sm border border-sage-border flex-shrink-0">Descarcă</a>
           </div>
-          <div>
-            <label className="font-body text-label-sm text-on-surface mb-1.5 block">Link Politică de confidențialitate</label>
-            <input type="url" defaultValue="https://withinapp.ro/confidentialitate" className="input w-full max-w-lg" />
+          <div className="flex items-center justify-between p-4 rounded-xl border border-sage-border/40">
+            <div>
+              <p className="font-body font-semibold text-body-sm text-deep-green">Ștergere cont utilizator</p>
+              <p className="font-body text-label-xs text-secondary-text">La cererea unui utilizator — din pagina Utilizatori, cu toate datele asociate</p>
+            </div>
+            <a href="/admin/utilizatori" className="btn btn-ghost btn-sm border border-sage-border flex-shrink-0">Deschide</a>
           </div>
-          <div>
-            <label className="font-body text-label-sm text-on-surface mb-1.5 block">Link Termeni și condiții</label>
-            <input type="url" defaultValue="https://withinapp.ro/termeni" className="input w-full max-w-lg" />
+          <div className="p-4 rounded-xl bg-light-green/40 border border-sage-border/40">
+            <p className="font-body text-label-xs text-secondary-text">
+              💡 Utilizatorii își pot șterge singuri contul din Contul meu → Confidențialitate.
+              Exportul individual de date („dreptul la portabilitate") e în lista de lansare.
+            </p>
           </div>
         </div>
-        <SaveBar onSave={() => {}} />
       </div>
     </div>
   );
@@ -1322,9 +1091,6 @@ export default function AdminSettingsPage() {
       {/* Tab content */}
       {activeTab === "platforma" && <PlatformTab />}
       {activeTab === "texte" && <SiteTextTab />}
-      {activeTab === "preturi" && <PricingTab />}
-      {activeTab === "email" && <EmailTab />}
-      {activeTab === "integrari" && <IntegrationsTab />}
       {activeTab === "gdpr" && <GdprTab />}
       {activeTab === "admini" && <AdminsTab />}
     </div>

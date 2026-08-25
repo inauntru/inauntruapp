@@ -21,10 +21,14 @@ interface ProgressData {
   moodData: { mood: string; count: number }[];
 }
 
+// Stările din check-in-uri (taxonomia reală din CheckInModal)
 const MOOD_LABELS: Record<string, string> = {
+  epuizat: "Epuizat", tensionat: "Tensionat", ok: "Ok", bine: "Bine", excelent: "Excelent",
+  // compatibilitate cu stările din notițele de jurnal
   happy: "Bucuros", content: "Mulțumit", neutral: "Neutru", anxious: "Anxios", sad: "Trist",
 };
 const MOOD_COLORS: Record<string, string> = {
+  epuizat: "#c06b4a", tensionat: "#e9b84a", ok: "#9eb3a4", bine: "#6b9f7a", excelent: "#2B8C5C",
   happy: "#4a7c59", content: "#6b9f7a", neutral: "#9eb3a4", anxious: "#e9b84a", sad: "#c06b4a",
 };
 const CHART_COLOR = "#4a7c59";

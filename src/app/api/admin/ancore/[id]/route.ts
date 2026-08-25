@@ -38,6 +38,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (idx === -1) return NextResponse.json({ error: "Exercițiu negăsit" }, { status: 404 });
     exercises[idx] = { ...exercises[idx], ...body, id };
     await saveExercises(exercises);
+  {
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Editare ancoră", id);
+  }
     return NextResponse.json({ exercise: exercises[idx] });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

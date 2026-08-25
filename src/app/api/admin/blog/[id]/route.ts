@@ -32,6 +32,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   const { error } = await (serviceClient as any).from("blog_posts").update(patch).eq("id", params.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  {
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Editare articol blog", params.id);
+  }
   return NextResponse.json({ ok: true });
 }
 

@@ -11,6 +11,7 @@ import {
   Phone,
 } from "@phosphor-icons/react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import NewsletterForm from "@/components/layout/NewsletterForm";
 
 const FOOTER_LINKS = {
   Platformă: [
@@ -54,16 +55,7 @@ export default function Footer() {
               <p className="font-body text-label-sm text-white/50 uppercase tracking-widest mb-3">
                 Newsletter
               </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder={tr("Email-ul tău")}
-                  className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-body-sm text-white placeholder-white/40 font-body focus:outline-none focus:border-forest-green transition-colors"
-                />
-                <button className="w-10 h-10 bg-forest-green rounded-full flex items-center justify-center flex-shrink-0 hover:bg-opacity-80 transition-colors">
-                  <ArrowRight size={18} weight="bold" />
-                </button>
-              </div>
+              <NewsletterForm />
             </div>
 
             {/* Social */}

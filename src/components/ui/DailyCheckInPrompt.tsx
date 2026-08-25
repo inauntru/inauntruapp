@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import CheckInModal from "@/components/ui/CheckInModal";
 
@@ -37,6 +38,7 @@ const setSnooze = (ms: number) => {
  */
 export default function DailyCheckInPrompt() {
   const { user } = useAuth();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const completedRef = useRef(false);
   const reminderRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -95,7 +97,8 @@ export default function DailyCheckInPrompt() {
     if (reminderRef.current) clearTimeout(reminderRef.current);
   }
 
-  if (!user) return null;
+  // Nu deranja lucrul în panoul de administrare
+  if (!user || pathname?.startsWith("/admin")) return null;
 
   return <CheckInModal isOpen={open} onClose={handleClose} onCompleted={handleCompleted} canSkip />;
 }

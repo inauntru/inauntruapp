@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   const { data: session, error: sessErr } = await service
     .from("live_sessions")
-    .select("id, spots_left")
+    .select("id, spots_left, title, scheduled_at, duration, facilitator_name, meeting_url")
     .eq("id", sessionId)
     .single();
 
@@ -77,6 +77,31 @@ export async function POST(req: NextRequest) {
     .eq("id", sessionId)
     .select("spots_left")
     .single();
+
+  // Email de confirmare — best-effort, nu blochează rezervarea
+  try {
+    const { data: authData } = await service.auth.admin.getUserById(user.id);
+    const email = authData?.user?.email;
+    if (email) {
+      const { data: prof } = await service.from("profiles").select("first_name").eq("id", user.id).maybeSingle();
+      const { sendEmail } = await import("@/lib/email");
+      await sendEmail({
+        templateId: "session_booked",
+        to: email,
+        vars: {
+          prenume: prof?.first_name || authData.user?.user_metadata?.first_name || "acolo",
+          sesiune_titlu: session.title,
+          sesiune_data: new Date(session.scheduled_at).toLocaleString("ro-RO", {
+            weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
+            timeZone: "Europe/Bucharest",
+          }),
+          sesiune_durata: String(session.duration ?? 60),
+          facilitator_nume: session.facilitator_name ?? "Echipa WithIn",
+          link: session.meeting_url || `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro"}/sesiuni-live`,
+        },
+      });
+    }
+  } catch { /* emailul nu blochează rezervarea */ }
 
   return NextResponse.json({ ok: true, spotsLeft: updated?.spots_left ?? session.spots_left - 1 });
 }

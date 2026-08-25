@@ -17,6 +17,8 @@ import {
   Clock,
 } from "@phosphor-icons/react";
 import { PRACTICES } from "@/lib/mockData";
+import { useAuth } from "@/contexts/AuthContext";
+import { canAccess, contentTier } from "@/lib/plan";
 
 interface MoodOption {
   id: string;
@@ -45,13 +47,13 @@ const INTENSITY = [
   { id: "forte",   label: "Foarte intens", value: 4 },
 ];
 
-// Mood → practice IDs
-const MOOD_PRACTICES: Record<string, number[]> = {
-  epuizat:   [4, 1, 2],
-  tensionat: [1, 7, 2],
-  ok:        [2, 7, 5],
-  bine:      [5, 3, 6],
-  excelent:  [5, 8, 3],
+// Dispoziția → categoria de practici potrivită (aceeași hartă ca în dashboard)
+const MOOD_CATEGORY: Record<string, string> = {
+  epuizat:   "Odihnă",
+  tensionat: "Suflu",
+  ok:        "Prezență",
+  bine:      "Fluiditate",
+  excelent:  "Vitalitate",
 };
 
 interface CheckInModalProps {
@@ -112,9 +114,25 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
     }
   };
 
-  const recommendations = PRACTICES.filter((p) =>
-    (MOOD_PRACTICES[selectedMood ?? "ok"] ?? [1, 2, 5]).includes(p.id)
-  ).slice(0, 3);
+  // Practici reale din API (fallback pe mock dacă API-ul nu răspunde),
+  // filtrate pe planul utilizatorului — nu recomandăm conținut blocat
+  const { profile } = useAuth();
+  const [allPractices, setAllPractices] = useState<typeof PRACTICES>(PRACTICES);
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch("/api/practices")
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d) && d.length > 0) setAllPractices(d); })
+      .catch(() => {});
+  }, [isOpen]);
+
+  const accessible = allPractices.filter(p => canAccess(profile?.plan, contentTier(p)));
+  const targetCategory = MOOD_CATEGORY[selectedMood ?? "ok"];
+  const categoryMatches = accessible.filter(p => p.category === targetCategory);
+  const recommendations = [
+    ...categoryMatches,
+    ...accessible.filter(p => p.category !== targetCategory),
+  ].slice(0, 3);
 
   const slideVariants = {
     enter: { x: "100%", opacity: 0 },

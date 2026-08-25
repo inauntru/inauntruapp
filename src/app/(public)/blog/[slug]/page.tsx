@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, Calendar, BookOpen, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { BLOG_POSTS } from "@/lib/mockData";
 import { createServiceClient } from "@/lib/supabase";
@@ -25,7 +26,7 @@ type NormalizedPost = {
   content?: string | null;
 };
 
-async function getPost(slug: string): Promise<NormalizedPost> {
+async function getPost(slug: string): Promise<NormalizedPost | null> {
   try {
     const supabase = createServiceClient();
     const { data } = await supabase
@@ -54,8 +55,8 @@ async function getPost(slug: string): Promise<NormalizedPost> {
     }
   } catch {}
 
-  const mock = BLOG_POSTS.find((p) => p.slug === slug) ?? BLOG_POSTS[0];
-  return mock as NormalizedPost;
+  const mock = BLOG_POSTS.find((p) => p.slug === slug);
+  return (mock as NormalizedPost) ?? null;
 }
 
 async function getRelated(slug: string, category: string): Promise<NormalizedPost[]> {
@@ -93,6 +94,7 @@ async function getRelated(slug: string, category: string): Promise<NormalizedPos
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = await getPost(params.slug);
+  if (!post) notFound();
   const related = await getRelated(params.slug, post.category);
 
   return (

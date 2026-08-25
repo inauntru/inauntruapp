@@ -60,5 +60,9 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  {
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Creare articol blog", (data as BlogPost)?.title ?? "");
+  }
   return NextResponse.json({ post: data as BlogPost });
 }

@@ -28,6 +28,10 @@ export async function POST(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const serviceClient = createServiceClient() as any;
     await serviceClient.from("settings").upsert({ key: SETTINGS_KEY, value: JSON.stringify(exercises) });
+  {
+    const { logAdminAction } = await import("@/lib/audit");
+    await logAdminAction("Import ancore", String(exercises.length) + " exerciții");
+  }
     return NextResponse.json({ ok: true, count: exercises.length });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
