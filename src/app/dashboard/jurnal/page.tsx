@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { fetchAncoreCompletions } from "@/lib/ancore-sync";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), { ssr: false });
 
@@ -81,6 +82,7 @@ function stripHtml(html: string) {
 }
 
 export default function JurnalPage() {
+  const { tr } = useLanguage();
   const [tab, setTab] = useState<"note" | "checkins" | "ancore">("note");
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [checkIns, setCheckIns] = useState<CheckInEntry[]>([]);
@@ -151,17 +153,17 @@ export default function JurnalPage() {
           <ArrowLeft size={18} weight="bold" />
         </Link>
         <div>
-          <h1 className="font-heading text-h2 text-deep-green">Jurnalul meu</h1>
-          <p className="font-body text-body-sm text-secondary-text">Note personale și istoricul check-in-urilor</p>
+          <h1 className="font-heading text-h2 text-deep-green">{tr("Jurnalul meu")}</h1>
+          <p className="font-body text-body-sm text-secondary-text">{tr("Note personale și istoricul check-in-urilor")}</p>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-sage-border mb-6">
         {[
-          { id: "note",     label: "Note personale" },
-          { id: "checkins", label: "Check-in-uri" },
-          { id: "ancore",   label: `Ancore${ancoreHistory.length > 0 ? ` (${ancoreHistory.length})` : ""}` },
+          { id: "note",     label: tr("Note personale") },
+          { id: "checkins", label: tr("Check-in-uri") },
+          { id: "ancore",   label: `${tr("Ancore")}${ancoreHistory.length > 0 ? ` (${ancoreHistory.length})` : ""}` },
         ].map((t) => (
           <button
             key={t.id}
@@ -179,7 +181,7 @@ export default function JurnalPage() {
         <>
           <div className="flex justify-end mb-4">
             <button onClick={openNew} className="btn btn-primary btn-sm gap-2">
-              <Plus size={14} weight="bold" /> Notă nouă
+              <Plus size={14} weight="bold" /> {tr("Notă nouă")}
             </button>
           </div>
 
@@ -188,9 +190,9 @@ export default function JurnalPage() {
           ) : entries.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <BookOpen size={48} className="text-sage-border mb-4" />
-              <p className="font-heading text-h3 text-deep-green mb-2">Nicio notă încă</p>
-              <p className="font-body text-body-sm text-secondary-text mb-5">Scrie prima ta notă — gânduri, reflecții, intenții.</p>
-              <button onClick={openNew} className="btn btn-primary btn-sm gap-2"><Plus size={14} weight="bold" /> Scrie prima notă</button>
+              <p className="font-heading text-h3 text-deep-green mb-2">{tr("Nicio notă încă")}</p>
+              <p className="font-body text-body-sm text-secondary-text mb-5">{tr("Scrie prima ta notă — gânduri, reflecții, intenții.")}</p>
+              <button onClick={openNew} className="btn btn-primary btn-sm gap-2"><Plus size={14} weight="bold" /> {tr("Scrie prima notă")}</button>
             </div>
           ) : (
             <div className="space-y-3">
@@ -244,8 +246,8 @@ export default function JurnalPage() {
           ) : checkIns.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <SmileyMeh size={48} className="text-sage-border mb-4" />
-              <p className="font-heading text-h3 text-deep-green mb-2">Niciun check-in încă</p>
-              <p className="font-body text-body-sm text-secondary-text">Check-in-urile zilnice vor apărea aici.</p>
+              <p className="font-heading text-h3 text-deep-green mb-2">{tr("Niciun check-in încă")}</p>
+              <p className="font-body text-body-sm text-secondary-text">{tr("Check-in-urile zilnice vor apărea aici.")}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -257,7 +259,7 @@ export default function JurnalPage() {
                     <div className="flex items-center gap-3 mb-2">
                       <MoodIcon size={22} className={MoodData?.color ?? "text-secondary-text"} />
                       <div>
-                        <p className="font-body font-semibold text-body-sm text-deep-green">{MoodData?.label ?? ci.mood}</p>
+                        <p className="font-body font-semibold text-body-sm text-deep-green">{tr(MoodData?.label ?? ci.mood)}</p>
                         <p className="font-body text-label-xs text-secondary-text">{formatDate(ci.created_at)} · {formatTime(ci.created_at)}</p>
                       </div>
                       {ci.intensity && (
@@ -285,12 +287,12 @@ export default function JurnalPage() {
           {ancoreHistory.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Anchor size={48} className="text-sage-border mb-4" />
-              <p className="font-heading text-h3 text-deep-green mb-2">Nicio ancoră finalizată încă</p>
+              <p className="font-heading text-h3 text-deep-green mb-2">{tr("Nicio ancoră finalizată încă")}</p>
               <p className="font-body text-body-sm text-secondary-text mb-5">
-                Când completezi o ancoră, aceasta va apărea aici împreună cu progresul tău.
+                {tr("Când completezi o ancoră, aceasta va apărea aici împreună cu progresul tău.")}
               </p>
               <Link href="/ancore" className="btn btn-primary btn-sm gap-2">
-                <Anchor size={14} /> Mergi la Ancore
+                <Anchor size={14} /> {tr("Mergi la Ancore")}
               </Link>
             </div>
           ) : (
@@ -304,14 +306,14 @@ export default function JurnalPage() {
                 ].map(s => (
                   <div key={s.label} className="card bg-white p-4 text-center">
                     <p className="font-heading text-2xl font-bold text-deep-green">{s.value}</p>
-                    <p className="font-body text-label-xs text-secondary-text mt-1">{s.label}</p>
+                    <p className="font-body text-label-xs text-secondary-text mt-1">{tr(s.label)}</p>
                   </div>
                 ))}
               </div>
 
               {/* Category distribution */}
               <div className="card bg-white p-5 mb-6">
-                <h3 className="font-body font-semibold text-body-sm text-deep-green mb-4">Pe categorii</h3>
+                <h3 className="font-body font-semibold text-body-sm text-deep-green mb-4">{tr("Pe categorii")}</h3>
                 <div className="space-y-3">
                   {(["ALERTĂ", "BLOCATĂ", "OBOSEALĂ", "LINIȘTIRE", "CONECTARE"] as const).map(cat => {
                     const count = ancoreHistory.filter(a => a.categorie === cat).length;
@@ -322,7 +324,7 @@ export default function JurnalPage() {
                       <div key={cat}>
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="font-body text-label-xs text-secondary-text"
-                            style={{ color: colors.text }}>{cat.charAt(0) + cat.slice(1).toLowerCase()}</span>
+                            style={{ color: colors.text }}>{tr(cat.charAt(0) + cat.slice(1).toLowerCase())}</span>
                           <span className="font-body text-label-xs font-bold text-deep-green">{count}</span>
                         </div>
                         <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: colors.border + "40" }}>
@@ -357,10 +359,10 @@ export default function JurnalPage() {
                       </div>
                       <div className="flex gap-1.5 flex-shrink-0">
                         <span className="tag text-[10px]" style={{ backgroundColor: catColors.bg, color: catColors.text, borderColor: catColors.border }}>
-                          {entry.categorie.charAt(0) + entry.categorie.slice(1).toLowerCase()}
+                          {tr(entry.categorie.charAt(0) + entry.categorie.slice(1).toLowerCase())}
                         </span>
                         <span className="tag text-[10px]" style={{ backgroundColor: nivColors.bg, color: nivColors.text }}>
-                          {entry.nivel === "SOS" ? "Rapid" : entry.nivel === "REGLEAZĂ" ? "Reglează" : "Profund"}
+                          {entry.nivel === "SOS" ? tr("Rapid") : entry.nivel === "REGLEAZĂ" ? tr("Reglează") : tr("Profund")}
                         </span>
                       </div>
                     </motion.div>
@@ -370,7 +372,7 @@ export default function JurnalPage() {
 
               <div className="mt-6 text-center">
                 <Link href="/ancore" className="inline-flex items-center gap-1.5 font-body text-body-sm text-forest-green hover:underline">
-                  Deschide Ancore <ArrowRight size={14} weight="bold" />
+                  {tr("Deschide Ancore")} <ArrowRight size={14} weight="bold" />
                 </Link>
               </div>
             </>
@@ -391,24 +393,24 @@ export default function JurnalPage() {
               transition={{ duration: 0.25 }}
             >
               <div className="flex items-center justify-between p-5 border-b border-sage-border">
-                <h3 className="font-heading text-h3 text-deep-green">{editing ? "Editează nota" : "Notă nouă"}</h3>
+                <h3 className="font-heading text-h3 text-deep-green">{editing ? tr("Editează nota") : tr("Notă nouă")}</h3>
                 <button onClick={() => setShowEditor(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green">
                   <X size={16} />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Titlu (opțional)</label>
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Titlu (opțional)")}</label>
                   <input
                     type="text"
                     value={form.title}
                     onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                    placeholder="Titlu notă..."
+                    placeholder={tr("Titlu notă...")}
                     className="input w-full"
                   />
                 </div>
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Stare (opțional)</label>
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Stare (opțional)")}</label>
                   <div className="flex gap-2 flex-wrap">
                     {Object.entries(MOOD_ICONS).map(([key, { icon: Icon, label, color }]) => (
                       <button
@@ -419,26 +421,26 @@ export default function JurnalPage() {
                           form.mood === key ? "border-forest-green bg-light-green text-deep-green" : "border-sage-border hover:border-forest-green/50"
                         }`}
                       >
-                        <Icon size={14} className={color} /> {label}
+                        <Icon size={14} className={color} /> {tr(label)}
                       </button>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Conținut</label>
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Conținut")}</label>
                   <RichTextEditor
                     content={form.content}
                     onChange={(html) => setForm((f) => ({ ...f, content: html }))}
-                    placeholder="Scrie gândurile tale..."
+                    placeholder={tr("Scrie gândurile tale...")}
                     minHeight="180px"
                   />
                 </div>
               </div>
               <div className="p-5 border-t border-sage-border flex gap-3">
-                <button onClick={() => setShowEditor(false)} className="btn btn-ghost flex-1">Anulează</button>
+                <button onClick={() => setShowEditor(false)} className="btn btn-ghost flex-1">{tr("Anulează")}</button>
                 <button onClick={handleSave} disabled={saving} className="btn btn-primary flex-1 gap-2">
                   {saving ? <CircleNotch size={14} className="animate-spin" /> : saveOk ? <Check size={14} weight="bold" /> : null}
-                  {saving ? "Se salvează..." : saveOk ? "Salvat!" : "Salvează"}
+                  {saving ? tr("Se salvează...") : saveOk ? tr("Salvat!") : tr("Salvează")}
                 </button>
               </div>
             </motion.div>

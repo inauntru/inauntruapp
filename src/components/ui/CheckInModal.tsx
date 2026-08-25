@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import { PRACTICES } from "@/lib/mockData";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { canAccess, contentTier } from "@/lib/plan";
 
 interface MoodOption {
@@ -65,6 +66,7 @@ interface CheckInModalProps {
 }
 
 export default function CheckInModal({ isOpen, onClose, canSkip = true, onCompleted }: CheckInModalProps) {
+  const { tr } = useLanguage();
   const [step, setStep] = useState(1);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
@@ -182,7 +184,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                         <Leaf size={14} weight="fill" className="text-white" />
                       </div>
                       <span className="font-body text-label-sm text-secondary-text uppercase tracking-widest">
-                        Check-in zilnic
+                        {tr("Check-in zilnic")}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -217,8 +219,8 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                         exit="exit"
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       >
-                        <h2 className="font-heading text-h3 text-deep-green mb-1">Cum te simți acum?</h2>
-                        <p className="font-body text-body-sm text-secondary-text mb-6">Nu există răspuns greșit.</p>
+                        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Cum te simți acum?")}</h2>
+                        <p className="font-body text-body-sm text-secondary-text mb-6">{tr("Nu există răspuns greșit.")}</p>
                         <div className="grid grid-cols-5 gap-2">
                           {MOODS.map((mood) => {
                             const MoodIcon = mood.Icon;
@@ -237,7 +239,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                                 }`}
                               >
                                 <MoodIcon size={28} weight={isSelected ? "fill" : "regular"} className={isSelected ? "text-white" : "text-forest-green"} />
-                                <span className="font-body text-label-xs font-semibold leading-tight text-center">{mood.label}</span>
+                                <span className="font-body text-label-xs font-semibold leading-tight text-center">{tr(mood.label)}</span>
                               </motion.button>
                             );
                           })}
@@ -255,8 +257,8 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                         exit="exit"
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       >
-                        <h2 className="font-heading text-h3 text-deep-green mb-1">Unde simți tensiunea?</h2>
-                        <p className="font-body text-body-sm text-secondary-text mb-4">Poți selecta mai multe zone.</p>
+                        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Unde simți tensiunea?")}</h2>
+                        <p className="font-body text-body-sm text-secondary-text mb-4">{tr("Poți selecta mai multe zone.")}</p>
                         <div className="flex gap-4 items-start">
                           {/* SVG body silhouette */}
                           <div className="flex-shrink-0">
@@ -311,7 +313,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                                       <Check size={8} weight="bold" className="text-white" />
                                     </span>
                                   )}
-                                  {zone}
+                                  {tr(zone)}
                                 </motion.button>
                               ))}
                             </div>
@@ -319,7 +321,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                               onClick={() => { setNoTension(true); setSelectedZones([]); setTimeout(goNext, 200); }}
                               className="mt-1 px-3 py-1.5 rounded-full text-body-sm font-body font-medium border border-dashed border-sage-border bg-white text-secondary-text hover:border-forest-green transition-all duration-200 text-left"
                             >
-                              Nu simt tensiune nicăieri
+                              {tr("Nu simt tensiune nicăieri")}
                             </button>
                           </div>
                         </div>
@@ -336,8 +338,8 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                         exit="exit"
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       >
-                        <h2 className="font-heading text-h3 text-deep-green mb-1">Cât de intens simți?</h2>
-                        <p className="font-body text-body-sm text-secondary-text mb-6">Evaluează intensitatea senzației.</p>
+                        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Cât de intens simți?")}</h2>
+                        <p className="font-body text-body-sm text-secondary-text mb-6">{tr("Evaluează intensitatea senzației.")}</p>
                         <div className="flex flex-col gap-2 mb-6">
                           {INTENSITY.map((item) => (
                             <motion.button
@@ -350,7 +352,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                                   : "bg-white border-sage-border text-on-surface hover:border-forest-green hover:bg-light-green"
                               }`}
                             >
-                              <span className="inline-block w-24">{item.label}</span>
+                              <span className="inline-block w-24">{tr(item.label)}</span>
                               <span className="ml-2 opacity-50">{"●".repeat(item.value + 1)}</span>
                             </motion.button>
                           ))}
@@ -358,7 +360,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                         <textarea
                           value={note}
                           onChange={(e) => setNote(e.target.value)}
-                          placeholder="Vrei să adaugi ceva? (opțional)"
+                          placeholder={tr("Vrei să adaugi ceva? (opțional)")}
                           className="w-full bg-surface-container-low border border-sage-border rounded-xl px-4 py-3 text-body-sm font-body text-on-surface placeholder-secondary-text resize-none focus:outline-none focus:border-forest-green transition-colors"
                           rows={2}
                         />
@@ -370,7 +372,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                   <div className="flex items-center justify-between mt-6 pt-4 border-t border-sage-border">
                     {step > 1 ? (
                       <button onClick={goBack} className="font-body text-body-sm text-secondary-text hover:text-forest-green transition-colors">
-                        ← Înapoi
+                        ← {tr("Înapoi")}
                       </button>
                     ) : (
                       <div />
@@ -378,7 +380,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                     <div className="flex items-center gap-3">
                       {canSkip && step === 1 && (
                         <button onClick={onClose} className="font-body text-body-sm text-secondary-text hover:text-forest-green transition-colors">
-                          Sari peste
+                          {tr("Sari peste")}
                         </button>
                       )}
                       {step < 3 ? (
@@ -387,7 +389,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                           disabled={(step === 1 && !canProceedStep1) || (step === 2 && !canProceedStep2)}
                           className={`btn btn-primary btn-sm ${(step === 1 && !canProceedStep1) || (step === 2 && !canProceedStep2) ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
-                          Continuă <ArrowRight size={16} weight="bold" />
+                          {tr("Continuă")} <ArrowRight size={16} weight="bold" />
                         </button>
                       ) : (
                         <button
@@ -395,7 +397,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                           disabled={!canProceedStep3}
                           className={`btn btn-primary ${!canProceedStep3 ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
-                          Găsește practica potrivită <ArrowRight size={16} weight="bold" />
+                          {tr("Găsește practica potrivită")} <ArrowRight size={16} weight="bold" />
                         </button>
                       )}
                     </div>
@@ -433,10 +435,10 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                       />
                     </div>
                     <h3 className="font-heading text-h3 text-deep-green mb-2">
-                      Mulțumim că te-ai conectat cu tine azi
+                      {tr("Mulțumim că te-ai conectat cu tine azi")}
                     </h3>
                     <p className="font-body text-body-sm text-secondary-text">
-                      Am ales {recommendations.length} practici potrivite pentru tine.
+                      {tr("Am ales")} {recommendations.length} {tr("practici potrivite pentru tine.")}
                     </p>
                   </div>
 
@@ -458,7 +460,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-body text-label-xs text-secondary-text mb-0.5">{p.category}</p>
+                          <p className="font-body text-label-xs text-secondary-text mb-0.5">{tr(p.category)}</p>
                           <p className="font-body text-body-sm font-semibold text-deep-green leading-tight line-clamp-1">
                             {p.title}
                           </p>

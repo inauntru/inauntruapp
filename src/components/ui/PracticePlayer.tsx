@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Play, Pause, SpeakerHigh, SpeakerLow, SpeakerNone, Headphones, VideoCamera, Lock } from "@phosphor-icons/react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const WAVEFORM = [30,45,60,40,72,55,80,48,35,62,75,50,42,68,85,60,44,70,52,38,63,82,56,72,46,34,60,50,78,42,55,30,48,65,80,55,40,70,52,36];
 
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function PracticePlayer({ title, duration, isPremium, mediaType = "audio", practiceId, locked = false }: Props) {
+  const { tr } = useLanguage();
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(80);
@@ -68,7 +70,7 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
           }
         </div>
         <p className="font-ui text-label-xs text-white/50 uppercase tracking-widest">
-          {mediaType === "video" ? "Practică video" : "Practică audio"} · {duration} min
+          {mediaType === "video" ? tr("Practică video") : tr("Practică audio")} · {duration} min
         </p>
         {isPremium && (
           <span className="ml-auto font-ui text-label-xs text-amber-300/80 bg-amber-300/10 px-2 py-0.5 rounded-full">Premium</span>
@@ -87,10 +89,10 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
             <Lock size={24} weight="fill" className="text-amber-300/90" />
           </div>
           <p className="font-body text-body-sm text-white/70 mb-5 max-w-xs mx-auto">
-            Această practică face parte din conținutul premium. Abonează-te pentru acces nelimitat.
+            {tr("Această practică face parte din conținutul premium. Abonează-te pentru acces nelimitat.")}
           </p>
           <Link href="/preturi" className="btn btn-primary btn-sm shadow-button">
-            Vezi abonamentele
+            {tr("Vezi abonamentele")}
           </Link>
         </div>
       ) : (

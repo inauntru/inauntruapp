@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check, Clock, X } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { recordAncoraCompletion } from "@/lib/ancore-sync";
 import {
   ANCORE_DATA, NIVEL_CONFIG, CATEGORIE_CONFIG,
@@ -80,6 +81,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
   onComplete?: () => void;
 }) {
   const { user } = useAuth();
+  const { tr } = useLanguage();
   const [step, setStep] = useState(0);
   const total = 1 + ex.pasi.length + 1;
   const isIntro = step === 0;
@@ -127,10 +129,10 @@ function ExerciseModal({ ex, onClose, onComplete }: {
               transition={{ duration: 0.18 }} className="px-6 py-6">
               {isIntro && (
                 <div className="text-center">
-                  <h2 className="font-heading text-h2 text-deep-green mb-4">{ex.nume}</h2>
-                  <p className="font-body text-body-md text-on-surface leading-relaxed mb-2">{ex.trigger_text}</p>
+                  <h2 className="font-heading text-h2 text-deep-green mb-4">{tr(ex.nume)}</h2>
+                  <p className="font-body text-body-md text-on-surface leading-relaxed mb-2">{tr(ex.trigger_text)}</p>
                   <p className="font-body text-label-xs text-secondary-text flex items-center justify-center gap-1.5 mt-4">
-                    <Clock size={13} />{dur(ex.durata_sec)} · {ex.pasi.length} {ex.pasi.length === 1 ? "pas" : "pași"}
+                    <Clock size={13} />{dur(ex.durata_sec)} · {ex.pasi.length} {ex.pasi.length === 1 ? tr("pas") : tr("pași")}
                   </p>
                 </div>
               )}
@@ -139,7 +141,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
                   <div className="w-10 h-10 rounded-full bg-light-green flex items-center justify-center mx-auto mb-5">
                     <span className="font-heading font-bold text-forest-green text-body-sm">{step}</span>
                   </div>
-                  <p className="font-body text-body-lg text-deep-green leading-relaxed">{ex.pasi[step - 1]}</p>
+                  <p className="font-body text-body-lg text-deep-green leading-relaxed">{tr(ex.pasi[step - 1])}</p>
                 </div>
               )}
               {isFinal && (
@@ -147,8 +149,8 @@ function ExerciseModal({ ex, onClose, onComplete }: {
                   <div className="w-12 h-12 rounded-full bg-light-green flex items-center justify-center mx-auto mb-5">
                     <Check size={22} weight="bold" className="text-forest-green" />
                   </div>
-                  <p className="font-body text-body-lg text-deep-green font-semibold mb-4 leading-relaxed">{ex.ancora_text}</p>
-                  <p className="font-body text-body-sm text-secondary-text leading-relaxed">{ex.inchidere_text}</p>
+                  <p className="font-body text-body-lg text-deep-green font-semibold mb-4 leading-relaxed">{tr(ex.ancora_text)}</p>
+                  <p className="font-body text-body-sm text-secondary-text leading-relaxed">{tr(ex.inchidere_text)}</p>
                 </div>
               )}
             </motion.div>
@@ -161,7 +163,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
           </button>
           {!isFinal ? (
             <button onClick={() => setStep(s => s + 1)} className="btn btn-primary flex-1 gap-2">
-              {isIntro ? "Încearcă" : "Continuă"} <ArrowRight size={14} weight="bold" />
+              {isIntro ? tr("Încearcă") : tr("Continuă")} <ArrowRight size={14} weight="bold" />
             </button>
           ) : (
             <button onClick={() => {
@@ -172,7 +174,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
               );
               if (onComplete) onComplete(); else onClose();
             }} className="btn btn-primary flex-1 gap-2">
-              <Check size={14} weight="bold" /> Gata
+              <Check size={14} weight="bold" /> {tr("Gata")}
             </button>
           )}
         </div>
@@ -185,6 +187,7 @@ function ExerciseModal({ ex, onClose, onComplete }: {
 function ExerciseCard({ ex, onStart, recommended }: {
   ex: AncoreExercise; onStart: () => void; recommended?: boolean;
 }) {
+  const { tr } = useLanguage();
   const niv = NIVEL_CONFIG[ex.nivel];
   return (
     <div className="bg-white rounded-2xl border border-sage-border shadow-sm hover:shadow-md transition-shadow flex flex-col w-full" style={{ minHeight: 220 }}>
@@ -192,26 +195,26 @@ function ExerciseCard({ ex, onStart, recommended }: {
         <div className="h-6 mb-1 flex items-center">
           {recommended && (
             <span className="text-[9px] font-body font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-light-green text-forest-green border border-forest-green/20">
-              Recomandat
+              {tr("Recomandat")}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2 mb-3">
           <span className="text-[10px] font-body font-semibold px-2.5 py-1 rounded-full"
             style={{ backgroundColor: niv.bg, color: niv.text }}>
-            {nivelLabel(ex.nivel)}
+            {tr(nivelLabel(ex.nivel))}
           </span>
           <span className="flex items-center gap-1 font-body text-[10px] text-secondary-text">
             <Clock size={10} />{dur(ex.durata_sec)}
           </span>
         </div>
-        <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1.5 line-clamp-2">{ex.nume}</h3>
-        <p className="font-body text-label-xs text-secondary-text line-clamp-2 flex-1">{ex.descriere_scurta}</p>
+        <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1.5 line-clamp-2">{tr(ex.nume)}</h3>
+        <p className="font-body text-label-xs text-secondary-text line-clamp-2 flex-1">{tr(ex.descriere_scurta)}</p>
       </div>
       <div className="p-3 pt-0 mt-auto">
         <button onClick={onStart}
           className="w-full py-2 rounded-xl bg-light-green text-forest-green font-body font-semibold text-label-xs hover:bg-forest-green hover:text-white transition-colors">
-          Încearcă
+          {tr("Încearcă")}
         </button>
       </div>
     </div>
@@ -222,7 +225,8 @@ function ExerciseCard({ ex, onStart, recommended }: {
 type FunnelStep = "stare" | "energie" | "result" | "browse" | "all";
 
 export default function AncoreClient({ siteContent }: Props) {
-  const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { tr } = useLanguage();
+  const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
   const funnelRef = useRef<HTMLElement>(null);
 
   const [funnelStep, setFunnelStep] = useState<FunnelStep>("stare");
@@ -285,7 +289,7 @@ export default function AncoreClient({ siteContent }: Props) {
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   onClick={scrollToFunnel}
                   className="btn btn-indigo gap-2 text-base px-6 py-3">
-                  Descoperă ancora ta <ArrowRight size={16} weight="bold" />
+                  {tr("Descoperă ancora ta")} <ArrowRight size={16} weight="bold" />
                 </motion.button>
               </div>
             </AnimateIn>
@@ -303,10 +307,10 @@ export default function AncoreClient({ siteContent }: Props) {
               <motion.div key="stare"
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
                 transition={{ duration: 0.22 }}>
-                <p className="font-body text-label-xs text-forest-green uppercase tracking-widest mb-2">Pas 1</p>
-                <h2 className="font-heading text-h2 text-deep-green mb-1">Cum te simți acum?</h2>
+                <p className="font-body text-label-xs text-forest-green uppercase tracking-widest mb-2">{tr("Pas 1")}</p>
+                <h2 className="font-heading text-h2 text-deep-green mb-1">{tr("Cum te simți acum?")}</h2>
                 <p className="font-body text-body-sm text-secondary-text mb-8">
-                  Alege starea ta — un tap și trecem mai departe.
+                  {tr("Alege starea ta — un tap și trecem mai departe.")}
                 </p>
                 <div className="space-y-3">
                   {STARE_OPTIONS.map(opt => (
@@ -317,7 +321,7 @@ export default function AncoreClient({ siteContent }: Props) {
                       <div className="w-3 h-3 rounded-full flex-shrink-0"
                         style={{ backgroundColor: opt.dotColor }} />
                       <span className="font-body font-semibold text-body-sm text-deep-green group-hover:text-forest-green transition-colors">
-                        {opt.label}
+                        {tr(opt.label)}
                       </span>
                       <ArrowRight size={14} className="ml-auto text-secondary-text group-hover:text-forest-green transition-colors" />
                     </motion.button>
@@ -333,19 +337,19 @@ export default function AncoreClient({ siteContent }: Props) {
                 transition={{ duration: 0.22 }}>
                 <button onClick={() => setFunnelStep("stare")}
                   className="flex items-center gap-1.5 text-secondary-text hover:text-deep-green transition-colors mb-5 font-body text-label-xs">
-                  <ArrowLeft size={13} weight="bold" /> Înapoi
+                  <ArrowLeft size={13} weight="bold" /> {tr("Înapoi")}
                 </button>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-3 h-3 rounded-full flex-shrink-0"
                     style={{ backgroundColor: selectedStare?.dotColor }} />
                   <span className="font-body text-body-sm text-secondary-text">
-                    {selectedStare?.label}
+                    {selectedStare && tr(selectedStare.label)}
                   </span>
                 </div>
-                <p className="font-body text-label-xs text-forest-green uppercase tracking-widest mb-2">Pas 2</p>
-                <h2 className="font-heading text-h2 text-deep-green mb-1">Câtă energie ai pentru asta?</h2>
+                <p className="font-body text-label-xs text-forest-green uppercase tracking-widest mb-2">{tr("Pas 2")}</p>
+                <h2 className="font-heading text-h2 text-deep-green mb-1">{tr("Câtă energie ai pentru asta?")}</h2>
                 <p className="font-body text-body-sm text-secondary-text mb-8">
-                  Alege cât timp poți aloca acum.
+                  {tr("Alege cât timp poți aloca acum.")}
                 </p>
                 <div className="space-y-3">
                   {ENERGIE_OPTIONS.map(opt => (
@@ -355,10 +359,10 @@ export default function AncoreClient({ siteContent }: Props) {
                     >
                       <div className="flex-1">
                         <span className="font-body font-semibold text-body-sm text-deep-green group-hover:text-forest-green transition-colors block">
-                          {opt.label}
+                          {tr(opt.label)}
                         </span>
                         {opt.sub && (
-                          <span className="font-body text-label-xs text-secondary-text">{opt.sub}</span>
+                          <span className="font-body text-label-xs text-secondary-text">{tr(opt.sub)}</span>
                         )}
                       </div>
                       <ArrowRight size={14} className="flex-shrink-0 text-secondary-text group-hover:text-forest-green transition-colors" />
@@ -377,21 +381,21 @@ export default function AncoreClient({ siteContent }: Props) {
                 <div className="flex items-center gap-3 flex-wrap mb-8">
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-light-green/60 border border-forest-green/20">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: selectedStare?.dotColor }} />
-                    <span className="font-body text-label-xs font-semibold text-forest-green">{selectedStare?.label}</span>
+                    <span className="font-body text-label-xs font-semibold text-forest-green">{selectedStare && tr(selectedStare.label)}</span>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-light-green/60 border border-forest-green/20">
                     <Clock size={12} className="text-forest-green" />
-                    <span className="font-body text-label-xs font-semibold text-forest-green">{selectedEnergie?.label}</span>
+                    <span className="font-body text-label-xs font-semibold text-forest-green">{selectedEnergie && tr(selectedEnergie.label)}</span>
                   </div>
                   <button onClick={resetFunnel}
                     className="font-body text-label-xs text-secondary-text hover:text-deep-green underline underline-offset-2 transition-colors">
-                    Încearcă din nou
+                    {tr("Încearcă din nou")}
                   </button>
                 </div>
 
-                <h2 className="font-heading text-h2 text-deep-green mb-1">Recomandat acum</h2>
+                <h2 className="font-heading text-h2 text-deep-green mb-1">{tr("Recomandat acum")}</h2>
                 <p className="font-body text-body-sm text-secondary-text mb-6">
-                  {recommendations.length} {recommendations.length === 1 ? "exercițiu" : "exerciții"} potrivite pentru tine
+                  {recommendations.length} {recommendations.length === 1 ? tr("exercițiu") : tr("exerciții")} {tr("potrivite pentru tine")}
                 </p>
               </motion.div>
             )}
@@ -414,24 +418,24 @@ export default function AncoreClient({ siteContent }: Props) {
                 <div className="bg-white rounded-2xl border-2 border-forest-green/30 shadow-md p-6 flex flex-col sm:flex-row gap-6">
                   <div className="flex-1">
                     <span className="inline-block text-[9px] font-body font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-light-green text-forest-green border border-forest-green/20 mb-3">
-                      Ancora ta acum
+                      {tr("Ancora ta acum")}
                     </span>
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-[10px] font-body font-semibold px-2.5 py-1 rounded-full"
                         style={{ backgroundColor: NIVEL_CONFIG[recommendations[0].nivel].bg, color: NIVEL_CONFIG[recommendations[0].nivel].text }}>
-                        {nivelLabel(recommendations[0].nivel)}
+                        {tr(nivelLabel(recommendations[0].nivel))}
                       </span>
                       <span className="flex items-center gap-1 font-body text-[10px] text-secondary-text">
                         <Clock size={10} />{dur(recommendations[0].durata_sec)}
                       </span>
                     </div>
-                    <h3 className="font-heading text-h2 text-deep-green mb-2">{recommendations[0].nume}</h3>
-                    <p className="font-body text-body-sm text-secondary-text">{recommendations[0].descriere_scurta}</p>
+                    <h3 className="font-heading text-h2 text-deep-green mb-2">{tr(recommendations[0].nume)}</h3>
+                    <p className="font-body text-body-sm text-secondary-text">{tr(recommendations[0].descriere_scurta)}</p>
                   </div>
                   <div className="flex items-end sm:items-center">
                     <button onClick={() => { setActiveEx(recommendations[0]); setIsPrimaryEx(true); }}
                       className="btn btn-primary gap-2 w-full sm:w-auto">
-                      Încearcă <ArrowRight size={14} weight="bold" />
+                      {tr("Încearcă")} <ArrowRight size={14} weight="bold" />
                     </button>
                   </div>
                 </div>
@@ -441,7 +445,7 @@ export default function AncoreClient({ siteContent }: Props) {
             {/* Alte opțiuni */}
             {recommendations.length > 1 && (
               <div className="mb-10">
-                <p className="font-body text-label-xs text-secondary-text uppercase tracking-widest mb-4">Alte opțiuni</p>
+                <p className="font-body text-label-xs text-secondary-text uppercase tracking-widest mb-4">{tr("Alte opțiuni")}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
                   {recommendations.slice(1).map((ex, i) => (
                     <motion.div key={ex.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -457,7 +461,7 @@ export default function AncoreClient({ siteContent }: Props) {
             <div className="text-center">
               <button onClick={() => setFunnelStep("all")}
                 className="font-body text-body-sm text-forest-green hover:text-deep-green underline underline-offset-4 transition-colors">
-                Vezi toate exercițiile
+                {tr("Vezi toate exercițiile")}
               </button>
             </div>
           </motion.div>
@@ -476,19 +480,19 @@ export default function AncoreClient({ siteContent }: Props) {
             <div className="flex items-center gap-3 flex-wrap mb-10 p-3 bg-light-green/40 rounded-xl border border-forest-green/20 w-fit">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: selectedStare?.dotColor }} />
-                <span className="font-body text-label-xs font-semibold text-forest-green">{selectedStare?.label}</span>
+                <span className="font-body text-label-xs font-semibold text-forest-green">{selectedStare && tr(selectedStare.label)}</span>
               </div>
               <span className="text-secondary-text">·</span>
-              <span className="font-body text-label-xs font-semibold text-forest-green">{selectedEnergie?.label}</span>
+              <span className="font-body text-label-xs font-semibold text-forest-green">{selectedEnergie && tr(selectedEnergie.label)}</span>
               <button onClick={resetFunnel}
                 className="font-body text-label-xs text-secondary-text hover:text-deep-green underline underline-offset-2 transition-colors ml-1">
-                Recalibrează
+                {tr("Recalibrează")}
               </button>
             </div>
 
             {/* Recomandate */}
             <div className="mb-12">
-              <h2 className="font-heading text-h2 text-deep-green mb-6">Recomandate pentru tine</h2>
+              <h2 className="font-heading text-h2 text-deep-green mb-6">{tr("Recomandate pentru tine")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {recommendations.map((ex, i) => (
                   <motion.div key={ex.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -502,8 +506,8 @@ export default function AncoreClient({ siteContent }: Props) {
             {/* Toate */}
             <div className="border-t border-sage-border pt-10">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-heading text-h3 text-deep-green">Toate ancorele</h3>
-                <span className="font-body text-body-sm text-secondary-text">{SORTED_ALL.length} exerciții</span>
+                <h3 className="font-heading text-h3 text-deep-green">{tr("Toate ancorele")}</h3>
+                <span className="font-body text-body-sm text-secondary-text">{SORTED_ALL.length} {tr("exerciții")}</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {SORTED_ALL.map((ex, i) => (
@@ -528,11 +532,11 @@ export default function AncoreClient({ siteContent }: Props) {
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="font-heading text-h2 text-deep-green">Toate ancorele</h2>
-                <p className="font-body text-body-sm text-secondary-text mt-1">{SORTED_ALL.length} exerciții</p>
+                <h2 className="font-heading text-h2 text-deep-green">{tr("Toate ancorele")}</h2>
+                <p className="font-body text-body-sm text-secondary-text mt-1">{SORTED_ALL.length} {tr("exerciții")}</p>
               </div>
               <button onClick={resetFunnel} className="btn btn-ghost btn-sm gap-1.5">
-                <ArrowLeft size={13} weight="bold" /> Recalibrează
+                <ArrowLeft size={13} weight="bold" /> {tr("Recalibrează")}
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

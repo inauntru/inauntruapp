@@ -1,0 +1,211 @@
+/** Traduceri EN — practici, prețuri, componente UI. Cheia = textul românesc exact. */
+export const EN_PRACTICI: Record<string, string> = {
+  // ── Practici — hero (fallback siteContent) ──
+  "Bibliotecă practici": "Practice library",
+  "70+ practici somatice": "70+ somatic practices",
+  "Respirație, mișcare, corp și voce — fiecare practică ghidată de experți somatic din România.":
+    "Breathwork, movement, body and voice — every practice guided by somatic experts from Romania.",
+  "De ce ai nevoie acum?": "What do you need right now?",
+
+  // ── Practici — filtre și categorii ──
+  "Toate": "All",
+  "Suflu": "Breath",
+  "Prezență": "Presence",
+  "Fluiditate": "Flow",
+  "Odihnă": "Rest",
+  "Vitalitate": "Vitality",
+  "Expresie": "Expression",
+  "Durată": "Duration",
+  "Toate nivelurile": "All levels",
+  "Începător": "Beginner",
+  "Intermediar": "Intermediate",
+  "Avansat": "Advanced",
+  "Filtre": "Filters",
+  "Nivel": "Level",
+  "Resetează": "Reset",
+  "Resetează filtrele": "Reset filters",
+  "Aplică": "Apply",
+  "practici găsite": "practices found",
+  "Nicio practică găsită": "No practices found",
+  "Încearcă să ajustezi filtrele sau căutarea.": "Try adjusting your filters or your search.",
+
+  // ── Niveluri de acces (TIER_LABEL) ──
+  "Gratuit": "Free",
+  "Standard": "Standard",
+  "Premium": "Premium",
+
+  // ── Prețuri — hero (fallback siteContent) ──
+  "Alege claritatea.": "Choose clarity.",
+  "Planuri pentru echilibru zilnic.": "Plans for daily balance.",
+  "Redescoperă-ți starea de bine. Alege varianta care ți se potrivește.":
+    "Rediscover your well-being. Choose the option that fits you.",
+  "Economisești 35%": "Save 35%",
+  "Lunar": "Monthly",
+  "Anual": "Yearly",
+  "CEL MAI POPULAR": "MOST POPULAR",
+  "RON/lună": "RON/month",
+  "RON/an": "RON/year",
+  "RON lunar": "RON monthly",
+  "Încearcă gratuit timp de 14 zile. Fără obligații, doar timp câștigat pentru tine.":
+    "Try it free for 14 days. No strings attached — just time won back for yourself.",
+  "Facturare": "Billing",
+  "Întrebări despre plăți": "Questions about payments",
+
+  // ── Prețuri — planuri (mockData) ──
+  "Recalibrare rapidă": "Quick recalibration",
+  "Claritate și echilibru": "Clarity and balance",
+  "Transformare profundă": "Deep transformation",
+  "5 practici gratuite pe lună": "5 free practices per month",
+  "1 sesiune live pe lună": "1 live session per month",
+  "Check-in zilnic": "Daily check-in",
+  "Acces la blog și resurse": "Access to blog and resources",
+  "Monitorizarea progresului": "Progress tracking",
+  "Bibliotecă completă (70+ practici)": "Full library (70+ practices)",
+  "Sesiuni live nelimitate": "Unlimited live sessions",
+  "Progres personalizat": "Personalized progress",
+  "Suport dedicat": "Dedicated support",
+  "Acces nelimitat la toate practicile": "Unlimited access to all practices",
+  "Check-in zilnic + harta corpului": "Daily check-in + body map",
+  "Recomandări bazate pe check-in": "Check-in based recommendations",
+  "Suport email 48h": "48h email support",
+  "Sesiuni 1:1 cu facilitatorul": "1:1 sessions with a facilitator",
+  "Program corporativ": "Corporate program",
+  "Tot ce include Premium": "Everything in Premium",
+  "1 sesiune 1:1 pe lună cu facilitatorul": "1 monthly 1:1 session with a facilitator",
+  "Program personalizat de 30 zile": "Personalized 30-day program",
+  "Acces anticipat la conținut nou": "Early access to new content",
+  "Grup privat de suport": "Private support group",
+  "Suport prioritar 24h": "24h priority support",
+  "Download practici offline": "Offline practice downloads",
+  "Începe gratuit": "Start for free",
+  "Începe Premium": "Start Premium",
+  "Începe Premium+": "Start Premium+",
+
+  // ── Prețuri — FAQ facturare (fallback siteContent) ──
+  "Pot anula oricând abonamentul?": "Can I cancel my subscription anytime?",
+  "Da, poți anula oricând din setările contului tău.": "Yes, you can cancel anytime from your account settings.",
+  "Ce metode de plată acceptați?": "What payment methods do you accept?",
+  "Acceptăm card Visa, Mastercard și transfer bancar.": "We accept Visa, Mastercard and bank transfer.",
+  "Există perioadă de probă gratuită?": "Is there a free trial period?",
+  "Planul Gratuit este disponibil fără limită de timp.": "The Free plan is available with no time limit.",
+  "Pot schimba planul ulterior?": "Can I change my plan later?",
+  "Da, poți face upgrade sau downgrade oricând.": "Yes, you can upgrade or downgrade anytime.",
+
+  // ── Player practică ──
+  "Practică video": "Video practice",
+  "Practică audio": "Audio practice",
+  "Această practică face parte din conținutul premium. Abonează-te pentru acces nelimitat.":
+    "This practice is part of our premium content. Subscribe for unlimited access.",
+  "Vezi abonamentele": "View plans",
+
+  // ── Card acces practică ──
+  "Practică gratuită": "Free practice",
+  "Disponibilă pentru toți utilizatorii, fără abonament.": "Available to all users, no subscription needed.",
+  "Inclus în abonamentul tău": "Included in your subscription",
+  "Ai acces la această practică prin planul": "You have access to this practice through your plan:",
+  "Conținut Standard": "Standard content",
+  "Conținut Premium": "Premium content",
+  "Această practică e disponibilă doar cu abonamentul Premium.":
+    "This practice is only available with the Premium subscription.",
+  "Această practică necesită un abonament Standard sau Premium.":
+    "This practice requires a Standard or Premium subscription.",
+  "Creează cont": "Create account",
+  "14 zile gratuit · Fără card": "14 days free · No card required",
+
+  // ── Check-in — dispoziții ──
+  "Epuizat": "Drained",
+  "Tensionat": "Tense",
+  "Ok": "Ok",
+  "Bine": "Good",
+  "Excelent": "Great",
+  "Fără energie": "No energy",
+  "Sub presiune": "Under pressure",
+  "Mediu": "Average",
+  "Decent": "Decent",
+  "Energizat": "Energized",
+
+  // ── Check-in — zone corporale ──
+  "Cap": "Head",
+  "Gât": "Neck",
+  "Umeri": "Shoulders",
+  "Mâini": "Arms",
+  "Piept": "Chest",
+  "Abdomen": "Abdomen",
+  "Spate": "Back",
+  "Șolduri": "Hips",
+  "Picioare": "Legs",
+
+  // ── Check-in — intensitate ──
+  "Deloc": "Not at all",
+  "Ușor": "Mild",
+  "Moderat": "Moderate",
+  "Intens": "Intense",
+  "Foarte intens": "Very intense",
+
+  // ── Check-in — pași și acțiuni ──
+  "Cum te simți acum?": "How are you feeling right now?",
+  "Nu există răspuns greșit.": "There is no wrong answer.",
+  "Unde simți tensiunea?": "Where do you feel tension?",
+  "Poți selecta mai multe zone.": "You can select multiple areas.",
+  "Nu simt tensiune nicăieri": "I don't feel tension anywhere",
+  "Cât de intens simți?": "How intense does it feel?",
+  "Evaluează intensitatea senzației.": "Rate the intensity of the sensation.",
+  "Vrei să adaugi ceva? (opțional)": "Want to add anything? (optional)",
+  "Înapoi": "Back",
+  "Sari peste": "Skip",
+  "Continuă": "Continue",
+  "Găsește practica potrivită": "Find the right practice",
+  "Mulțumim că te-ai conectat cu tine azi": "Thank you for connecting with yourself today",
+  "Am ales": "We picked",
+  "practici potrivite pentru tine.": "practices suited for you.",
+
+  // ── Influențele zilei ──
+  "Influențele zilei": "Today's influences",
+  "Favorabil": "Favorable",
+  "Echilibrat": "Balanced",
+  "Provocator": "Challenging",
+  "Corp": "Body",
+  "Minte": "Mind",
+  "Relații": "Relationships",
+  "Energie": "Energy",
+  "Personalizat": "Personalized",
+  "Profilul tău:": "Your profile:",
+  "în": "in",
+  "Se calculează tranzitele...": "Calculating transits...",
+  "Adaugă data nașterii pentru a vedea cum te influențează tranzitele planetare de azi, personalizat pentru semnul tău.":
+    "Add your date of birth to see how today's planetary transits influence you, personalized for your sign.",
+  "Adaugă în profil": "Add to profile",
+
+  // ── Faze ale lunii ──
+  "Lună Nouă": "New Moon",
+  "Semilună Crescătoare": "Waxing Crescent",
+  "Lună în Creștere": "First Quarter",
+  "Aproape Plină": "Waxing Gibbous",
+  "Lună Plină": "Full Moon",
+  "Descrescătoare": "Waning Gibbous",
+  "Semilună Descrescătoare": "Last Quarter",
+  "Lună în Scădere": "Waning Crescent",
+
+  // ── Guvernatorii zilelor ──
+  "Soare": "Sun",
+  "Lună": "Moon",
+  "Marte": "Mars",
+  "Mercur": "Mercury",
+  "Jupiter": "Jupiter",
+  "Venus": "Venus",
+  "Saturn": "Saturn",
+
+  // ── Zodii ──
+  "Berbec": "Aries",
+  "Taur": "Taurus",
+  "Gemeni": "Gemini",
+  "Rac": "Cancer",
+  "Leu": "Leo",
+  "Fecioară": "Virgo",
+  "Balanță": "Libra",
+  "Scorpion": "Scorpio",
+  "Săgetător": "Sagittarius",
+  "Capricorn": "Capricorn",
+  "Vărsător": "Aquarius",
+  "Pești": "Pisces",
+};

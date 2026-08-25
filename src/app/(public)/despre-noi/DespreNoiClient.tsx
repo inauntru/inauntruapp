@@ -5,12 +5,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Heart, Leaf, MapPin, ArrowRight, Globe, Check } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { FACILITATORS } from "@/lib/mockData";
 
 interface Props { siteContent: Record<string, string>; }
 
 export default function DespreNoiClient({ siteContent }: Props) {
-  const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { tr } = useLanguage();
+  const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
 
   const timeline = [
     { year: t("tl1_year", "2026"), location: t("tl1_location", "România"), desc: t("tl1_desc", "Lansare platformă cu 70+ practici, sesiuni live și facilitatori certificați. Primii 5.000 utilizatori.") },
@@ -37,7 +39,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
             </AnimateIn>
             <AnimateIn from="scale">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden relative shadow-card-hover">
-                <Image src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80" alt="Sabina, co-fondator WithIn" fill className="object-cover object-top" priority />
+                <Image src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80" alt={tr("Sabina, co-fondator WithIn")} fill className="object-cover object-top" priority />
                 <div className="absolute inset-0 bg-deep-green/10" />
               </div>
             </AnimateIn>
@@ -50,7 +52,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <AnimateIn from="scale">
               <div className="aspect-square rounded-card overflow-hidden relative">
-                <Image src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80" alt="Sabina, co-fondator WithIn" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80" alt={tr("Sabina, co-fondator WithIn")} fill className="object-cover" />
                 <div className="absolute inset-0 bg-deep-green/15" />
                 <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur rounded-xl p-4 shadow-card">
                   <p className="font-heading text-forest-green text-body-sm italic">&ldquo;{t("founder_quote", "Am construit WithIn pentru că eu însămi am căutat ani de zile un loc sigur să mă vindec.")}&rdquo;</p>
@@ -75,8 +77,8 @@ export default function DespreNoiClient({ siteContent }: Props) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn from="bottom">
             <div className="text-center mb-12">
-              <p className="section-label">Valorile noastre</p>
-              <h2 className="section-title">Ce ne ghidează</h2>
+              <p className="section-label">{tr("Valorile noastre")}</p>
+              <h2 className="section-title">{tr("Ce ne ghidează")}</h2>
             </div>
           </AnimateIn>
           <StaggerChildren className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" staggerDelay={0.1}>
@@ -97,7 +99,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
       <section className="py-16 bg-surface-container-low">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn from="bottom">
-            <div className="text-center mb-10"><p className="section-label">Echipa</p><h2 className="section-title">Facilitatorii noștri</h2></div>
+            <div className="text-center mb-10"><p className="section-label">{tr("Echipa")}</p><h2 className="section-title">{tr("Facilitatorii noștri")}</h2></div>
           </AnimateIn>
           <StaggerChildren className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" staggerDelay={0.1}>
             {FACILITATORS.map((f) => (
@@ -107,7 +109,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
                 </div>
                 <h3 className="font-body font-semibold text-body-sm text-deep-green mb-0.5">{f.name}</h3>
                 <p className="font-body text-label-xs text-secondary-text mb-3">{f.title}</p>
-                <div className="flex flex-wrap justify-center gap-1">{f.tags.slice(0, 2).map((tag) => <span key={tag} className="tag tag-green">{tag}</span>)}</div>
+                <div className="flex flex-wrap justify-center gap-1">{f.tags.slice(0, 2).map((tag) => <span key={tag} className="tag tag-green">{tr(tag)}</span>)}</div>
               </Link>
             ))}
           </StaggerChildren>
@@ -117,11 +119,11 @@ export default function DespreNoiClient({ siteContent }: Props) {
       <section className="py-16 bg-bg-main text-center">
         <AnimateIn from="bottom">
           <div className="max-w-xl mx-auto px-4">
-            <h2 className="font-heading text-h2 text-deep-green mb-4">Vino alături de noi</h2>
-            <p className="font-body text-body-lg text-secondary-text mb-8">Fie că ești utilizator, facilitator sau partener corporativ — există un loc pentru tine în WithIn.</p>
+            <h2 className="font-heading text-h2 text-deep-green mb-4">{tr("Vino alături de noi")}</h2>
+            <p className="font-body text-body-lg text-secondary-text mb-8">{tr("Fie că ești utilizator, facilitator sau partener corporativ — există un loc pentru tine în WithIn.")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register" className="btn btn-primary">Creează cont gratuit <ArrowRight size={16} weight="bold" /></Link>
-              <Link href="/facilitatori" className="btn btn-ghost">Explorează facilitatorii</Link>
+              <Link href="/register" className="btn btn-primary">{tr("Creează cont gratuit")} <ArrowRight size={16} weight="bold" /></Link>
+              <Link href="/facilitatori" className="btn btn-ghost">{tr("Explorează facilitatorii")}</Link>
             </div>
           </div>
         </AnimateIn>

@@ -10,6 +10,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell,
 } from "recharts";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ProgressData {
   totalMinutes: number;
@@ -56,6 +57,7 @@ function fmtMinutes(m: number): string {
 }
 
 export default function ProgresPage() {
+  const { tr } = useLanguage();
   const [data, setData] = useState<ProgressData | null>(null);
   const [usage, setUsage] = useState<UsageDay[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,8 +106,8 @@ export default function ProgresPage() {
           <ArrowLeft size={18} weight="bold" />
         </Link>
         <div>
-          <h1 className="font-heading text-h2 text-deep-green">Progresul meu</h1>
-          <p className="font-body text-body-sm text-secondary-text">Statistici detaliate despre practicile tale</p>
+          <h1 className="font-heading text-h2 text-deep-green">{tr("Progresul meu")}</h1>
+          <p className="font-body text-body-sm text-secondary-text">{tr("Statistici detaliate despre practicile tale")}</p>
         </div>
       </div>
 
@@ -114,15 +116,15 @@ export default function ProgresPage() {
           <CircleNotch size={32} className="animate-spin text-forest-green" />
         </div>
       ) : !data ? (
-        <p className="text-center font-body text-secondary-text py-16">Nu s-au putut încărca datele.</p>
+        <p className="text-center font-body text-secondary-text py-16">{tr("Nu s-au putut încărca datele.")}</p>
       ) : (
         <div className="space-y-6">
           {/* Stats grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard icon={Flame} label="Streak" value={data.streak} sub={data.streak === 1 ? "zi consecutivă" : "zile consecutive"} />
-            <StatCard icon={Timer} label="Minute practicate" value={data.totalMinutes} sub="total" />
-            <StatCard icon={Lightning} label="Practici completate" value={data.totalPractices} sub="total" />
-            <StatCard icon={CalendarCheck} label="Check-in-uri" value={data.totalCheckIns} sub="total" />
+            <StatCard icon={Flame} label={tr("Streak")} value={data.streak} sub={data.streak === 1 ? tr("zi consecutivă") : tr("zile consecutive")} />
+            <StatCard icon={Timer} label={tr("Minute practicate")} value={data.totalMinutes} sub={tr("total")} />
+            <StatCard icon={Lightning} label={tr("Practici completate")} value={data.totalPractices} sub={tr("total")} />
+            <StatCard icon={CalendarCheck} label={tr("Check-in-uri")} value={data.totalCheckIns} sub={tr("total")} />
           </div>
 
           {/* Time in platform */}
@@ -130,9 +132,9 @@ export default function ProgresPage() {
             <div className="flex items-start justify-between mb-1">
               <div>
                 <h3 className="font-body font-semibold text-body-md text-deep-green flex items-center gap-2">
-                  <Hourglass size={16} className="text-forest-green" /> Timp în platformă
+                  <Hourglass size={16} className="text-forest-green" /> {tr("Timp în platformă")}
                 </h3>
-                <p className="font-body text-label-xs text-secondary-text">Ultimele 14 zile · total săptămâna asta: {fmtMinutes(totalWeekMin)}</p>
+                <p className="font-body text-label-xs text-secondary-text">{tr("Ultimele 14 zile")} · {tr("total săptămâna asta:")} {fmtMinutes(totalWeekMin)}</p>
               </div>
             </div>
 
@@ -144,7 +146,7 @@ export default function ProgresPage() {
                 { label: "Acum 7 zile",    value: weekAgoMin, highlight: false },
               ].map(c => (
                 <div key={c.label} className={`rounded-xl p-3 text-center border ${c.highlight ? "bg-light-green border-forest-green/30" : "bg-white border-sage-border/40"}`}>
-                  <p className="font-body text-label-xs text-secondary-text uppercase tracking-wider mb-0.5">{c.label}</p>
+                  <p className="font-body text-label-xs text-secondary-text uppercase tracking-wider mb-0.5">{tr(c.label)}</p>
                   <p className={`font-heading text-lg font-bold ${c.highlight ? "text-forest-green" : "text-deep-green"}`}>{fmtMinutes(c.value)}</p>
                 </div>
               ))}
@@ -155,7 +157,7 @@ export default function ProgresPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
                 <XAxis dataKey="label" tick={{ fontSize: 10, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} interval={1} />
                 <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: "#f0f5f1" }} formatter={(v: unknown): [string, string] => [fmtMinutes(Number(v ?? 0)), "Timp"]} />
+                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: "#f0f5f1" }} formatter={(v: unknown): [string, string] => [fmtMinutes(Number(v ?? 0)), tr("Timp")]} />
                 <Bar dataKey="minutes" radius={[6, 6, 0, 0]}>
                   {usageSeries.map((entry) => (
                     <Cell key={entry.key} fill={entry.isToday ? "#2B8C5C" : CHART_COLOR} fillOpacity={entry.isToday ? 1 : 0.65} />
@@ -164,20 +166,20 @@ export default function ProgresPage() {
               </BarChart>
             </ResponsiveContainer>
             <p className="font-body text-label-xs text-secondary-text text-center mt-2">
-              Timpul se contorizează automat cât ai platforma deschisă.
+              {tr("Timpul se contorizează automat cât ai platforma deschisă.")}
             </p>
           </motion.div>
 
           {/* Weekly practices chart */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card bg-white p-5">
-            <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Practici pe săptămână</h3>
-            <p className="font-body text-label-xs text-secondary-text mb-5">Ultimele 8 săptămâni</p>
+            <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">{tr("Practici pe săptămână")}</h3>
+            <p className="font-body text-label-xs text-secondary-text mb-5">{tr("Ultimele 8 săptămâni")}</p>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={data.weeklyPractices} barCategoryGap="30%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
                 <XAxis dataKey="week" tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: "#f0f5f1" }} formatter={(v: unknown): [number, string] => [Number(v ?? 0), "Practici"]} />
+                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: "#f0f5f1" }} formatter={(v: unknown): [number, string] => [Number(v ?? 0), tr("Practici")]} />
                 <Bar dataKey="count" fill={CHART_COLOR} radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -185,8 +187,8 @@ export default function ProgresPage() {
 
           {/* Daily check-ins chart */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="card bg-white p-5">
-            <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Check-in-uri zilnice</h3>
-            <p className="font-body text-label-xs text-secondary-text mb-5">Ultimele 30 de zile</p>
+            <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">{tr("Check-in-uri zilnice")}</h3>
+            <p className="font-body text-label-xs text-secondary-text mb-5">{tr("Ultimele 30 de zile")}</p>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data.dailyCheckIns}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
@@ -197,7 +199,7 @@ export default function ProgresPage() {
                   interval={4}
                 />
                 <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: unknown): [number, string] => [Number(v ?? 0), "Check-in-uri"]} />
+                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: unknown): [number, string] => [Number(v ?? 0), tr("Check-in-uri")]} />
                 <Line type="monotone" dataKey="count" stroke={CHART_COLOR} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: CHART_COLOR }} />
               </LineChart>
             </ResponsiveContainer>
@@ -206,8 +208,8 @@ export default function ProgresPage() {
           {/* Mood distribution */}
           {data.moodData.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="card bg-white p-5">
-              <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Distribuție stări</h3>
-              <p className="font-body text-label-xs text-secondary-text mb-5">Cum te-ai simțit în check-in-uri</p>
+              <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">{tr("Distribuție stări")}</h3>
+              <p className="font-body text-label-xs text-secondary-text mb-5">{tr("Cum te-ai simțit în check-in-uri")}</p>
               <div className="flex flex-col lg:flex-row items-center gap-8">
                 <PieChart width={200} height={200}>
                   <Pie data={data.moodData} cx={100} cy={100} innerRadius={55} outerRadius={90} paddingAngle={3} dataKey="count">
@@ -215,13 +217,13 @@ export default function ProgresPage() {
                       <Cell key={entry.mood} fill={MOOD_COLORS[entry.mood] ?? "#9eb3a4"} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v: unknown, _: unknown, props: { payload?: { mood?: string } }): [number, string] => [Number(v ?? 0), MOOD_LABELS[props.payload?.mood ?? ""] ?? props.payload?.mood ?? ""]} />
+                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v: unknown, _: unknown, props: { payload?: { mood?: string } }): [number, string] => [Number(v ?? 0), tr(MOOD_LABELS[props.payload?.mood ?? ""] ?? props.payload?.mood ?? "")]} />
                 </PieChart>
                 <div className="flex flex-wrap gap-3">
                   {data.moodData.map((entry) => (
                     <div key={entry.mood} className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: MOOD_COLORS[entry.mood] ?? "#9eb3a4" }} />
-                      <span className="font-body text-label-xs text-on-surface">{MOOD_LABELS[entry.mood] ?? entry.mood}</span>
+                      <span className="font-body text-label-xs text-on-surface">{tr(MOOD_LABELS[entry.mood] ?? entry.mood)}</span>
                       <span className="font-body text-label-xs font-semibold text-deep-green">{entry.count}</span>
                     </div>
                   ))}

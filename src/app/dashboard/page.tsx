@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { CountUp } from "@/components/ui/AnimateIn";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { getDailyQuote } from "@/lib/quotes";
 import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
 import { fetchAncoreCompletions } from "@/lib/ancore-sync";
@@ -22,12 +23,12 @@ function formatDate() {
   });
 }
 
-function streakMessage(streak: number): string {
-  if (streak === 0) return "Prima zi e întotdeauna un nou început.";
-  if (streak <= 2)  return "Ai început! Fiecare zi contează.";
-  if (streak <= 6)  return "Ești pe drumul cel bun. Continuă!";
-  if (streak <= 13) return `${streak} zile consecutive — ești în ritm.`;
-  return `${streak} zile — un angajament real față de tine.`;
+function streakMessage(streak: number, tr: (ro: string) => string): string {
+  if (streak === 0) return tr("Prima zi e întotdeauna un nou început.");
+  if (streak <= 2)  return tr("Ai început! Fiecare zi contează.");
+  if (streak <= 6)  return tr("Ești pe drumul cel bun. Continuă!");
+  if (streak <= 13) return `${streak} ${tr("zile consecutive — ești în ritm.")}`;
+  return `${streak} ${tr("zile — un angajament real față de tine.")}`;
 }
 
 const QUICK_ACCESS = [
@@ -65,6 +66,7 @@ function pickRecommendation(practices: PracticeItem[], mood: string | null, plan
 }
 
 export default function DashboardPage() {
+  const { tr } = useLanguage();
   const { profile, user: authUser, signOut } = useAuth();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const dateOfBirth = authUser?.user_metadata?.date_of_birth as string | undefined;
@@ -149,6 +151,7 @@ export default function DashboardPage() {
     { label: "Check-in-uri (săpt.)", value: stats.checkInsThisWeek, max: 7,   pct: Math.round(stats.checkInsThisWeek / 7 * 100),      bar: "bg-indigo",       track: "bg-indigo-light",   text: "text-indigo",       icon: Check,   hint: (() => {
       // Zile rămase din săptămâna calendaristică (luni–duminică), după ziua de azi
       const left = 6 - ((new Date().getDay() + 6) % 7);
+      // Textul complet e cheie de traducere (left e mereu între 1 și 6)
       return left === 0 ? "Ultima zi din săptămână" : `Încă ${left} ${left === 1 ? "zi" : "zile"} din săptămâna asta`;
     })() },
     { label: "Ancore completate",     value: ancoreCount,            max: 20,  pct: Math.min(100, ancoreCount / 20 * 100),             bar: "bg-deep-green",   track: "bg-light-green/60", text: "text-deep-green",   icon: Anchor,  hint: "Practici de reglare a sistemului nervos" },
@@ -206,7 +209,7 @@ export default function DashboardPage() {
                   <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-body text-body-sm ${item.active ? "bg-forest-green/30 text-white" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
                     <Icon size={18} weight="regular" />
-                    {item.label}
+                    {tr(item.label)}
                   </Link>
                 );
               })}
@@ -226,13 +229,13 @@ export default function DashboardPage() {
                       onClick={() => { setSidebarOpen(false); setUserMenuOpen(false); }}
                       className="flex items-center gap-2.5 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 transition-colors font-body text-body-sm"
                     >
-                      <GearSix size={15} /> Setări cont
+                      <GearSix size={15} /> {tr("Setări cont")}
                     </Link>
                     <button
                       onClick={async () => { await signOut(); window.location.href = "/"; }}
                       className="w-full flex items-center gap-2.5 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 transition-colors font-body text-body-sm text-left border-t border-white/10"
                     >
-                      <SignOut size={15} /> Deconectare
+                      <SignOut size={15} /> {tr("Deconectare")}
                     </button>
                   </motion.div>
                 )}
@@ -246,7 +249,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0 text-left">
                   <p className="font-body text-body-sm font-semibold text-white truncate">{fullName}</p>
-                  <p className="font-body text-label-xs text-white/40">{planLabel}</p>
+                  <p className="font-body text-label-xs text-white/40">{tr(planLabel)}</p>
                 </div>
                 <CaretUp size={13} className={`text-white/40 flex-shrink-0 transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`} />
               </button>
@@ -266,11 +269,11 @@ export default function DashboardPage() {
               <div className="flex items-start gap-4">
                 <button onClick={() => setSidebarOpen(true)}
                   className="mt-1.5 w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-sage-border text-deep-green hover:bg-light-green hover:border-forest-green transition-colors flex-shrink-0 shadow-sm"
-                  aria-label="Meniu">
+                  aria-label={tr("Meniu")}>
                   <List size={18} weight="bold" />
                 </button>
                 <div>
-                  <h1 className="font-heading text-h2 text-deep-green">Bună, {firstName} 🌿</h1>
+                  <h1 className="font-heading text-h2 text-deep-green">{tr("Bună,")} {firstName} 🌿</h1>
                   <p className="font-body text-body-sm text-secondary-text capitalize">{formatDate()}</p>
                 </div>
               </div>
@@ -285,7 +288,7 @@ export default function DashboardPage() {
                       className="flex items-center gap-2.5 bg-deep-green text-white rounded-full px-4 py-2 hover:bg-forest-green transition-colors shadow-sm">
                       <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
                       <div className="text-left">
-                        <p className="font-body text-label-xs font-semibold leading-tight">Sesiune Live</p>
+                        <p className="font-body text-label-xs font-semibold leading-tight">{tr("Sesiune Live")}</p>
                         <p className="font-body text-[10px] text-white/60 leading-tight">
                           {new Date(upcomingSession.date).toLocaleDateString("ro-RO", { day: "numeric", month: "short" })}
                           {" · "}
@@ -308,7 +311,7 @@ export default function DashboardPage() {
                           <div className="p-5">
                             <div className="flex items-center gap-2 mb-3">
                               <div className="w-2 h-2 rounded-full bg-forest-green animate-live-pulse" />
-                              <span className="font-body text-label-xs text-forest-green uppercase tracking-wider font-semibold">Urmează</span>
+                              <span className="font-body text-label-xs text-forest-green uppercase tracking-wider font-semibold">{tr("Urmează")}</span>
                             </div>
                             <h3 className="font-body font-semibold text-body-md text-deep-green mb-1 leading-snug">{upcomingSession.title}</h3>
                             <p className="font-body text-label-xs text-secondary-text mb-4">{upcomingSession.facilitator}</p>
@@ -324,8 +327,8 @@ export default function DashboardPage() {
                             </div>
                             <div className="mb-5">
                               <div className="flex justify-between font-body text-label-xs text-secondary-text mb-1.5">
-                                <span>Locuri disponibile</span>
-                                <span className="font-semibold text-forest-green">{upcomingSession.spotsLeft} rămase</span>
+                                <span>{tr("Locuri disponibile")}</span>
+                                <span className="font-semibold text-forest-green">{upcomingSession.spotsLeft} {tr("rămase")}</span>
                               </div>
                               <div className="h-1.5 bg-light-green rounded-full overflow-hidden">
                                 <motion.div className="h-full bg-forest-green rounded-full"
@@ -336,7 +339,7 @@ export default function DashboardPage() {
                             </div>
                             <Link href="/sesiuni-live" onClick={() => setSessionExpanded(false)}
                               className="btn btn-primary w-full btn-sm">
-                              Rezervă locul <ArrowRight size={14} weight="bold" />
+                              {tr("Rezervă locul")} <ArrowRight size={14} weight="bold" />
                             </Link>
                           </div>
                         </motion.div>
@@ -349,13 +352,13 @@ export default function DashboardPage() {
                 {checkInDone ? (
                   <div className="flex items-center gap-2 bg-light-green border border-sage-border rounded-full px-3 py-1.5">
                     <Check size={13} weight="bold" className="text-forest-green" />
-                    <span className="font-body text-[11px] text-forest-green font-semibold">Check-in completat</span>
+                    <span className="font-body text-[11px] text-forest-green font-semibold">{tr("Check-in completat")}</span>
                   </div>
                 ) : (
                   <button onClick={() => window.dispatchEvent(new Event("checkin:open"))}
                     className="flex items-center gap-2 bg-forest-green/10 border border-forest-green/30 rounded-full px-3 py-1.5 hover:bg-forest-green/20 transition-colors">
                     <Leaf size={13} weight="fill" className="text-forest-green" />
-                    <span className="font-body text-[11px] text-forest-green font-semibold">Check-in zilnic ○</span>
+                    <span className="font-body text-[11px] text-forest-green font-semibold">{tr("Check-in zilnic")} ○</span>
                   </button>
                 )}
               </div>
@@ -384,7 +387,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex items-baseline gap-1.5">
                         <p className="font-heading text-lg font-bold text-white leading-none"><CountUp to={stat.value} /></p>
-                        <p className="font-body text-[11px] text-white/50 leading-none">{stat.label}</p>
+                        <p className="font-body text-[11px] text-white/50 leading-none">{tr(stat.label)}</p>
                       </div>
                     </div>
                   );
@@ -409,29 +412,29 @@ export default function DashboardPage() {
                   <div className="absolute bottom-0 left-0 right-0 p-4"
                     style={{ background: "linear-gradient(to top, rgba(15,46,26,0.85) 0%, transparent 100%)" }}>
                     <div className="px-1 pb-1">
-                      <p className="font-body text-label-xs text-sage-border/80 mb-1 uppercase tracking-wider">Recomandat pentru tine azi</p>
+                      <p className="font-body text-label-xs text-sage-border/80 mb-1 uppercase tracking-wider">{tr("Recomandat pentru tine azi")}</p>
                       <p className="font-heading text-xl text-white font-bold leading-tight">
-                        {recommended?.title ?? "Explorează biblioteca de practici"}
+                        {recommended?.title ?? tr("Explorează biblioteca de practici")}
                       </p>
                       <p className="font-body text-label-xs text-white/50 mt-1">
-                        {recommended ? `${recommended.duration} min · ${recommended.facilitator}` : "Practici ghidate pentru fiecare stare"}
+                        {recommended ? `${recommended.duration} min · ${recommended.facilitator}` : tr("Practici ghidate pentru fiecare stare")}
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="p-5 flex items-center justify-between bg-white">
                   <p className="font-body text-body-sm text-secondary-text">
-                    {todayMood ? "Bazat pe check-in-ul tău de azi" : "Recomandarea zilei"}
+                    {todayMood ? tr("Bazat pe check-in-ul tău de azi") : tr("Recomandarea zilei")}
                   </p>
                   <Link href={recommended ? `/practici/${recommended.id}` : "/practici"} className="btn btn-primary btn-sm shadow-button">
-                    <Play size={14} weight="fill" /> Începe acum
+                    <Play size={14} weight="fill" /> {tr("Începe acum")}
                   </Link>
                 </div>
               </motion.div>
 
               {/* Quick access */}
               <div>
-                <h2 className="font-heading text-h3 text-deep-green mb-4">Acces rapid</h2>
+                <h2 className="font-heading text-h3 text-deep-green mb-4">{tr("Acces rapid")}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {QUICK_ACCESS.map(item => {
                     const Icon = item.icon;
@@ -441,7 +444,7 @@ export default function DashboardPage() {
                         <div className={`w-11 h-11 rounded-xl ${item.iconCls} flex items-center justify-center`}>
                           <Icon size={20} weight="fill" />
                         </div>
-                        <span className="font-body text-label-xs font-semibold text-on-surface">{item.label}</span>
+                        <span className="font-body text-label-xs font-semibold text-on-surface">{tr(item.label)}</span>
                       </Link>
                     );
                   })}
@@ -452,15 +455,15 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-heading text-h3 text-deep-green">
-                    {hasRealHistory ? "Continuă de unde ai rămas" : "Descoperă practici"}
+                    {hasRealHistory ? tr("Continuă de unde ai rămas") : tr("Descoperă practici")}
                   </h2>
                   <Link href="/practici" className="font-body text-label-xs text-forest-green hover:underline">
-                    Toate <ArrowRight size={12} weight="bold" className="inline" />
+                    {tr("Toate")} <ArrowRight size={12} weight="bold" className="inline" />
                   </Link>
                 </div>
                 <div className="space-y-3">
                   {recentPractices.length === 0 ? (
-                    <p className="font-body text-body-sm text-secondary-text py-4 text-center">Nicio practică încă</p>
+                    <p className="font-body text-body-sm text-secondary-text py-4 text-center">{tr("Nicio practică încă")}</p>
                   ) : recentPractices.map(p => (
                     <Link key={p.id} href={`/practici/${p.id}`}
                       className="rounded-2xl bg-white border border-sage-border/30 p-4 flex items-center gap-4 hover:border-forest-green hover:shadow-card-hover transition-all">
@@ -474,7 +477,7 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         {!canAccess(profile?.plan, contentTier(p)) && (
                           <span className="tag border-0 bg-secondary-container text-on-secondary-container">
-                            🔒 {TIER_LABEL[contentTier(p) as ContentTier]}
+                            🔒 {tr(TIER_LABEL[contentTier(p) as ContentTier])}
                           </span>
                         )}
                         <span className="tag tag-green">{p.category}</span>
@@ -490,15 +493,15 @@ export default function DashboardPage() {
 
               {/* 1. Progress */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <h2 className="font-heading text-h3 text-deep-green mb-4">Progresul tău</h2>
+                <h2 className="font-heading text-h3 text-deep-green mb-4">{tr("Progresul tău")}</h2>
                 <div className="rounded-2xl bg-white border border-sage-border/30 shadow-card overflow-hidden">
                   {/* Narrative header */}
                   <div className="px-5 pt-5 pb-4 border-b border-sage-border/20"
                     style={{ background: "linear-gradient(135deg, rgba(168,223,192,0.18) 0%, rgba(255,255,255,0) 100%)" }}>
                     <p className="font-body text-label-xs font-semibold text-secondary-text uppercase tracking-widest mb-1">
-                      {stats.streak >= 7 ? "🔥 Seria continuă" : "Statistici"}
+                      {stats.streak >= 7 ? `🔥 ${tr("Seria continuă")}` : tr("Statistici")}
                     </p>
-                    <p className="font-body text-body-sm text-deep-green">{streakMessage(stats.streak)}</p>
+                    <p className="font-body text-body-sm text-deep-green">{streakMessage(stats.streak, tr)}</p>
                   </div>
                   {/* Animated rows */}
                   <div className="px-5 py-4 space-y-4">
@@ -512,7 +515,7 @@ export default function DashboardPage() {
                           <div className="flex items-center justify-between mb-1.5">
                             <div className="flex items-center gap-1.5">
                               <Icon size={13} weight="fill" className={row.text} />
-                              <span className="font-body text-label-xs text-secondary-text">{row.label}</span>
+                              <span className="font-body text-label-xs text-secondary-text">{tr(row.label)}</span>
                             </div>
                             <span className={`font-body text-label-xs font-bold tabular-nums ${row.text}`}>
                               {row.label.includes("Check-in") ? `${row.value}/7` : row.value}
@@ -524,7 +527,7 @@ export default function DashboardPage() {
                               animate={{ width: `${row.pct}%` }}
                               transition={{ delay: 0.4 + i * 0.08, duration: 0.7, ease: "easeOut" }} />
                           </div>
-                          <p className="font-body text-[10px] text-secondary-text/60 mt-0.5">{row.hint}</p>
+                          <p className="font-body text-[10px] text-secondary-text/60 mt-0.5">{tr(row.hint)}</p>
                         </motion.div>
                       );
                     })}
@@ -532,7 +535,7 @@ export default function DashboardPage() {
                   <div className="px-5 pb-5">
                     <Link href="/dashboard/progres"
                       className="font-body text-label-xs text-forest-green hover:underline flex items-center gap-1">
-                      Raport complet <ArrowRight size={12} weight="bold" />
+                      {tr("Raport complet")} <ArrowRight size={12} weight="bold" />
                     </Link>
                   </div>
                 </div>
@@ -540,7 +543,7 @@ export default function DashboardPage() {
 
               {/* 2. Journal */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <h2 className="font-heading text-h3 text-deep-green mb-4">Jurnal</h2>
+                <h2 className="font-heading text-h3 text-deep-green mb-4">{tr("Jurnal")}</h2>
                 <div className="rounded-2xl overflow-hidden border border-rose-powder/40 shadow-card"
                   style={{ background: "linear-gradient(145deg, rgba(255,228,220,0.3) 0%, rgba(255,255,255,1) 55%)" }}>
                   <div className="p-5">
@@ -549,13 +552,13 @@ export default function DashboardPage() {
                         <PencilSimple size={15} weight="fill" className="text-terracotta" />
                       </div>
                       <span className="font-body text-label-xs text-terracotta font-semibold uppercase tracking-wider">
-                        {stats.journalCount > 0 ? `${stats.journalCount} ${stats.journalCount === 1 ? "notă" : "note"}` : "Azi"}
+                        {stats.journalCount > 0 ? `${stats.journalCount} ${stats.journalCount === 1 ? tr("notă") : tr("note")}` : tr("Azi")}
                       </span>
                     </div>
                     <p className="font-body text-body-sm text-on-surface mb-3">
                       {checkInDone
-                        ? "Ai completat check-in-ul. Dacă vrei, notează câteva gânduri despre cum te simți acum."
-                        : "Un moment de reflecție scrisă poate clarifica mult din ce simți."}
+                        ? tr("Ai completat check-in-ul. Dacă vrei, notează câteva gânduri despre cum te simți acum.")
+                        : tr("Un moment de reflecție scrisă poate clarifica mult din ce simți.")}
                     </p>
                     <blockquote className="border-l-2 border-terracotta/40 pl-3 mb-4">
                       <p className="font-body text-label-xs text-secondary-text italic leading-relaxed">
@@ -566,7 +569,7 @@ export default function DashboardPage() {
                     <Link href="/dashboard/jurnal"
                       className="w-full h-9 rounded-full bg-terracotta/90 hover:bg-terracotta text-white font-ui font-semibold text-label-xs uppercase tracking-wide flex items-center justify-center gap-2 transition-colors">
                       <PencilSimple size={13} weight="bold" />
-                      Deschide jurnalul
+                      {tr("Deschide jurnalul")}
                     </Link>
                   </div>
                 </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Lock, CheckCircle, Crown } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { canAccess, TIER_LABEL, type ContentTier } from "@/lib/plan";
 import PracticePlayer from "@/components/ui/PracticePlayer";
 
@@ -25,6 +26,7 @@ export function GatedPlayer(props: PlayerProps) {
 
 /** Cardul de acces din dreapta paginii de practică — se adaptează la planul userului. */
 export function AccessCard({ isPremium, tier: tierProp }: { isPremium: boolean; tier?: ContentTier }) {
+  const { tr } = useLanguage();
   const { profile, user, loading } = useAuth();
   const tier = tierProp ?? (isPremium ? "premium" : "gratuit");
   const access = canAccess(profile?.plan, tier);
@@ -35,9 +37,9 @@ export function AccessCard({ isPremium, tier: tierProp }: { isPremium: boolean; 
         <div className="w-12 h-12 rounded-full bg-forest-green/15 flex items-center justify-center mx-auto mb-3">
           <CheckCircle size={24} weight="fill" className="text-forest-green" />
         </div>
-        <h3 className="font-heading text-h4 text-deep-green mb-2">Practică gratuită</h3>
+        <h3 className="font-heading text-h4 text-deep-green mb-2">{tr("Practică gratuită")}</h3>
         <p className="font-body text-body-sm text-secondary-text">
-          Disponibilă pentru toți utilizatorii, fără abonament.
+          {tr("Disponibilă pentru toți utilizatorii, fără abonament.")}
         </p>
       </div>
     );
@@ -53,9 +55,9 @@ export function AccessCard({ isPremium, tier: tierProp }: { isPremium: boolean; 
         <div className="w-12 h-12 rounded-full bg-forest-green/15 flex items-center justify-center mx-auto mb-3">
           <Crown size={22} weight="fill" className="text-forest-green" />
         </div>
-        <h3 className="font-heading text-h4 text-deep-green mb-2">Inclus în abonamentul tău</h3>
+        <h3 className="font-heading text-h4 text-deep-green mb-2">{tr("Inclus în abonamentul tău")}</h3>
         <p className="font-body text-body-sm text-secondary-text">
-          Ai acces la această practică prin planul {TIER_LABEL[(profile?.plan as ContentTier) ?? "gratuit"]}.
+          {tr("Ai acces la această practică prin planul")} {tr(TIER_LABEL[(profile?.plan as ContentTier) ?? "gratuit"])}.
         </p>
       </div>
     );
@@ -66,16 +68,16 @@ export function AccessCard({ isPremium, tier: tierProp }: { isPremium: boolean; 
       <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
         <Lock size={22} weight="fill" className="text-amber-600" />
       </div>
-      <h3 className="font-heading text-h4 text-deep-green mb-2">Conținut {TIER_LABEL[tier]}</h3>
+      <h3 className="font-heading text-h4 text-deep-green mb-2">{tr(tier === "premium" ? "Conținut Premium" : "Conținut Standard")}</h3>
       <p className="font-body text-body-sm text-secondary-text mb-5">
         {tier === "premium"
-          ? "Această practică e disponibilă doar cu abonamentul Premium."
-          : "Această practică necesită un abonament Standard sau Premium."}
+          ? tr("Această practică e disponibilă doar cu abonamentul Premium.")
+          : tr("Această practică necesită un abonament Standard sau Premium.")}
       </p>
       <Link href={user ? "/preturi" : "/register"} className="btn btn-primary w-full">
-        {user ? "Vezi abonamentele" : "Creează cont"}
+        {user ? tr("Vezi abonamentele") : tr("Creează cont")}
       </Link>
-      <p className="font-ui text-label-xs text-secondary-text mt-3">14 zile gratuit · Fără card</p>
+      <p className="font-ui text-label-xs text-secondary-text mt-3">{tr("14 zile gratuit · Fără card")}</p>
     </div>
   );
 }

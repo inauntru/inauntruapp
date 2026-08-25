@@ -8,6 +8,7 @@ import { CalendarBlank, Users, Clock, Video, Lock, ArrowRight, Play, Star, Caret
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { LIVE_SESSIONS, PAST_RECORDINGS } from "@/lib/mockData";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { canAccess, contentTier } from "@/lib/plan";
 
 const WEEK_DAYS = ["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"];
@@ -22,7 +23,8 @@ function formatTime(dateStr: string) {
 interface Props { siteContent: Record<string, string>; }
 
 export default function SesiuniLiveClient({ siteContent }: Props) {
-  const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { tr } = useLanguage();
+  const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
   const { user, profile } = useAuth();
   const planAllows = (s: { tier?: string; isPremium?: boolean }) => canAccess(profile?.plan, contentTier(s));
   const [sessions, setSessions] = useState(LIVE_SESSIONS);
@@ -126,27 +128,27 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
             <AnimateIn from="left">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-2 h-2 rounded-full bg-primary-fixed-dim animate-live-pulse" />
-                <span className="font-body text-label-sm text-primary-fixed-dim">LIVE</span>
+                <span className="font-body text-label-sm text-primary-fixed-dim">{tr("LIVE")}</span>
               </div>
               <h1 className="font-heading text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">{featured.title}</h1>
               <p className="font-body text-body-md text-white/60 mb-6">{featured.description}</p>
               <div className="flex flex-wrap gap-4 mb-6 text-white/70 font-body text-body-sm">
                 <span className="flex items-center gap-2"><CalendarBlank size={16} weight="regular" />{formatDate(featured.date)}</span>
                 <span className="flex items-center gap-2"><Clock size={16} weight="regular" />{formatTime(featured.date)} · {featured.duration} min</span>
-                <span className="flex items-center gap-2"><Users size={16} weight="regular" />{featured.spotsLeft} locuri rămase din {featured.spotsTotal}</span>
+                <span className="flex items-center gap-2"><Users size={16} weight="regular" />{featured.spotsLeft} {tr("locuri rămase din")} {featured.spotsTotal}</span>
               </div>
               <div className="mb-6">
                 <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div className="h-full bg-rose-powder rounded-full transition-all duration-500" style={{ width: `${spotsPercent(featured)}%` }} />
                 </div>
-                <p className="font-body text-label-xs text-white/40 mt-1">{spotsPercent(featured)}% ocupat</p>
+                <p className="font-body text-label-xs text-white/40 mt-1">{spotsPercent(featured)}{tr("% ocupat")}</p>
               </div>
               <div className="flex gap-4">
                 {!user ? (
-                  <Link href="/register" className="btn btn-rose">Rezervă locul tău <ArrowRight size={16} weight="bold" /></Link>
+                  <Link href="/register" className="btn btn-rose">{tr("Rezervă locul tău")} <ArrowRight size={16} weight="bold" /></Link>
                 ) : !planAllows(featured) ? (
                   <Link href="/preturi" className="btn bg-white/15 text-white border border-white/25 hover:bg-white/25 gap-2">
-                    <Lock size={16} weight="fill" /> Necesită abonament
+                    <Lock size={16} weight="fill" /> {tr("Necesită abonament")}
                   </Link>
                 ) : reserved.includes(featured.id) ? (
                   <div className="relative" data-cancel-menu>
@@ -154,7 +156,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                       onClick={() => setCancelMenuFor(p => p === featured.id ? null : featured.id)}
                       className="btn bg-white/15 text-white border border-white/25 hover:bg-white/25 transition-colors gap-2"
                     >
-                      <Check size={16} weight="bold" /> Loc rezervat
+                      <Check size={16} weight="bold" /> {tr("Loc rezervat")}
                       <CaretDown size={12} weight="bold"
                         className={`transition-transform duration-200 ${cancelMenuFor === featured.id ? "rotate-180" : ""}`} />
                     </button>
@@ -172,11 +174,11 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                               onClick={() => { setCancelMenuFor(null); cancelReservation(featured.id); }}
                               className="w-full flex items-center gap-2.5 px-4 py-3 font-body text-body-sm text-terracotta hover:bg-red-50 transition-colors text-left"
                             >
-                              <X size={15} weight="bold" /> Anulează rezervarea
+                              <X size={15} weight="bold" /> {tr("Anulează rezervarea")}
                             </button>
                           ) : (
                             <p className="px-4 py-3 font-body text-label-xs text-secondary-text">
-                              Nu se mai poate anula — sesiunea începe în mai puțin de 20 de minute.
+                              {tr("Nu se mai poate anula — sesiunea începe în mai puțin de 20 de minute.")}
                             </p>
                           )}
                         </motion.div>
@@ -185,23 +187,23 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                   </div>
                 ) : (
                   <button onClick={() => reserve(featured.id)} className="btn btn-rose">
-                    Rezervă locul tău <ArrowRight size={16} weight="bold" />
+                    {tr("Rezervă locul tău")} <ArrowRight size={16} weight="bold" />
                   </button>
                 )}
-                <span className="flex items-center gap-2 font-body text-body-sm text-white/50"><Video size={16} weight="regular" />{featured.type}</span>
+                <span className="flex items-center gap-2 font-body text-body-sm text-white/50"><Video size={16} weight="regular" />{tr(featured.type)}</span>
               </div>
             </AnimateIn>
             <AnimateIn from="scale" className="hidden lg:block">
               <div className="relative aspect-video rounded-2xl overflow-hidden">
-                <Image src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80" alt="Sesiune live meditație" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80" alt={tr("Sesiune live meditație")} fill className="object-cover" />
                 <div className="absolute inset-0 bg-deep-green/30" />
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/40 rounded-full px-3 py-1.5 backdrop-blur">
                   <div className="w-2 h-2 rounded-full bg-rose-powder animate-live-pulse" />
-                  <span className="font-body text-label-xs text-white">Starts {formatTime(featured.date)}</span>
+                  <span className="font-body text-label-xs text-white">{tr("Începe la")} {formatTime(featured.date)}</span>
                 </div>
                 <div className="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
                   <p className="font-heading text-white text-body-md">{featured.facilitator}</p>
-                  <p className="font-body text-white/60 text-label-xs">Facilitator principal</p>
+                  <p className="font-body text-white/60 text-label-xs">{tr("Facilitator principal")}</p>
                 </div>
               </div>
             </AnimateIn>
@@ -219,7 +221,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                 const day = d.getDate(); const weekDay = WEEK_DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
                 return (
                   <button key={i} onClick={() => setSelectedDay(i)} className={`flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-xl flex-shrink-0 transition-all duration-200 min-w-[60px] ${selectedDay === i ? "bg-forest-green text-white" : "hover:bg-light-green text-secondary-text"}`}>
-                    <span className="font-body text-label-xs">{weekDay}</span>
+                    <span className="font-body text-label-xs">{tr(weekDay)}</span>
                     <span className="font-heading font-bold text-lg">{day}</span>
                     {i < 4 && <div className={`w-1.5 h-1.5 rounded-full ${selectedDay === i ? "bg-white" : "bg-forest-green"}`} />}
                   </button>
@@ -233,7 +235,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
 
       <section className="py-12 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimateIn from="bottom"><h2 className="font-heading text-h2 text-deep-green mb-8">Sesiuni viitoare</h2></AnimateIn>
+          <AnimateIn from="bottom"><h2 className="font-heading text-h2 text-deep-green mb-8">{tr("Sesiuni viitoare")}</h2></AnimateIn>
           <StaggerChildren className="flex flex-col gap-4" staggerDelay={0.1}>
             {upcoming.map((session) => (
               <div key={session.id} className="card card-lift p-6">
@@ -242,30 +244,30 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <h3 className="font-body font-semibold text-body-md text-deep-green">{session.title}</h3>
-                      {session.isPremium && <span className="tag bg-secondary-container text-on-secondary-container border-0">Premium</span>}
-                      <span className="tag tag-green">{session.type}</span>
+                      {session.isPremium && <span className="tag bg-secondary-container text-on-secondary-container border-0">{tr("Premium")}</span>}
+                      <span className="tag tag-green">{tr(session.type)}</span>
                     </div>
                     <p className="font-body text-label-xs text-secondary-text mb-2">{session.facilitator}</p>
                     <div className="flex flex-wrap gap-4 text-secondary-text font-body text-label-xs">
                       <span className="flex items-center gap-1"><CalendarBlank size={12} />{formatDate(session.date)}</span>
                       <span className="flex items-center gap-1"><Clock size={12} />{formatTime(session.date)} · {session.duration} min</span>
-                      <span className="flex items-center gap-1"><Users size={12} />{session.spotsLeft} locuri rămase</span>
+                      <span className="flex items-center gap-1"><Users size={12} />{session.spotsLeft} {tr("locuri rămase")}</span>
                     </div>
                   </div>
                   <div className="flex-shrink-0">
                     {!planAllows(session) ? (
                       <Link href={user ? "/preturi" : "/register"} className="btn btn-ghost btn-sm gap-2">
-                        <Lock size={14} weight="fill" /> {contentTier(session) === "premium" ? "Premium" : "Standard"}
+                        <Lock size={14} weight="fill" /> {contentTier(session) === "premium" ? tr("Premium") : tr("Standard")}
                       </Link>
                     ) : !user ? (
-                      <Link href="/register" className="btn btn-primary btn-sm">Rezervă <ArrowRight size={14} weight="bold" /></Link>
+                      <Link href="/register" className="btn btn-primary btn-sm">{tr("Rezervă")} <ArrowRight size={14} weight="bold" /></Link>
                     ) : reserved.includes(session.id) ? (
                       <div className="relative" data-cancel-menu>
                         <button
                           onClick={() => setCancelMenuFor(p => p === session.id ? null : session.id)}
                           className="btn btn-sm gap-1.5 bg-light-green text-forest-green border border-sage-border hover:border-forest-green/50 transition-colors"
                         >
-                          <Check size={14} weight="bold" /> Rezervat
+                          <Check size={14} weight="bold" /> {tr("Rezervat")}
                           <CaretDown size={11} weight="bold"
                             className={`transition-transform duration-200 ${cancelMenuFor === session.id ? "rotate-180" : ""}`} />
                         </button>
@@ -283,11 +285,11 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                                   onClick={() => { setCancelMenuFor(null); cancelReservation(session.id); }}
                                   className="w-full flex items-center gap-2.5 px-4 py-3 font-body text-body-sm text-terracotta hover:bg-red-50 transition-colors text-left"
                                 >
-                                  <X size={14} weight="bold" /> Anulează rezervarea
+                                  <X size={14} weight="bold" /> {tr("Anulează rezervarea")}
                                 </button>
                               ) : (
                                 <p className="px-4 py-3 font-body text-label-xs text-secondary-text">
-                                  Nu se mai poate anula — sesiunea începe în mai puțin de 20 de minute.
+                                  {tr("Nu se mai poate anula — sesiunea începe în mai puțin de 20 de minute.")}
                                 </p>
                               )}
                             </motion.div>
@@ -296,14 +298,14 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                       </div>
                     ) : (
                       <button onClick={() => reserve(session.id)} className="btn btn-primary btn-sm">
-                        Rezervă <ArrowRight size={14} weight="bold" />
+                        {tr("Rezervă")} <ArrowRight size={14} weight="bold" />
                       </button>
                     )}
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-sage-border/40">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-body text-label-xs text-secondary-text">Locuri ocupate</span>
+                    <span className="font-body text-label-xs text-secondary-text">{tr("Locuri ocupate")}</span>
                     <span className="font-body text-label-xs text-secondary-text">{session.spotsTotal - session.spotsLeft}/{session.spotsTotal}</span>
                   </div>
                   <div className="h-1.5 bg-light-green rounded-full overflow-hidden">
@@ -320,7 +322,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn from="bottom">
             <div className="flex items-end justify-between mb-8">
-              <div><p className="section-label">Înregistrări</p><h2 className="font-heading text-h2 text-deep-green">Sesiuni anterioare</h2></div>
+              <div><p className="section-label">{tr("Înregistrări")}</p><h2 className="font-heading text-h2 text-deep-green">{tr("Sesiuni anterioare")}</h2></div>
             </div>
           </AnimateIn>
           <StaggerChildren className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" staggerDelay={0.1}>
@@ -332,14 +334,14 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                       {rec.isPremium ? <Lock size={24} weight="fill" className="text-white/60" /> : <Play size={24} weight="fill" className="text-forest-green/70" />}
                     </div>
                   </div>
-                  {rec.isPremium && <div className="absolute top-3 right-3"><span className="tag bg-deep-green/70 text-white border-0 backdrop-blur">Premium</span></div>}
+                  {rec.isPremium && <div className="absolute top-3 right-3"><span className="tag bg-deep-green/70 text-white border-0 backdrop-blur">{tr("Premium")}</span></div>}
                 </div>
                 <div className="p-4">
                   <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1 line-clamp-2">{rec.title}</h3>
                   <p className="font-body text-label-xs text-secondary-text mb-2">{rec.facilitator}</p>
                   <div className="flex items-center justify-between text-label-xs text-secondary-text font-body">
                     <span className="flex items-center gap-1"><Clock size={11} />{rec.duration} min</span>
-                    <span>{rec.views} vizionări</span>
+                    <span>{rec.views} {tr("vizionări")}</span>
                     <span>{new Date(rec.date).toLocaleDateString("ro-RO", { day: "numeric", month: "short" })}</span>
                   </div>
                 </div>

@@ -11,6 +11,7 @@ import {
   Export, SignOut, CaretDown,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import PhoneInput from "@/components/ui/PhoneInput";
 
 // ── Date picker ────────────────────────────────────────────────────────────
@@ -107,6 +108,7 @@ function PickerDropdown({
 }
 
 function DatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { tr } = useLanguage();
   const maxYear = new Date().getFullYear() - 13;
   const parsed = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
@@ -120,21 +122,21 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
 
   const daysInMonth = selY && selM ? new Date(selY, selM, 0).getDate() : 31;
   const dayOpts = Array.from({ length: daysInMonth }, (_, i) => ({ value: i+1, label: String(i+1) }));
-  const monthOpts = MONTHS_RO.map((n, i) => ({ value: i+1, label: n }));
+  const monthOpts = MONTHS_RO.map((n, i) => ({ value: i+1, label: tr(n) }));
   const yearOpts = Array.from({ length: maxYear - 1923 }, (_, i) => ({ value: maxYear - i, label: String(maxYear - i) }));
 
   return (
     <div className="flex gap-2">
       <PickerDropdown
-        value={selD} placeholder="Zi" options={dayOpts} narrow
+        value={selD} placeholder={tr("Zi")} options={dayOpts} narrow
         onChange={d => { setSelD(d); emit(selY, selM, d); }}
       />
       <PickerDropdown
-        value={selM} placeholder="Lună" options={monthOpts}
+        value={selM} placeholder={tr("Lună")} options={monthOpts}
         onChange={m => { setSelM(m); emit(selY, m, selD); }}
       />
       <PickerDropdown
-        value={selY} placeholder="An" options={yearOpts}
+        value={selY} placeholder={tr("An")} options={yearOpts}
         onChange={y => { setSelY(y); emit(y, selM, selD); }}
       />
     </div>
@@ -166,22 +168,25 @@ const PLAN_CLS: Record<string, string> = {
 const labelCls = "font-body text-label-xs text-secondary-text uppercase tracking-widest block mb-1.5";
 
 function SaveBtn({ loading, disabled, label = "Salvează" }: { loading: boolean; disabled?: boolean; label?: string }) {
+  const { tr } = useLanguage();
   return (
     <button type="submit" disabled={loading || disabled} className="btn btn-primary btn-sm gap-2 disabled:opacity-40">
       {loading ? <CircleNotch size={13} className="animate-spin" /> : <Check size={13} weight="bold" />}
-      {loading ? "Se salvează..." : label}
+      {loading ? tr("Se salvează...") : tr(label)}
     </button>
   );
 }
 
 function ErrorBox({ msg }: { msg: string }) {
-  return <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl font-body text-label-xs text-red-600">{msg}</div>;
+  const { tr } = useLanguage();
+  return <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl font-body text-label-xs text-red-600">{tr(msg)}</div>;
 }
 
 function SuccessBox({ msg }: { msg: string }) {
+  const { tr } = useLanguage();
   return (
     <div className="mb-4 p-3 bg-light-green border border-sage-border rounded-xl font-body text-label-xs text-forest-green flex items-center gap-2">
-      <Check size={14} weight="bold" /> {msg}
+      <Check size={14} weight="bold" /> {tr(msg)}
     </div>
   );
 }
@@ -199,6 +204,7 @@ const GOALS = [
 
 function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>["profile"]; authUser: ReturnType<typeof useAuth>["user"] }) {
   const { refreshUser } = useAuth();
+  const { tr } = useLanguage();
   const fn = profile?.first_name || authUser?.user_metadata?.first_name || "";
   const ln = profile?.last_name  || authUser?.user_metadata?.last_name  || "";
   const savedDob = (authUser?.user_metadata?.date_of_birth as string | undefined) ?? "";
@@ -257,50 +263,48 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
-        <h2 className="font-heading text-h3 text-deep-green mb-1">Profil personal</h2>
-        <p className="font-body text-body-sm text-secondary-text">Informațiile tale de bază în aplicație.</p>
+        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Profil personal")}</h2>
+        <p className="font-body text-body-sm text-secondary-text">{tr("Informațiile tale de bază în aplicație.")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div><label className={labelCls}>Prenume</label><input className="input w-full" value={pFirst} onChange={e => { setTouched(true); setPFirst(e.target.value); }} placeholder="Ana" required /></div>
-        <div><label className={labelCls}>Nume</label><input className="input w-full" value={pLast} onChange={e => { setTouched(true); setPLast(e.target.value); }} placeholder="Popescu" required /></div>
+        <div><label className={labelCls}>{tr("Prenume")}</label><input className="input w-full" value={pFirst} onChange={e => { setTouched(true); setPFirst(e.target.value); }} placeholder="Ana" required /></div>
+        <div><label className={labelCls}>{tr("Nume")}</label><input className="input w-full" value={pLast} onChange={e => { setTouched(true); setPLast(e.target.value); }} placeholder="Popescu" required /></div>
       </div>
 
       <div>
-        <label className={labelCls}>Email</label>
+        <label className={labelCls}>{tr("Email")}</label>
         <input className="input w-full bg-light-green/40 text-secondary-text cursor-not-allowed" value={authUser?.email || ""} readOnly />
-        <p className="font-body text-label-xs text-secondary-text mt-1.5">Adresa de email nu poate fi modificată momentan.</p>
+        <p className="font-body text-label-xs text-secondary-text mt-1.5">{tr("Adresa de email nu poate fi modificată momentan.")}</p>
       </div>
 
       <div>
-        <label className={labelCls}>Număr de telefon</label>
+        <label className={labelCls}>{tr("Număr de telefon")}</label>
         <PhoneInput value={pPhone} onChange={v => { setTouched(true); setPPhone(v); }} inputClassName="input" />
         <p className="font-body text-label-xs text-secondary-text mt-1.5">
-          Folosit pentru securitatea contului și asistență personalizată.
+          {tr("Folosit pentru securitatea contului și asistență personalizată.")}
         </p>
       </div>
 
       <div>
-        <label className={labelCls}>Data nașterii</label>
+        <label className={labelCls}>{tr("Data nașterii")}</label>
         <DatePicker value={pDob} onChange={v => { setTouched(true); setPDob(v); }} />
         <p className="font-body text-label-xs text-secondary-text mt-1.5">
-          Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine.
+          {tr("Opțional. Folosim data nașterii pentru a personaliza conținutul zilnic pentru tine.")}
         </p>
       </div>
 
       {pDob && (
         <div className="rounded-2xl bg-light-green/40 border border-sage-border/40 p-4">
           <p className="font-body font-semibold text-body-sm text-deep-green mb-1">
-            ✨ Nou: profil astral complet
+            ✨ {tr("Nou: profil astral complet")}
           </p>
           <p className="font-body text-label-xs text-secondary-text mb-4">
-            Cu ora și orașul nașterii îți calculăm ascendentul și zodia lunară, iar influențele
-            zilei devin cu adevărat personale — nu doar după zodia solară. Dacă nu le completezi,
-            rămânem la zodia solară.
+            {tr("Cu ora și orașul nașterii îți calculăm ascendentul și zodia lunară, iar influențele zilei devin cu adevărat personale — nu doar după zodia solară. Dacă nu le completezi, rămânem la zodia solară.")}
           </p>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelCls}>Ora nașterii</label>
+              <label className={labelCls}>{tr("Ora nașterii")}</label>
               <input
                 type="time"
                 className="input w-full"
@@ -309,13 +313,13 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
               />
             </div>
             <div>
-              <label className={labelCls}>Orașul nașterii</label>
+              <label className={labelCls}>{tr("Orașul nașterii")}</label>
               <input
                 type="text"
                 className="input w-full"
                 value={pBirthCity}
                 onChange={e => { setTouched(true); setPBirthCity(e.target.value); }}
-                placeholder="ex: București"
+                placeholder={tr("ex: București")}
               />
             </div>
           </div>
@@ -323,13 +327,13 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
       )}
 
       <div className="pt-2 border-t border-sage-border/40">
-        <label className={labelCls + " mb-3"}>Obiectivele tale</label>
+        <label className={labelCls + " mb-3"}>{tr("Obiectivele tale")}</label>
         <div className="flex flex-wrap gap-2">
           {GOALS.map(g => (
-            <span key={g} className="tag bg-light-green text-forest-green border border-sage-border/60 cursor-default">{g}</span>
+            <span key={g} className="tag bg-light-green text-forest-green border border-sage-border/60 cursor-default">{tr(g)}</span>
           ))}
         </div>
-        <p className="font-body text-label-xs text-secondary-text mt-2">Personalizarea obiectivelor vine în curând.</p>
+        <p className="font-body text-label-xs text-secondary-text mt-2">{tr("Personalizarea obiectivelor vine în curând.")}</p>
       </div>
 
       {error && <ErrorBox msg={error} />}
@@ -342,20 +346,21 @@ function ProfilTab({ profile, authUser }: { profile: ReturnType<typeof useAuth>[
 // ── Tab: Abonament ─────────────────────────────────────────────────────────
 
 function AbonamentTab({ profile }: { profile: ReturnType<typeof useAuth>["profile"] }) {
+  const { tr } = useLanguage();
   const plan = profile?.plan || "gratuit";
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-heading text-h3 text-deep-green mb-1">Abonament</h2>
-        <p className="font-body text-body-sm text-secondary-text">Planul tău curent și opțiunile de upgrade.</p>
+        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Abonament")}</h2>
+        <p className="font-body text-body-sm text-secondary-text">{tr("Planul tău curent și opțiunile de upgrade.")}</p>
       </div>
 
       <div className="rounded-2xl border border-sage-border/40 p-5 flex items-center justify-between">
         <div>
-          <p className="font-body text-label-xs text-secondary-text uppercase tracking-widest mb-1">Plan curent</p>
+          <p className="font-body text-label-xs text-secondary-text uppercase tracking-widest mb-1">{tr("Plan curent")}</p>
           <div className="flex items-center gap-2">
-            <span className="font-heading text-h3 text-deep-green">{PLAN_LABEL[plan] ?? "Gratuit"}</span>
-            <span className={`tag text-[10px] border ${PLAN_CLS[plan] ?? PLAN_CLS.gratuit}`}>{PLAN_LABEL[plan] ?? "Gratuit"}</span>
+            <span className="font-heading text-h3 text-deep-green">{tr(PLAN_LABEL[plan] ?? "Gratuit")}</span>
+            <span className={`tag text-[10px] border ${PLAN_CLS[plan] ?? PLAN_CLS.gratuit}`}>{tr(PLAN_LABEL[plan] ?? "Gratuit")}</span>
           </div>
         </div>
         {plan === "gratuit" && (
@@ -375,14 +380,14 @@ function AbonamentTab({ profile }: { profile: ReturnType<typeof useAuth>["profil
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <span className="font-body font-semibold text-body-md text-deep-green">{p.name}</span>
-                  <span className="font-body text-label-xs text-secondary-text ml-2">{p.price}</span>
+                  <span className="font-body text-label-xs text-secondary-text ml-2">{tr(p.price)}</span>
                 </div>
-                <Link href="/preturi" className="btn btn-ghost btn-sm">Vezi detalii</Link>
+                <Link href="/preturi" className="btn btn-ghost btn-sm">{tr("Vezi detalii")}</Link>
               </div>
               <ul className="space-y-1">
                 {p.features.map(f => (
                   <li key={f} className="flex items-center gap-2 font-body text-body-sm text-on-surface">
-                    <Check size={13} weight="bold" className="text-forest-green flex-shrink-0" /> {f}
+                    <Check size={13} weight="bold" className="text-forest-green flex-shrink-0" /> {tr(f)}
                   </li>
                 ))}
               </ul>
@@ -393,7 +398,7 @@ function AbonamentTab({ profile }: { profile: ReturnType<typeof useAuth>["profil
 
       {plan !== "gratuit" && (
         <div className="rounded-2xl bg-light-green/50 border border-sage-border/40 p-5 text-center">
-          <p className="font-body text-body-sm text-secondary-text">Gestionarea facturării și istoricul plăților vor fi disponibile după integrarea Stripe.</p>
+          <p className="font-body text-body-sm text-secondary-text">{tr("Gestionarea facturării și istoricul plăților vor fi disponibile după integrarea Stripe.")}</p>
         </div>
       )}
     </div>
@@ -403,6 +408,7 @@ function AbonamentTab({ profile }: { profile: ReturnType<typeof useAuth>["profil
 // ── Tab: Notificări ────────────────────────────────────────────────────────
 
 function NotificariTab() {
+  const { tr } = useLanguage();
   const [notifs, setNotifs] = useState({
     weeklyDigest: true,
     sessionReminders: true,
@@ -447,8 +453,8 @@ function NotificariTab() {
   return (
     <form onSubmit={handleSave} className="space-y-6">
       <div>
-        <h2 className="font-heading text-h3 text-deep-green mb-1">Notificări</h2>
-        <p className="font-body text-body-sm text-secondary-text">Controlează ce emailuri primești de la noi.</p>
+        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Notificări")}</h2>
+        <p className="font-body text-body-sm text-secondary-text">{tr("Controlează ce emailuri primești de la noi.")}</p>
       </div>
 
       <div className="space-y-3">
@@ -461,14 +467,14 @@ function NotificariTab() {
               className="mt-0.5 w-4 h-4 accent-forest-green flex-shrink-0"
             />
             <div>
-              <p className="font-body font-semibold text-body-sm text-deep-green">{item.label}</p>
-              <p className="font-body text-label-xs text-secondary-text">{item.desc}</p>
+              <p className="font-body font-semibold text-body-sm text-deep-green">{tr(item.label)}</p>
+              <p className="font-body text-label-xs text-secondary-text">{tr(item.desc)}</p>
             </div>
           </label>
         ))}
       </div>
 
-      <p className="font-body text-label-xs text-secondary-text">Notificările push vor fi disponibile în versiunea mobilă.</p>
+      <p className="font-body text-label-xs text-secondary-text">{tr("Notificările push vor fi disponibile în versiunea mobilă.")}</p>
       {error && <ErrorBox msg={error} />}
       {ok && <SuccessBox msg="Preferințele au fost salvate." />}
       <SaveBtn loading={saving} />
@@ -480,6 +486,7 @@ function NotificariTab() {
 
 function SecuritateTab() {
   const { signOut } = useAuth();
+  const { tr } = useLanguage();
   const [newPass, setNewPass]       = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [showPass, setShowPass]     = useState(false);
@@ -505,17 +512,17 @@ function SecuritateTab() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-heading text-h3 text-deep-green mb-1">Securitate</h2>
-        <p className="font-body text-body-sm text-secondary-text">Gestionează accesul la contul tău.</p>
+        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Securitate")}</h2>
+        <p className="font-body text-body-sm text-secondary-text">{tr("Gestionează accesul la contul tău.")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 pb-8 border-b border-sage-border/40">
-        <h3 className="font-body font-semibold text-body-md text-deep-green">Schimbă parola</h3>
+        <h3 className="font-body font-semibold text-body-md text-deep-green">{tr("Schimbă parola")}</h3>
         <div>
-          <label className={labelCls}>Parolă nouă</label>
+          <label className={labelCls}>{tr("Parolă nouă")}</label>
           <div className="relative">
             <input type={showPass ? "text" : "password"} className="input w-full pr-12" value={newPass}
-              onChange={e => setNewPass(e.target.value)} placeholder="Minim 8 caractere" minLength={8} required />
+              onChange={e => setNewPass(e.target.value)} placeholder={tr("Minim 8 caractere")} minLength={8} required />
             <button type="button" onClick={() => setShowPass(!showPass)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-deep-green">
               {showPass ? <EyeSlash size={16} /> : <Eye size={16} />}
@@ -523,9 +530,9 @@ function SecuritateTab() {
           </div>
         </div>
         <div>
-          <label className={labelCls}>Confirmă parola nouă</label>
+          <label className={labelCls}>{tr("Confirmă parola nouă")}</label>
           <input type={showPass ? "text" : "password"} className="input w-full" value={confirmPass}
-            onChange={e => setConfirmPass(e.target.value)} placeholder="Repetă parola" required />
+            onChange={e => setConfirmPass(e.target.value)} placeholder={tr("Repetă parola")} required />
         </div>
         {error && <ErrorBox msg={error} />}
         {ok    && <SuccessBox msg="Parola a fost schimbată." />}
@@ -533,13 +540,13 @@ function SecuritateTab() {
       </form>
 
       <div className="space-y-3">
-        <h3 className="font-body font-semibold text-body-md text-deep-green">Sesiuni active</h3>
-        <p className="font-body text-body-sm text-secondary-text">Deconectează-te de pe toate dispozitivele.</p>
+        <h3 className="font-body font-semibold text-body-md text-deep-green">{tr("Sesiuni active")}</h3>
+        <p className="font-body text-body-sm text-secondary-text">{tr("Deconectează-te de pe toate dispozitivele.")}</p>
         <button
           onClick={() => signOut()}
           className="flex items-center gap-2 h-9 px-5 rounded-full border border-sage-border text-secondary-text font-ui font-semibold text-label-xs uppercase tracking-wide hover:border-deep-green hover:text-deep-green transition-colors"
         >
-          <SignOut size={14} /> Deconectare completă
+          <SignOut size={14} /> {tr("Deconectare completă")}
         </button>
       </div>
     </div>
@@ -549,6 +556,7 @@ function SecuritateTab() {
 // ── Tab: Confidențialitate ─────────────────────────────────────────────────
 
 function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAuth>["user"] }) {
+  const { tr } = useLanguage();
   const router = useRouter();
   const email = authUser?.email || "";
   const [deleteOpen, setDeleteOpen]       = useState(false);
@@ -572,33 +580,33 @@ function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAut
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-heading text-h3 text-deep-green mb-1">Confidențialitate</h2>
-        <p className="font-body text-body-sm text-secondary-text">Datele tale și drepturile GDPR.</p>
+        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Confidențialitate")}</h2>
+        <p className="font-body text-body-sm text-secondary-text">{tr("Datele tale și drepturile GDPR.")}</p>
       </div>
 
       <div className="space-y-4 pb-8 border-b border-sage-border/40">
-        <h3 className="font-body font-semibold text-body-md text-deep-green">Export date</h3>
+        <h3 className="font-body font-semibold text-body-md text-deep-green">{tr("Export date")}</h3>
         <p className="font-body text-body-sm text-secondary-text">
-          Conform GDPR, ai dreptul să descarci toate datele tale stocate în platformă (jurnal, check-in-uri, progres).
+          {tr("Conform GDPR, ai dreptul să descarci toate datele tale stocate în platformă (jurnal, check-in-uri, progres).")}
         </p>
         <button
           className="flex items-center gap-2 h-9 px-5 rounded-full border border-sage-border text-secondary-text font-ui font-semibold text-label-xs uppercase tracking-wide hover:border-forest-green hover:text-forest-green transition-colors"
-          onClick={() => alert("Export date — disponibil în curând.")}
+          onClick={() => alert(tr("Export date — disponibil în curând."))}
         >
-          <Export size={14} /> Descarcă datele mele
+          <Export size={14} /> {tr("Descarcă datele mele")}
         </button>
       </div>
 
       <div className="space-y-4">
-        <h3 className="font-body font-semibold text-body-md text-red-600">Ștergere cont</h3>
+        <h3 className="font-body font-semibold text-body-md text-red-600">{tr("Ștergere cont")}</h3>
         <p className="font-body text-body-sm text-secondary-text">
-          Ștergerea contului este permanentă. Toate datele (jurnal, progres, check-in-uri) vor fi eliminate definitiv.
+          {tr("Ștergerea contului este permanentă. Toate datele (jurnal, progres, check-in-uri) vor fi eliminate definitiv.")}
         </p>
         <button
           onClick={() => setDeleteOpen(true)}
           className="flex items-center gap-2 h-9 px-5 rounded-full border border-red-200 text-red-600 font-ui font-semibold text-label-xs uppercase tracking-wide hover:bg-red-50 transition-colors"
         >
-          <Trash size={13} /> Șterge contul definitiv
+          <Trash size={13} /> {tr("Șterge contul definitiv")}
         </button>
       </div>
 
@@ -616,8 +624,8 @@ function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAut
                     <Warning size={18} className="text-red-600" weight="fill" />
                   </div>
                   <div>
-                    <h3 className="font-heading text-h3 text-deep-green">Șterge contul</h3>
-                    <p className="font-body text-label-xs text-secondary-text">Acțiune ireversibilă</p>
+                    <h3 className="font-heading text-h3 text-deep-green">{tr("Șterge contul")}</h3>
+                    <p className="font-body text-label-xs text-secondary-text">{tr("Acțiune ireversibilă")}</p>
                   </div>
                 </div>
                 <button onClick={() => { setDeleteOpen(false); setDeletePassword(""); setDeleteError(null); }}
@@ -626,14 +634,14 @@ function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAut
                 </button>
               </div>
               <p className="font-body text-body-sm text-on-surface mb-4">
-                Contul pentru <strong>{email}</strong> va fi șters permanent împreună cu toate datele tale.
+                {tr("Contul pentru")} <strong>{email}</strong> {tr("va fi șters permanent împreună cu toate datele tale.")}
               </p>
               <div className="mb-4">
-                <label className={labelCls}>Introdu parola pentru a confirma</label>
+                <label className={labelCls}>{tr("Introdu parola pentru a confirma")}</label>
                 <div className="relative">
                   <input type={showDeletePass ? "text" : "password"} className="input w-full pr-12"
                     value={deletePassword} onChange={e => setDeletePassword(e.target.value)}
-                    placeholder="Parola contului tău" autoComplete="current-password" />
+                    placeholder={tr("Parola contului tău")} autoComplete="current-password" />
                   <button type="button" onClick={() => setShowDeletePass(!showDeletePass)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-deep-green">
                     {showDeletePass ? <EyeSlash size={16} /> : <Eye size={16} />}
@@ -643,11 +651,11 @@ function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAut
               {deleteError && <ErrorBox msg={deleteError} />}
               <div className="flex gap-3">
                 <button onClick={() => { setDeleteOpen(false); setDeletePassword(""); setDeleteError(null); }}
-                  disabled={deleting} className="btn btn-ghost btn-sm flex-1">Anulează</button>
+                  disabled={deleting} className="btn btn-ghost btn-sm flex-1">{tr("Anulează")}</button>
                 <button onClick={handleDelete} disabled={deleting || !deletePassword}
                   className="flex-1 h-9 rounded-full bg-red-600 text-white font-ui font-semibold text-label-xs uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-red-700 transition-colors disabled:opacity-40">
                   {deleting ? <CircleNotch size={13} className="animate-spin" /> : <Trash size={13} />}
-                  {deleting ? "Se verifică..." : "Șterge definitiv"}
+                  {deleting ? tr("Se verifică...") : tr("Șterge definitiv")}
                 </button>
               </div>
             </motion.div>
@@ -661,6 +669,7 @@ function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAut
 // ── Tab: Ajutor ────────────────────────────────────────────────────────────
 
 function AjutorTab() {
+  const { tr } = useLanguage();
   const links = [
     { label: "Centrul de ajutor", desc: "Întrebări frecvente și ghiduri de utilizare", href: "#" },
     { label: "Contactează-ne", desc: "Trimite-ne un mesaj la hello@withinapp.ro", href: "mailto:hello@withinapp.ro" },
@@ -670,23 +679,23 @@ function AjutorTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-heading text-h3 text-deep-green mb-1">Ajutor</h2>
-        <p className="font-body text-body-sm text-secondary-text">Resurse și informații utile.</p>
+        <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Ajutor")}</h2>
+        <p className="font-body text-body-sm text-secondary-text">{tr("Resurse și informații utile.")}</p>
       </div>
       <div className="space-y-2">
         {links.map(l => (
           <a key={l.label} href={l.href}
             className="flex items-center justify-between p-4 rounded-2xl border border-sage-border/40 bg-white hover:border-forest-green/40 hover:shadow-card transition-all group">
             <div>
-              <p className="font-body font-semibold text-body-sm text-deep-green group-hover:text-forest-green transition-colors">{l.label}</p>
-              <p className="font-body text-label-xs text-secondary-text">{l.desc}</p>
+              <p className="font-body font-semibold text-body-sm text-deep-green group-hover:text-forest-green transition-colors">{tr(l.label)}</p>
+              <p className="font-body text-label-xs text-secondary-text">{tr(l.desc)}</p>
             </div>
             <ArrowRight size={16} className="text-secondary-text group-hover:text-forest-green transition-colors" weight="bold" />
           </a>
         ))}
       </div>
       <p className="font-body text-label-xs text-secondary-text text-center pt-4">
-        WithIn · v1.0 · <Link href="/despre-noi" className="hover:underline">Despre noi</Link>
+        WithIn · v1.0 · <Link href="/despre-noi" className="hover:underline">{tr("Despre noi")}</Link>
       </p>
     </div>
   );
@@ -695,6 +704,7 @@ function AjutorTab() {
 // ── Main page ──────────────────────────────────────────────────────────────
 
 export default function ContPage() {
+  const { tr } = useLanguage();
   const { profile, user: authUser } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("profil");
 
@@ -719,7 +729,7 @@ export default function ContPage() {
       <div className="max-w-5xl mx-auto">
         {/* Back */}
         <Link href="/dashboard" className="inline-flex items-center gap-2 font-body text-body-sm text-secondary-text hover:text-deep-green transition-colors mb-8">
-          <ArrowLeft size={16} weight="bold" /> Înapoi la Dashboard
+          <ArrowLeft size={16} weight="bold" /> {tr("Înapoi la Dashboard")}
         </Link>
 
         {/* Header */}
@@ -733,7 +743,7 @@ export default function ContPage() {
               <h1 className="font-heading text-h2 text-deep-green">{fullName}</h1>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="font-body text-body-sm text-secondary-text">{email}</span>
-                <span className={`tag text-[10px] border ${PLAN_CLS[plan] ?? PLAN_CLS.gratuit}`}>{PLAN_LABEL[plan] ?? "Gratuit"}</span>
+                <span className={`tag text-[10px] border ${PLAN_CLS[plan] ?? PLAN_CLS.gratuit}`}>{tr(PLAN_LABEL[plan] ?? "Gratuit")}</span>
               </div>
             </div>
           </div>
@@ -758,7 +768,7 @@ export default function ContPage() {
                       }`}
                     >
                       <Icon size={17} weight={active ? "fill" : "regular"} />
-                      {tab.label}
+                      {tr(tab.label)}
                     </button>
                   </li>
                 );

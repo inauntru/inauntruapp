@@ -4,6 +4,10 @@
  */
 import { EN_HOME } from "./en-home";
 import { EN_AUTH } from "./en-auth";
+import { EN_PRACTICI } from "./en-practici";
+import { EN_ANCORE } from "./en-ancore";
+import { EN_DESCOPERA } from "./en-descopera";
+import { EN_DASHBOARD } from "./en-dashboard";
 
 const EN_BASE: Record<string, string> = {
   // ── Navbar ──
@@ -54,6 +58,10 @@ export const EN: Record<string, string> = {
   ...EN_BASE,
   ...EN_HOME,
   ...EN_AUTH,
+  ...EN_PRACTICI,
+  ...EN_ANCORE,
+  ...EN_DESCOPERA,
+  ...EN_DASHBOARD,
 };
 
 /**

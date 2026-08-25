@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
 
 const ALL_SPECIALTIES = ["Toți", "Traumă", "Anxietate", "Burnout", "Somn", "Energie", "Mișcare", "Respirație", "Relații", "Meditație", "Reglare", "Corp", "Stres", "Claritate"];
@@ -14,7 +15,8 @@ type Facilitator = typeof FACILITATORS_DATA[0];
 interface Props { siteContent: Record<string, string>; }
 
 export default function FacilitatoriClient({ siteContent }: Props) {
-  const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { tr } = useLanguage();
+  const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
   const [facilitators, setFacilitators] = useState<Facilitator[]>(FACILITATORS_DATA);
   const [specialty, setSpecialty] = useState("Toți");
   const [search, setSearch] = useState("");
@@ -60,11 +62,11 @@ export default function FacilitatoriClient({ siteContent }: Props) {
           <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
             <div className="relative">
               <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-text" />
-              <input type="search" placeholder="Caută facilitator..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 pr-4 py-2 rounded-full border border-sage-border text-body-sm font-body bg-white focus:outline-none focus:border-forest-green w-full md:w-48" />
+              <input type="search" placeholder={tr("Caută facilitator...")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 pr-4 py-2 rounded-full border border-sage-border text-body-sm font-body bg-white focus:outline-none focus:border-forest-green w-full md:w-48" />
             </div>
             <div className="flex gap-2 overflow-x-auto no-scrollbar">
               {ALL_SPECIALTIES.map((s) => (
-                <button key={s} onClick={() => setSpecialty(s)} className={`filter-pill flex-shrink-0 ${specialty === s ? "active" : ""}`}>{s}</button>
+                <button key={s} onClick={() => setSpecialty(s)} className={`filter-pill flex-shrink-0 ${specialty === s ? "active" : ""}`}>{tr(s)}</button>
               ))}
             </div>
           </div>
@@ -85,14 +87,14 @@ export default function FacilitatoriClient({ siteContent }: Props) {
                     <h3 className="font-body font-semibold text-body-md text-deep-green mb-0.5 group-hover:text-forest-green transition-colors">{f.name}</h3>
                     <p className="font-body text-label-xs text-secondary-text mb-3">{f.specialty}</p>
                     <p className="font-body text-body-sm text-secondary-text mb-4 line-clamp-2 flex-1">{f.bio}</p>
-                    <div className="flex flex-wrap gap-1.5 mb-4">{f.tags.map((tag) => <span key={tag} className="tag tag-green">{tag}</span>)}</div>
+                    <div className="flex flex-wrap gap-1.5 mb-4">{f.tags.map((tag) => <span key={tag} className="tag tag-green">{tr(tag)}</span>)}</div>
                     <div className="flex items-center justify-between mt-auto">
                       <div className="flex items-center gap-1">
                         <Star size={13} weight="fill" className="text-terracotta" />
                         <span className="font-body text-label-xs font-semibold text-deep-green">{f.rating}</span>
-                        <span className="font-body text-label-xs text-secondary-text">({f.sessions} sesiuni)</span>
+                        <span className="font-body text-label-xs text-secondary-text">({f.sessions} {tr("sesiuni")})</span>
                       </div>
-                      <span className="font-body text-label-xs text-forest-green flex items-center gap-1">Vezi profil <ArrowRight size={12} weight="bold" /></span>
+                      <span className="font-body text-label-xs text-forest-green flex items-center gap-1">{tr("Vezi profil")} <ArrowRight size={12} weight="bold" /></span>
                     </div>
                   </div>
                 </Link>
@@ -102,7 +104,7 @@ export default function FacilitatoriClient({ siteContent }: Props) {
         </AnimatePresence>
         {filtered.length === 0 && (
           <div className="text-center py-20">
-            <p className="font-body text-body-md text-secondary-text">Niciun facilitator găsit pentru această specialitate.</p>
+            <p className="font-body text-body-md text-secondary-text">{tr("Niciun facilitator găsit pentru această specialitate.")}</p>
           </div>
         )}
       </div>
@@ -110,9 +112,9 @@ export default function FacilitatoriClient({ siteContent }: Props) {
       <section className="py-16 bg-surface-container-low">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimateIn from="bottom">
-            <h2 className="font-heading text-h2 text-deep-green mb-3">Ești facilitator?</h2>
-            <p className="font-body text-body-lg text-secondary-text mb-8">Fii parte din echipa noastră și oferă îndrumare celor care vor să se simtă din nou bine în corpul lor.</p>
-            <Link href="/contact" className="btn btn-primary">Aplică ca facilitator <ArrowRight size={16} weight="bold" /></Link>
+            <h2 className="font-heading text-h2 text-deep-green mb-3">{tr("Ești facilitator?")}</h2>
+            <p className="font-body text-body-lg text-secondary-text mb-8">{tr("Fii parte din echipa noastră și oferă îndrumare celor care vor să se simtă din nou bine în corpul lor.")}</p>
+            <Link href="/contact" className="btn btn-primary">{tr("Aplică ca facilitator")} <ArrowRight size={16} weight="bold" /></Link>
           </AnimateIn>
         </div>
       </section>

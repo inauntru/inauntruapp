@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, ArrowRight } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { BLOG_POSTS } from "@/lib/mockData";
 
 const BLOG_IMAGES = [
@@ -19,7 +20,8 @@ const CATEGORIES = ["Toate", "Educație", "Practici", "Știință", "Resurse", "
 interface Props { siteContent: Record<string, string>; }
 
 export default function BlogClient({ siteContent }: Props) {
-  const t = (key: string, fallback: string) => siteContent[key] || fallback;
+  const { tr } = useLanguage();
+  const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
   const [posts, setPosts] = useState(BLOG_POSTS);
   const [category, setCategory] = useState("Toate");
 
@@ -56,15 +58,15 @@ export default function BlogClient({ siteContent }: Props) {
               </div>
               <div className="p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="tag tag-green">Articol principal</span>
-                  <span className="tag tag-outline">{featured.category}</span>
+                  <span className="tag tag-green">{tr("Articol principal")}</span>
+                  <span className="tag tag-outline">{tr(featured.category)}</span>
                 </div>
                 <h2 className="font-heading text-h2 text-deep-green mb-3 group-hover:text-forest-green transition-colors leading-snug">{featured.title}</h2>
                 <p className="font-body text-body-md text-secondary-text mb-6 leading-relaxed">{featured.excerpt}</p>
                 <div className="flex items-center gap-4 text-label-xs text-secondary-text font-body">
                   <span className="font-semibold text-deep-green">{featured.author}</span>
                   <span>{new Date(featured.date).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })}</span>
-                  <span className="flex items-center gap-1"><Clock size={12} />{featured.readTime} min</span>
+                  <span className="flex items-center gap-1"><Clock size={12} />{featured.readTime} {tr("min lectură")}</span>
                 </div>
               </div>
             </div>
@@ -73,7 +75,7 @@ export default function BlogClient({ siteContent }: Props) {
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar mb-8">
           {CATEGORIES.map((c) => (
-            <button key={c} onClick={() => setCategory(c)} className={`filter-pill flex-shrink-0 ${category === c ? "active" : ""}`}>{c}</button>
+            <button key={c} onClick={() => setCategory(c)} className={`filter-pill flex-shrink-0 ${category === c ? "active" : ""}`}>{tr(c)}</button>
           ))}
         </div>
 
@@ -86,12 +88,12 @@ export default function BlogClient({ siteContent }: Props) {
                     <Image src={BLOG_IMAGES[i % 3]} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="p-5">
-                    <span className="tag tag-green mb-3">{post.category}</span>
+                    <span className="tag tag-green mb-3">{tr(post.category)}</span>
                     <h3 className="font-heading text-h3 text-deep-green mb-2 group-hover:text-forest-green transition-colors line-clamp-2 leading-snug">{post.title}</h3>
                     <p className="font-body text-body-sm text-secondary-text mb-4 line-clamp-3">{post.excerpt}</p>
                     <div className="flex items-center justify-between text-label-xs text-secondary-text font-body">
                       <span>{post.author}</span>
-                      <span className="flex items-center gap-1"><Clock size={11} />{post.readTime} min</span>
+                      <span className="flex items-center gap-1"><Clock size={11} />{post.readTime} {tr("min lectură")}</span>
                     </div>
                   </div>
                 </Link>
