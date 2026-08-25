@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
             to: email,
             vars: {
               prenume: profile.first_name || authData.user?.user_metadata?.first_name || "acolo",
-              link: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://inauntru.ro"}/dashboard`,
+              link: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro"}/dashboard`,
             },
           });
         }

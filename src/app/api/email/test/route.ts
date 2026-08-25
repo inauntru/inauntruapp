@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         prenume: "Sabina",
         email: to,
         plan: "Premium",
-        link: "https://inauntru.ro/dashboard",
+        link: "https://withinapp.ro/dashboard",
         rol: "Super Admin",
         sesiune_titlu: "Respirație pentru reglare nervoasă",
         sesiune_data: "Vineri, 23 mai · 18:00",

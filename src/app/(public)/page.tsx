@@ -26,7 +26,7 @@ const jsonLd = {
       url: BASE_URL,
       logo: { "@type": "ImageObject", url: `${BASE_URL}/logo-orizontal.png` },
       sameAs: [],
-      contactPoint: { "@type": "ContactPoint", email: "hello@inauntru.ro", contactType: "customer support", availableLanguage: "Romanian" },
+      contactPoint: { "@type": "ContactPoint", email: "hello@withinapp.ro", contactType: "customer support", availableLanguage: "Romanian" },
     },
     {
       "@type": "WebSite",

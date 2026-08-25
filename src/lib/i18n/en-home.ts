@@ -114,8 +114,8 @@ export const EN_HOME: Record<string, string> = {
   "Da, toate sesiunile live sunt înregistrate și disponibile în biblioteca de replay în termen de 24 de ore. Abonații Premium și Premium+ au acces la arhiva completă.":
     "Yes, all live sessions are recorded and available in the replay library within 24 hours. Premium and Premium+ subscribers have access to the full archive.",
   "Există opțiuni corporate / B2B?": "Are there corporate / B2B options?",
-  "Da! Oferim pachete corporate pentru companii care doresc să investească în bunăstarea angajaților. Contactați-ne la business@inauntru.ro pentru un demo și ofertă personalizată.":
-    "Yes! We offer corporate packages for companies that want to invest in their employees' wellbeing. Contact us at business@inauntru.ro for a demo and a personalized offer.",
+  "Da! Oferim pachete corporate pentru companii care doresc să investească în bunăstarea angajaților. Contactați-ne la business@withinapp.ro pentru un demo și ofertă personalizată.":
+    "Yes! We offer corporate packages for companies that want to invest in their employees' wellbeing. Contact us at business@withinapp.ro for a demo and a personalized offer.",
 
   // ── Final CTA ──
   "Alege să te simți mai bine acum.": "Choose to feel better now.",

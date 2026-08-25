@@ -57,8 +57,8 @@ const DEFAULT_PLATFORM = {
   name: "WithIn",
   tagline: "Primul ecosistem de terapie somatică din România",
   description: "WithIn este platforma care îți oferă acces la practici somatice ghidate, sesiuni LIVE și suport pentru bunăstarea ta.",
-  email_support: "suport@inauntru.ro",
-  email_billing: "facturare@inauntru.ro",
+  email_support: "suport@withinapp.ro",
+  email_billing: "facturare@withinapp.ro",
   cui: "",
   address: "",
   allow_register: true,
@@ -443,11 +443,11 @@ function GdprTab() {
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Link Politică de confidențialitate</label>
-            <input type="url" defaultValue="https://inauntru.ro/confidentialitate" className="input w-full max-w-lg" />
+            <input type="url" defaultValue="https://withinapp.ro/confidentialitate" className="input w-full max-w-lg" />
           </div>
           <div>
             <label className="font-body text-label-sm text-on-surface mb-1.5 block">Link Termeni și condiții</label>
-            <input type="url" defaultValue="https://inauntru.ro/termeni" className="input w-full max-w-lg" />
+            <input type="url" defaultValue="https://withinapp.ro/termeni" className="input w-full max-w-lg" />
           </div>
         </div>
         <SaveBar onSave={() => {}} />
@@ -1060,7 +1060,7 @@ const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
     faq7_q: "Sesiunile live sunt inregistrate?",
     faq7_a: "Da, toate sesiunile live sunt inregistrate si disponibile in biblioteca de replay in termen de 24 de ore.",
     faq8_q: "Exista optiuni corporate / B2B?",
-    faq8_a: "Da! Oferim pachete corporate pentru companii care doresc sa investeasca in bunastarea angajatilor. Contactati-ne la business@inauntru.ro pentru un demo.",
+    faq8_a: "Da! Oferim pachete corporate pentru companii care doresc sa investeasca in bunastarea angajatilor. Contactati-ne la business@withinapp.ro pentru un demo.",
   },
   preturi: {
     label: "Alege claritatea.",

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createServiceClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://inauntru.ro";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
   // Find users with no check-in in the last 7 days
   const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();

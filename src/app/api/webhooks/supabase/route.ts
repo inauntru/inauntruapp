@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
           vars: {
             prenume: firstName || "acolo",
             email,
-            link: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://inauntru.ro"}/dashboard`,
+            link: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro"}/dashboard`,
           },
         });
       }

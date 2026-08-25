@@ -79,7 +79,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
           sesiune_data: dateStr,
           sesiune_durata: `${session.duration} minute`,
           facilitator_nume: session.facilitator_name ?? "Facilitatorul tău",
-          link: session.meeting_url ?? `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://inauntru.ro"}/sesiuni-live`,
+          link: session.meeting_url ?? `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro"}/sesiuni-live`,
         },
       });
     }

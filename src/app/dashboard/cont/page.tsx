@@ -663,7 +663,7 @@ function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAut
 function AjutorTab() {
   const links = [
     { label: "Centrul de ajutor", desc: "Întrebări frecvente și ghiduri de utilizare", href: "#" },
-    { label: "Contactează-ne", desc: "Trimite-ne un mesaj la hello@inauntru.ro", href: "mailto:hello@inauntru.ro" },
+    { label: "Contactează-ne", desc: "Trimite-ne un mesaj la hello@withinapp.ro", href: "mailto:hello@withinapp.ro" },
     { label: "Termeni și condiții", desc: "Condițiile de utilizare ale platformei", href: "/termeni" },
     { label: "Politica de confidențialitate", desc: "Cum îți protejăm datele", href: "/confidentialitate" },
   ];

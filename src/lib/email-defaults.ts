@@ -57,7 +57,7 @@ export const EMAIL_DEFAULTS: Record<string, EmailDefault> = {
     <div style="text-align:center;margin:32px 0;">
       <a href="{{link}}" style="background:#2D5016;color:#fff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:600;display:inline-block;">Confirmă noul email →</a>
     </div>
-    <p style="color:#9ca3af;font-size:13px;text-align:center;">Dacă nu ai solicitat această schimbare, contactează-ne imediat la suport@inauntru.ro.</p>`),
+    <p style="color:#9ca3af;font-size:13px;text-align:center;">Dacă nu ai solicitat această schimbare, contactează-ne imediat la suport@withinapp.ro.</p>`),
   },
 
   invite_user: {
@@ -286,6 +286,6 @@ export const EMAIL_DEFAULTS: Record<string, EmailDefault> = {
     <div style="text-align:center;margin:28px 0;">
       <a href="{{link}}" style="background:#2D5016;color:#fff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:600;display:inline-block;">Reactivează abonamentul →</a>
     </div>
-    <p style="color:#9ca3af;font-size:13px;text-align:center;">Dacă ai anulat din greșeală, scrie-ne la suport@inauntru.ro.</p>`),
+    <p style="color:#9ca3af;font-size:13px;text-align:center;">Dacă ai anulat din greșeală, scrie-ne la suport@withinapp.ro.</p>`),
   },
 };

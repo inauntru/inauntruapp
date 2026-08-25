@@ -547,7 +547,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: "Există opțiuni corporate / B2B?",
-    a: "Da! Oferim pachete corporate pentru companii care doresc să investească în bunăstarea angajaților. Contactați-ne la business@inauntru.ro pentru un demo și ofertă personalizată.",
+    a: "Da! Oferim pachete corporate pentru companii care doresc să investească în bunăstarea angajaților. Contactați-ne la business@withinapp.ro pentru un demo și ofertă personalizată.",
   },
 ];
 
