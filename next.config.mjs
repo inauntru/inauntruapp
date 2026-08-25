@@ -9,6 +9,23 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60,
   },
+  // Adresele vechi .vercel.app redirecționează permanent spre domeniul oficial
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "withinapp.vercel.app" }],
+        destination: "https://withinapp.ro/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "inauntruapp.vercel.app" }],
+        destination: "https://withinapp.ro/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
