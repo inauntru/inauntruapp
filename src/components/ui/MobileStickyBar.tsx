@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function MobileStickyBar() {
   const [visible, setVisible] = useState(true);
+  const { tr } = useLanguage();
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
@@ -30,7 +32,7 @@ export default function MobileStickyBar() {
         href="/register"
         className="btn btn-primary w-full text-center flex items-center justify-center"
       >
-        Începe gratuit
+        {tr("Începe gratuit")}
       </Link>
     </div>
   );

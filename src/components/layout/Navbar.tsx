@@ -98,7 +98,7 @@ export default function Navbar() {
         <button
           key={l}
           onClick={() => setLocale(l)}
-          aria-label={l === "ro" ? "Română" : "English"}
+          aria-label={l === "ro" ? tr("Română") : "English"}
           className={`px-2.5 py-1.5 font-ui text-[11px] font-bold uppercase transition-colors ${
             locale === l
               ? glass ? "bg-white/25 text-white" : "bg-deep-green text-white"
@@ -264,7 +264,7 @@ export default function Navbar() {
                 glass ? "text-white hover:bg-white/10" : "text-deep-green hover:bg-light-green"
               }`}
               onClick={() => setMobileOpen(true)}
-              aria-label="Deschide meniu"
+              aria-label={tr("Deschide meniu")}
             >
               <List size={24} weight="regular" />
             </button>

@@ -1,4 +1,5 @@
 "use client";
+import { dateLocale } from "@/lib/i18n/date";
 
 import { useRef, useEffect, useState, ReactNode } from "react";
 import { motion, useInView, useAnimation, Variant } from "framer-motion";
@@ -145,7 +146,7 @@ export function CountUp({ from = 0, to, duration = 2, suffix = "", prefix = "", 
 
   return (
     <span ref={ref} className={className}>
-      {prefix}{count.toLocaleString("ro-RO")}{suffix}
+      {prefix}{count.toLocaleString(dateLocale())}{suffix}
     </span>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { dateLocale } from "@/lib/i18n/date";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -54,18 +55,18 @@ export default function BlogClient({ siteContent }: Props) {
           <Link href={`/blog/${featured.slug}`} className="group block card card-lift overflow-hidden mb-10">
             <div className="grid lg:grid-cols-2">
               <div className="aspect-video lg:aspect-auto lg:min-h-[320px] overflow-hidden relative">
-                <Image src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80" alt={featured.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80" alt={tr(featured.title)} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="tag tag-green">{tr("Articol principal")}</span>
                   <span className="tag tag-outline">{tr(featured.category)}</span>
                 </div>
-                <h2 className="font-heading text-h2 text-deep-green mb-3 group-hover:text-forest-green transition-colors leading-snug">{featured.title}</h2>
-                <p className="font-body text-body-md text-secondary-text mb-6 leading-relaxed">{featured.excerpt}</p>
+                <h2 className="font-heading text-h2 text-deep-green mb-3 group-hover:text-forest-green transition-colors leading-snug">{tr(featured.title)}</h2>
+                <p className="font-body text-body-md text-secondary-text mb-6 leading-relaxed">{tr(featured.excerpt)}</p>
                 <div className="flex items-center gap-4 text-label-xs text-secondary-text font-body">
                   <span className="font-semibold text-deep-green">{featured.author}</span>
-                  <span>{new Date(featured.date).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })}</span>
+                  <span>{new Date(featured.date).toLocaleDateString(dateLocale(), { day: "numeric", month: "long", year: "numeric" })}</span>
                   <span className="flex items-center gap-1"><Clock size={12} />{featured.readTime} {tr("min lectură")}</span>
                 </div>
               </div>
@@ -85,12 +86,12 @@ export default function BlogClient({ siteContent }: Props) {
               <motion.div key={post.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
                 <Link href={`/blog/${post.slug}`} className="group card card-lift block overflow-hidden h-full">
                   <div className="aspect-video overflow-hidden relative">
-                    <Image src={BLOG_IMAGES[i % 3]} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <Image src={BLOG_IMAGES[i % 3]} alt={tr(post.title)} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="p-5">
                     <span className="tag tag-green mb-3">{tr(post.category)}</span>
-                    <h3 className="font-heading text-h3 text-deep-green mb-2 group-hover:text-forest-green transition-colors line-clamp-2 leading-snug">{post.title}</h3>
-                    <p className="font-body text-body-sm text-secondary-text mb-4 line-clamp-3">{post.excerpt}</p>
+                    <h3 className="font-heading text-h3 text-deep-green mb-2 group-hover:text-forest-green transition-colors line-clamp-2 leading-snug">{tr(post.title)}</h3>
+                    <p className="font-body text-body-sm text-secondary-text mb-4 line-clamp-3">{tr(post.excerpt)}</p>
                     <div className="flex items-center justify-between text-label-xs text-secondary-text font-body">
                       <span>{post.author}</span>
                       <span className="flex items-center gap-1"><Clock size={11} />{post.readTime} {tr("min lectură")}</span>

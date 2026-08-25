@@ -108,7 +108,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
                   <span className="font-heading text-2xl font-bold text-forest-green/60">{f.name.split(" ").map((n) => n[0]).join("")}</span>
                 </div>
                 <h3 className="font-body font-semibold text-body-sm text-deep-green mb-0.5">{f.name}</h3>
-                <p className="font-body text-label-xs text-secondary-text mb-3">{f.title}</p>
+                <p className="font-body text-label-xs text-secondary-text mb-3">{tr(f.title)}</p>
                 <div className="flex flex-wrap justify-center gap-1">{f.tags.slice(0, 2).map((tag) => <span key={tag} className="tag tag-green">{tr(tag)}</span>)}</div>
               </Link>
             ))}

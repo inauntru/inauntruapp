@@ -8,6 +8,9 @@ import { EN_PRACTICI } from "./en-practici";
 import { EN_ANCORE } from "./en-ancore";
 import { EN_DESCOPERA } from "./en-descopera";
 import { EN_DASHBOARD } from "./en-dashboard";
+import { EN_CONTENT } from "./en-content";
+import { EN_DETAIL } from "./en-detail";
+import { EN_QUOTES } from "./en-quotes";
 
 const EN_BASE: Record<string, string> = {
   // ── Navbar ──
@@ -37,6 +40,8 @@ const EN_BASE: Record<string, string> = {
   "Practici bazate pe știință pentru echilibrul tău interior. Întoarce-te la tine în mai puțin de 2 minute.":
     "Science-based practices for your inner balance. Come back to yourself in under 2 minutes.",
   "Email-ul tău": "Your email",
+  "Te-ai abonat! Ne auzim curând.": "You're subscribed! Talk soon.",
+  "Abonează-te": "Subscribe",
   "Linie de criză:": "Crisis line:",
   "Dacă ești în criză, nu folosi această platformă. Sună la": "If you are in crisis, do not use this platform. Call",
   "(gratuit, 24/7)": "(free, 24/7)",
@@ -62,6 +67,9 @@ export const EN: Record<string, string> = {
   ...EN_ANCORE,
   ...EN_DESCOPERA,
   ...EN_DASHBOARD,
+  ...EN_CONTENT,
+  ...EN_DETAIL,
+  ...EN_QUOTES,
 };
 
 /**

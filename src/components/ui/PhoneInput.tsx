@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CaretDown } from "@phosphor-icons/react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const PHONE_PREFIXES = [
   { code: "+40",  label: "🇷🇴 România",       short: "+40" },
@@ -55,6 +56,7 @@ export default function PhoneInput({ value, onChange, inputClassName = "input" }
   const initial = splitPhone(value);
   const [prefix, setPrefix] = useState(initial.prefix);
   const [number, setNumber] = useState(initial.number);
+  const { tr } = useLanguage();
 
   // Sincronizează când valoarea vine din exterior (ex. profilul se încarcă târziu)
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function PhoneInput({ value, onChange, inputClassName = "input" }
           value={prefix}
           onChange={e => update(e.target.value, number)}
           className={`${inputClassName} w-[5.5rem] pr-7 cursor-pointer appearance-none`}
-          aria-label="Prefix țară"
+          aria-label={tr("Prefix țară")}
         >
           {PHONE_PREFIXES.map(p => (
             <option key={p.code} value={p.code}>{p.short}</option>
@@ -90,7 +92,7 @@ export default function PhoneInput({ value, onChange, inputClassName = "input" }
         type="tel"
         value={number}
         onChange={e => update(prefix, e.target.value)}
-        placeholder={prefix === "+40" ? "07XX XXX XXX" : "Număr de telefon"}
+        placeholder={prefix === "+40" ? "07XX XXX XXX" : tr("Număr de telefon")}
         autoComplete="tel-national"
         className={`${inputClassName} flex-1`}
       />

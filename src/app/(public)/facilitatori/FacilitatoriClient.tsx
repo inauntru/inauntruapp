@@ -85,8 +85,8 @@ export default function FacilitatoriClient({ siteContent }: Props) {
                   </div>
                   <div className="p-5 flex flex-col flex-1">
                     <h3 className="font-body font-semibold text-body-md text-deep-green mb-0.5 group-hover:text-forest-green transition-colors">{f.name}</h3>
-                    <p className="font-body text-label-xs text-secondary-text mb-3">{f.specialty}</p>
-                    <p className="font-body text-body-sm text-secondary-text mb-4 line-clamp-2 flex-1">{f.bio}</p>
+                    <p className="font-body text-label-xs text-secondary-text mb-3">{tr(f.specialty)}</p>
+                    <p className="font-body text-body-sm text-secondary-text mb-4 line-clamp-2 flex-1">{tr(f.bio)}</p>
                     <div className="flex flex-wrap gap-1.5 mb-4">{f.tags.map((tag) => <span key={tag} className="tag tag-green">{tr(tag)}</span>)}</div>
                     <div className="flex items-center justify-between mt-auto">
                       <div className="flex items-center gap-1">

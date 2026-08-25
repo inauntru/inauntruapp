@@ -1,6 +1,7 @@
-﻿import { ReactNode } from "react";
+import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import AuthFooter from "./AuthFooter";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -16,12 +17,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      <footer className="py-6 text-center font-body text-label-xs text-secondary-text space-x-4">
-        <Link href="#" className="hover:text-forest-green transition-colors">Ajutor</Link>
-        <Link href="/despre-noi" className="hover:text-forest-green transition-colors">Știința din spate</Link>
-        <Link href="#" className="hover:text-forest-green transition-colors">Contact</Link>
-        <span className="block mt-2 text-secondary-text/60">© 2026 WithIn Digital Somatic Therapy. Toate drepturile rezervate.</span>
-      </footer>
+      <AuthFooter />
     </div>
   );
 }

@@ -454,7 +454,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                         <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 relative">
                           <Image
                             src={`${p.image}?w=120&q=75`}
-                            alt={p.title}
+                            alt={tr(p.title)}
                             fill
                             className="object-cover"
                           />
@@ -462,7 +462,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                         <div className="flex-1 min-w-0">
                           <p className="font-body text-label-xs text-secondary-text mb-0.5">{tr(p.category)}</p>
                           <p className="font-body text-body-sm font-semibold text-deep-green leading-tight line-clamp-1">
-                            {p.title}
+                            {tr(p.title)}
                           </p>
                           <p className="font-body text-label-xs text-secondary-text flex items-center gap-1 mt-0.5">
                             <Clock size={11} />

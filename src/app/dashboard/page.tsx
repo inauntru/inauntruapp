@@ -1,4 +1,5 @@
 "use client";
+import { dateLocale } from "@/lib/i18n/date";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -18,7 +19,7 @@ import { fetchAncoreCompletions } from "@/lib/ancore-sync";
 import { canAccess, contentTier, TIER_LABEL, type ContentTier } from "@/lib/plan";
 
 function formatDate() {
-  return new Date().toLocaleDateString("ro-RO", {
+  return new Date().toLocaleDateString(dateLocale(), {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 }
@@ -290,9 +291,9 @@ export default function DashboardPage() {
                       <div className="text-left">
                         <p className="font-body text-label-xs font-semibold leading-tight">{tr("Sesiune Live")}</p>
                         <p className="font-body text-[10px] text-white/60 leading-tight">
-                          {new Date(upcomingSession.date).toLocaleDateString("ro-RO", { day: "numeric", month: "short" })}
+                          {new Date(upcomingSession.date).toLocaleDateString(dateLocale(), { day: "numeric", month: "short" })}
                           {" · "}
-                          {new Date(upcomingSession.date).toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" })}
+                          {new Date(upcomingSession.date).toLocaleTimeString(dateLocale(), { hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
                       <CaretDown size={11} weight="bold"
@@ -313,16 +314,16 @@ export default function DashboardPage() {
                               <div className="w-2 h-2 rounded-full bg-forest-green animate-live-pulse" />
                               <span className="font-body text-label-xs text-forest-green uppercase tracking-wider font-semibold">{tr("Urmează")}</span>
                             </div>
-                            <h3 className="font-body font-semibold text-body-md text-deep-green mb-1 leading-snug">{upcomingSession.title}</h3>
+                            <h3 className="font-body font-semibold text-body-md text-deep-green mb-1 leading-snug">{tr(upcomingSession.title)}</h3>
                             <p className="font-body text-label-xs text-secondary-text mb-4">{upcomingSession.facilitator}</p>
                             <div className="flex items-center gap-4 mb-4">
                               <span className="flex items-center gap-1.5 font-body text-label-xs text-secondary-text">
                                 <CalendarBlank size={13} className="text-forest-green" />
-                                {new Date(upcomingSession.date).toLocaleDateString("ro-RO", { weekday: "short", day: "numeric", month: "short" })}
+                                {new Date(upcomingSession.date).toLocaleDateString(dateLocale(), { weekday: "short", day: "numeric", month: "short" })}
                               </span>
                               <span className="flex items-center gap-1.5 font-body text-label-xs text-secondary-text">
                                 <Clock size={13} className="text-forest-green" />
-                                {new Date(upcomingSession.date).toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" })}
+                                {new Date(upcomingSession.date).toLocaleTimeString(dateLocale(), { hour: "2-digit", minute: "2-digit" })}
                               </span>
                             </div>
                             <div className="mb-5">
@@ -414,7 +415,7 @@ export default function DashboardPage() {
                     <div className="px-1 pb-1">
                       <p className="font-body text-label-xs text-sage-border/80 mb-1 uppercase tracking-wider">{tr("Recomandat pentru tine azi")}</p>
                       <p className="font-heading text-xl text-white font-bold leading-tight">
-                        {recommended?.title ?? tr("Explorează biblioteca de practici")}
+                        {recommended ? tr(recommended.title) : tr("Explorează biblioteca de practici")}
                       </p>
                       <p className="font-body text-label-xs text-white/50 mt-1">
                         {recommended ? `${recommended.duration} min · ${recommended.facilitator}` : tr("Practici ghidate pentru fiecare stare")}
@@ -471,7 +472,7 @@ export default function DashboardPage() {
                         <Play size={18} weight="fill" className="text-forest-green" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-body font-semibold text-body-sm text-deep-green line-clamp-1">{p.title}</p>
+                        <p className="font-body font-semibold text-body-sm text-deep-green line-clamp-1">{tr(p.title)}</p>
                         <p className="font-body text-label-xs text-secondary-text">{p.facilitator} · {p.duration} min</p>
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -480,7 +481,7 @@ export default function DashboardPage() {
                             🔒 {tr(TIER_LABEL[contentTier(p) as ContentTier])}
                           </span>
                         )}
-                        <span className="tag tag-green">{p.category}</span>
+                        <span className="tag tag-green">{tr(p.category)}</span>
                       </div>
                     </Link>
                   ))}
@@ -562,7 +563,7 @@ export default function DashboardPage() {
                     </p>
                     <blockquote className="border-l-2 border-terracotta/40 pl-3 mb-4">
                       <p className="font-body text-label-xs text-secondary-text italic leading-relaxed">
-                        &ldquo;{dailyQuote.text}&rdquo;
+                        &ldquo;{tr(dailyQuote.text)}&rdquo;
                       </p>
                       <p className="font-body text-label-xs text-terracotta/70 mt-1">— {dailyQuote.author}</p>
                     </blockquote>

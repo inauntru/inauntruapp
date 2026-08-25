@@ -1,4 +1,5 @@
 "use client";
+import { dateLocale } from "@/lib/i18n/date";
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,10 +15,10 @@ import { canAccess, contentTier } from "@/lib/plan";
 const WEEK_DAYS = ["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"];
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("ro-RO", { weekday: "long", day: "numeric", month: "long" });
+  return new Date(dateStr).toLocaleDateString(dateLocale(), { weekday: "long", day: "numeric", month: "long" });
 }
 function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" });
+  return new Date(dateStr).toLocaleTimeString(dateLocale(), { hour: "2-digit", minute: "2-digit" });
 }
 
 interface Props { siteContent: Record<string, string>; }
@@ -130,8 +131,8 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                 <div className="w-2 h-2 rounded-full bg-primary-fixed-dim animate-live-pulse" />
                 <span className="font-body text-label-sm text-primary-fixed-dim">{tr("LIVE")}</span>
               </div>
-              <h1 className="font-heading text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">{featured.title}</h1>
-              <p className="font-body text-body-md text-white/60 mb-6">{featured.description}</p>
+              <h1 className="font-heading text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">{tr(featured.title)}</h1>
+              <p className="font-body text-body-md text-white/60 mb-6">{tr(featured.description)}</p>
               <div className="flex flex-wrap gap-4 mb-6 text-white/70 font-body text-body-sm">
                 <span className="flex items-center gap-2"><CalendarBlank size={16} weight="regular" />{formatDate(featured.date)}</span>
                 <span className="flex items-center gap-2"><Clock size={16} weight="regular" />{formatTime(featured.date)} · {featured.duration} min</span>
@@ -243,7 +244,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                   <div className="w-14 h-14 rounded-xl bg-light-green flex items-center justify-center flex-shrink-0"><Video size={24} weight="regular" className="text-forest-green" /></div>
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="font-body font-semibold text-body-md text-deep-green">{session.title}</h3>
+                      <h3 className="font-body font-semibold text-body-md text-deep-green">{tr(session.title)}</h3>
                       {session.isPremium && <span className="tag bg-secondary-container text-on-secondary-container border-0">{tr("Premium")}</span>}
                       <span className="tag tag-green">{tr(session.type)}</span>
                     </div>
@@ -337,12 +338,12 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                   {rec.isPremium && <div className="absolute top-3 right-3"><span className="tag bg-deep-green/70 text-white border-0 backdrop-blur">{tr("Premium")}</span></div>}
                 </div>
                 <div className="p-4">
-                  <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1 line-clamp-2">{rec.title}</h3>
+                  <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1 line-clamp-2">{tr(rec.title)}</h3>
                   <p className="font-body text-label-xs text-secondary-text mb-2">{rec.facilitator}</p>
                   <div className="flex items-center justify-between text-label-xs text-secondary-text font-body">
                     <span className="flex items-center gap-1"><Clock size={11} />{rec.duration} min</span>
                     <span>{rec.views} {tr("vizionări")}</span>
-                    <span>{new Date(rec.date).toLocaleDateString("ro-RO", { day: "numeric", month: "short" })}</span>
+                    <span>{new Date(rec.date).toLocaleDateString(dateLocale(), { day: "numeric", month: "short" })}</span>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 "use client";
+import { dateLocale } from "@/lib/i18n/date";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -33,7 +34,7 @@ interface Props {
 }
 
 export default function DailyInfluence({ sign, dateOfBirth }: Props) {
-  const { tr } = useLanguage();
+  const { tr, locale } = useLanguage();
   const [data, setData] = useState<InfluenceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -41,7 +42,7 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
   useEffect(() => {
     if (!sign || !dateOfBirth) return;
     setLoading(true);
-    fetch(`/api/astro/daily?sign=${encodeURIComponent(sign)}`)
+    fetch(`/api/astro/daily?sign=${encodeURIComponent(sign)}&lang=${locale}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(d => { setData(d); setLoading(false); })
       .catch(() => {
@@ -61,9 +62,9 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
         }
         setLoading(false);
       });
-  }, [sign, dateOfBirth]);
+  }, [sign, dateOfBirth, locale]);
 
-  const today = new Date().toLocaleDateString("ro-RO", { day: "numeric", month: "short" });
+  const today = new Date().toLocaleDateString(dateLocale(), { day: "numeric", month: "short" });
 
   if (loading) return <DailyInfluenceSkeleton />;
   if (error || !data) return null;
@@ -127,7 +128,7 @@ export default function DailyInfluence({ sign, dateOfBirth }: Props) {
                   <span className={`font-body text-label-xs font-semibold ${cfg.text}`}>{tr(cfg.label)}</span>
                 </div>
               </div>
-              <p className="font-body text-body-sm text-secondary-text leading-relaxed">{area.description}</p>
+              <p className="font-body text-body-sm text-secondary-text leading-relaxed">{tr(area.description)}</p>
             </motion.div>
           );
         })}

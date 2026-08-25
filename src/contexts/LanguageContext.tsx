@@ -11,6 +11,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { translateEn } from "@/lib/i18n/en";
+import { setDateLocale } from "@/lib/i18n/date";
 
 export type Locale = "ro" | "en";
 
@@ -35,7 +36,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === "en" || saved === "ro") setLocaleState(saved);
+      if (saved === "en" || saved === "ro") { setDateLocale(saved); setLocaleState(saved); }
     } catch { /* ignore */ }
   }, []);
 
@@ -44,6 +45,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, [locale]);
 
   function setLocale(l: Locale) {
+    setDateLocale(l);
     setLocaleState(l);
     try { localStorage.setItem(STORAGE_KEY, l); } catch { /* ignore */ }
   }

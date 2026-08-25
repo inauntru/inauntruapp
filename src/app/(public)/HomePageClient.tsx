@@ -288,7 +288,7 @@ export default function HomePageClient({ siteContent }: Props) {
                 <div className="flex items-center gap-0.5 mb-5">
                   {Array.from({ length: t_.stars }).map((_, i) => <Star key={i} size={16} weight="fill" className="text-[#F59E0B]" />)}
                 </div>
-                <p className="font-body text-body-lg text-secondary-text italic mb-6 leading-relaxed flex-1">&ldquo;{t_.quote}&rdquo;</p>
+                <p className="font-body text-body-lg text-secondary-text italic mb-6 leading-relaxed flex-1">&ldquo;{tr(t_.quote)}&rdquo;</p>
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-full bg-indigo-light flex items-center justify-center font-bold text-indigo font-body flex-shrink-0">
                     {t_.name.split(" ").map((n: string) => n[0]).join("")}
@@ -307,7 +307,7 @@ export default function HomePageClient({ siteContent }: Props) {
                 <div className="flex items-center gap-0.5 mb-3">
                   {Array.from({ length: t_.stars }).map((_, i) => <Star key={i} size={14} weight="fill" className="text-[#F59E0B]" />)}
                 </div>
-                <p className="font-body text-body-sm text-secondary-text italic mb-4">&ldquo;{t_.quote}&rdquo;</p>
+                <p className="font-body text-body-sm text-secondary-text italic mb-4">&ldquo;{tr(t_.quote)}&rdquo;</p>
                 <p className="font-body font-semibold text-body-sm text-deep-green">{t_.name}</p>
                 <p className="font-body text-label-xs text-secondary-text">{t_.city}</p>
               </div>
@@ -336,7 +336,7 @@ export default function HomePageClient({ siteContent }: Props) {
                 </div>
                 <div>
                   <h4 className="font-body font-semibold text-body-md text-deep-green group-hover:text-forest-green transition-colors">{f.name}</h4>
-                  <p className="font-body text-label-xs text-forest-green">{f.specialty}</p>
+                  <p className="font-body text-label-xs text-forest-green">{tr(f.specialty)}</p>
                 </div>
               </Link>
             ))}
@@ -373,8 +373,8 @@ export default function HomePageClient({ siteContent }: Props) {
                   </div>
                 )}
                 <div className="mb-6">
-                  <h3 className={`font-heading text-h3 mb-1 ${plan.isPopular ? "text-white" : "text-deep-green"}`}>{plan.name}</h3>
-                  <p className={`font-body text-body-sm ${plan.isPopular ? "text-white/70" : "text-secondary-text"}`}>{plan.description}</p>
+                  <h3 className={`font-heading text-h3 mb-1 ${plan.isPopular ? "text-white" : "text-deep-green"}`}>{tr(plan.name)}</h3>
+                  <p className={`font-body text-body-sm ${plan.isPopular ? "text-white/70" : "text-secondary-text"}`}>{tr(plan.description)}</p>
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline gap-1">
@@ -393,17 +393,17 @@ export default function HomePageClient({ siteContent }: Props) {
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
                       <Check size={16} weight="bold" className={`flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-white" : "text-forest-green"}`} />
-                      <span className={`font-body text-body-sm ${plan.isPopular ? "text-white/80" : "text-secondary-text"}`}>{feature}</span>
+                      <span className={`font-body text-body-sm ${plan.isPopular ? "text-white/80" : "text-secondary-text"}`}>{tr(feature)}</span>
                     </li>
                   ))}
                   {plan.notIncluded.map((feature) => (
                     <li key={feature} className="flex items-start gap-2 opacity-40">
                       <X size={16} weight="regular" className="flex-shrink-0 mt-0.5" />
-                      <span className={`font-body text-body-sm ${plan.isPopular ? "text-white" : "text-secondary-text"}`}>{feature}</span>
+                      <span className={`font-body text-body-sm ${plan.isPopular ? "text-white" : "text-secondary-text"}`}>{tr(feature)}</span>
                     </li>
                   ))}
                 </ul>
-                <Link href="/register" className={`btn w-full text-center ${plan.isPopular ? "bg-white text-forest-green hover:bg-white/90" : "btn-primary"}`}>{plan.cta}</Link>
+                <Link href="/register" className={`btn w-full text-center ${plan.isPopular ? "bg-white text-forest-green hover:bg-white/90" : "btn-primary"}`}>{tr(plan.cta)}</Link>
               </div>
             ))}
           </StaggerChildren>

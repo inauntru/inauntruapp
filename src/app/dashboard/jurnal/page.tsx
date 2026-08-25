@@ -1,4 +1,5 @@
 "use client";
+import { dateLocale } from "@/lib/i18n/date";
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -71,10 +72,10 @@ const CHECKIN_MOODS: Record<string, { icon: React.ElementType; label: string; co
 };
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" });
+  return new Date(iso).toLocaleDateString(dateLocale(), { day: "numeric", month: "long", year: "numeric" });
 }
 function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" });
+  return new Date(iso).toLocaleTimeString(dateLocale(), { hour: "2-digit", minute: "2-digit" });
 }
 
 function stripHtml(html: string) {

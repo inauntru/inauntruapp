@@ -907,7 +907,7 @@ const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
   },
 };
 
-function SiteTextTab() {
+function SiteTextTabEditor() {
   const [activePage, setActivePage] = useState("homepage");
   const [content, setContent] = useState<Record<string, Record<string, string>>>(DEFAULT_SITE_CONTENT);
   const [loading, setLoading] = useState(true);
@@ -1049,6 +1049,24 @@ function SiteTextTab() {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+
+function SiteTextTab() {
+  return (
+    <div className="space-y-4">
+      <div className="card bg-amber-50 border-amber-200 p-5">
+        <p className="font-body font-semibold text-body-md text-amber-800 mb-1">⏸ Funcție dezactivată temporar</p>
+        <p className="font-body text-label-xs text-amber-700">
+          Textele site-ului vin acum exclusiv din cod, unde au și traducerea în engleză.
+          Editarea de aici ar afișa versiuni netraduse pe EN. Funcția rămâne pregătită și
+          poate fi reactivată când sistemul de traduceri va acoperi și textele editate din admin.
+        </p>
+      </div>
+      <div className="opacity-40 pointer-events-none select-none">
+        <SiteTextTabEditor />
+      </div>
+    </div>
+  );
+}
 
 export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState("platforma");

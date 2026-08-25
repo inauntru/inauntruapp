@@ -1,4 +1,5 @@
 "use client";
+import { dateLocale } from "@/lib/i18n/date";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -80,7 +81,7 @@ export default function ProgresPage() {
     const key = d.toLocaleDateString("sv-SE");
     return {
       key,
-      label: d.toLocaleDateString("ro-RO", { weekday: "short", day: "numeric" }),
+      label: d.toLocaleDateString(dateLocale(), { weekday: "short", day: "numeric" }),
       minutes: usageMap.get(key) ?? 0,
       isToday: i === 13,
     };

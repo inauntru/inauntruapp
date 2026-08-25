@@ -45,8 +45,11 @@ const DAY_NAMES  = ["duminică", "luni", "marți", "miercuri", "joi", "vineri", 
 
 // ── Prompt pentru Claude ──────────────────────────────────────────────────────
 
-function buildPrompt(date: Date, moon: ReturnType<typeof getMoonPhase>, sunSign: string, dayRuler: string, dayName: string): string {
-  return `Ești un astrolog modern în stilul Co-Star. Scrii în română, direct, atmosferic, fără clișee.
+function buildPrompt(date: Date, moon: ReturnType<typeof getMoonPhase>, sunSign: string, dayRuler: string, dayName: string, lang: "ro" | "en" = "ro"): string {
+  const langLine = lang === "en"
+    ? "Write in natural, modern ENGLISH (Co-Star style) — every description in English. Keep the JSON keys and the 12 Romanian sign names as keys exactly as given."
+    : "Scrii în română, direct, atmosferic, fără clișee.";
+  return `Ești un astrolog modern în stilul Co-Star. ${langLine}
 
 Contextul astronomic de azi (${date.toISOString().split("T")[0]}, ${dayName}):
 - Conducătorul zilei: ${dayRuler} (planetă asociată tradițional cu această zi a săptămânii)
@@ -58,7 +61,7 @@ Pentru fiecare semn, 4 domenii: corp, minte, relatii, energie.
 
 Fiecare domeniu are:
 - "level": "favorabil" | "echilibrat" | "provocator"
-- "description": 20-28 de cuvinte în română, prezent, fără să începi cu "Azi", direct la subiect
+- "description": 20-28 de cuvinte ${lang === "en" ? "în ENGLEZĂ" : "în română"}, prezent, fără să începi cu "Azi"/"Today", direct la subiect
 
 Ține cont de:
 - Cum conducătorul zilei (${dayRuler}) interacționează cu elementul fiecărui semn (foc/pământ/aer/apă)
@@ -99,9 +102,13 @@ function buildPersonalPrompt(
   moon: ReturnType<typeof getMoonPhase>,
   sunSign: string,
   dayRuler: string,
-  dayName: string
+  dayName: string,
+  lang: "ro" | "en" = "ro"
 ): string {
-  return `Ești un astrolog modern în stilul Co-Star. Scrii în română, direct, atmosferic, fără clișee.
+  const langLine = lang === "en"
+    ? "Write in natural, modern ENGLISH (Co-Star style) — every description in English."
+    : "Scrii în română, direct, atmosferic, fără clișee.";
+  return `Ești un astrolog modern în stilul Co-Star. ${langLine}
 
 Profilul natal al persoanei:
 - Soare în ${natal.sunSign} (identitatea, direcția)
@@ -119,7 +126,7 @@ ascendentul colorează energia zilei, Luna natală filtrează emoțiile, Soarele
 
 Fiecare domeniu are:
 - "level": "favorabil" | "echilibrat" | "provocator"
-- "description": 20-28 de cuvinte în română, prezent, fără să începi cu "Azi", direct la subiect
+- "description": 20-28 de cuvinte ${lang === "en" ? "în ENGLEZĂ" : "în română"}, prezent, fără să începi cu "Azi"/"Today", direct la subiect
 
 Distribuie nivelurile realist — nu totul favorabil, nu totul provocator.
 
@@ -132,6 +139,7 @@ Returnează STRICT JSON valid:
 export async function GET(req: NextRequest) {
   const sign = req.nextUrl.searchParams.get("sign");
   if (!sign) return NextResponse.json({ error: "Missing sign" }, { status: 400 });
+  const lang: "ro" | "en" = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ro";
 
   // Verifică autentificarea
   const cookieStore = await cookies();
@@ -151,7 +159,7 @@ export async function GET(req: NextRequest) {
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
-  const dateKey = `astro_daily_${todayStr}`;
+  const dateKey = lang === "en" ? `astro_daily_${todayStr}_en` : `astro_daily_${todayStr}`;
   const service = createServiceClient() as any;
 
   // ── Profil natal complet? → conținut personalizat per utilizator ──────────
@@ -167,7 +175,7 @@ export async function GET(req: NextRequest) {
     : null;
 
   if (natal) {
-    const userKey = `astro_user_${user.id}_${todayStr}`;
+    const userKey = `astro_user_${user.id}_${todayStr}${lang === "en" ? "_en" : ""}`;
     const moon = getMoonPhase(today);
     const sunNow = getSunSign(today);
     const dayIdx = today.getDay();
@@ -196,7 +204,7 @@ export async function GET(req: NextRequest) {
         max_tokens: 1024,
         messages: [{
           role: "user",
-          content: buildPersonalPrompt(natal, today, moon, sunNow, DAY_RULERS[dayIdx], DAY_NAMES[dayIdx]),
+          content: buildPersonalPrompt(natal, today, moon, sunNow, DAY_RULERS[dayIdx], DAY_NAMES[dayIdx], lang),
         }],
       });
       const raw = (msg.content[0] as { type: string; text: string }).text;
@@ -256,7 +264,7 @@ export async function GET(req: NextRequest) {
       max_tokens: 4096,
       messages: [{
         role: "user",
-        content: buildPrompt(today, moon, sunSign, dayRuler, dayName),
+        content: buildPrompt(today, moon, sunSign, dayRuler, dayName, lang),
       }],
     });
 

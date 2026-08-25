@@ -13,6 +13,7 @@ import {
   Play,
 } from "@phosphor-icons/react";
 import { FACILITATORS, PRACTICES } from "@/lib/mockData";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 function genitiveName(fullName: string): string {
   const first = fullName.split(" ")[0];
@@ -35,6 +36,7 @@ type FacilitatorShape = {
 };
 
 export default function FacilitatorPage({ params }: { params: { slug: string } }) {
+  const { tr, locale } = useLanguage();
   const [facilitator, setFacilitator] = useState<FacilitatorShape | null>(null);
   const [missing, setMissing] = useState(false);
 
@@ -70,7 +72,7 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <Link href="/facilitatori" className="inline-flex items-center gap-2 text-secondary-text hover:text-forest-green transition-colors font-body text-body-sm">
           <ArrowLeft size={16} weight="bold" />
-          Toți facilitatorii
+          {tr("Toți facilitatorii")}
         </Link>
       </div>
 
@@ -89,7 +91,7 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
                 />
               </div>
               <h1 className="font-heading text-h3 text-deep-green mb-1">{facilitator.name}</h1>
-              <p className="font-body text-body-sm text-secondary-text mb-3">{facilitator.title}</p>
+              <p className="font-body text-body-sm text-secondary-text mb-3">{tr(facilitator.title)}</p>
 
               <div className="flex items-center justify-center gap-1 mb-4">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -101,30 +103,30 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
                   />
                 ))}
                 <span className="font-body text-label-xs text-secondary-text ml-1">
-                  {facilitator.rating} ({facilitator.reviews} recenzii)
+                  {facilitator.rating} ({facilitator.reviews} {tr("recenzii")})
                 </span>
               </div>
 
               <div className="flex flex-wrap justify-center gap-1.5 mb-6">
                 {facilitator.tags.map((tag) => (
-                  <span key={tag} className="tag tag-green">{tag}</span>
+                  <span key={tag} className="tag tag-green">{tr(tag)}</span>
                 ))}
               </div>
 
               <Link href="/register" className="btn btn-primary w-full">
-                Accesează practicile <ArrowRight size={16} weight="bold" />
+                {tr("Accesează practicile")} <ArrowRight size={16} weight="bold" />
               </Link>
             </div>
 
             {/* Quick stats */}
             <div className="grid grid-cols-2 gap-3 mt-4">
               <div className="card p-4 text-center">
-                <p className="font-heading text-2xl font-bold text-forest-green">{facilitator.practiceDuration}</p>
-                <p className="font-body text-label-xs text-secondary-text">Experiență</p>
+                <p className="font-heading text-2xl font-bold text-forest-green">{tr(facilitator.practiceDuration)}</p>
+                <p className="font-body text-label-xs text-secondary-text">{tr("Experiență")}</p>
               </div>
               <div className="card p-4 text-center">
                 <p className="font-heading text-2xl font-bold text-forest-green">{practices.length}</p>
-                <p className="font-body text-label-xs text-secondary-text">Practici</p>
+                <p className="font-body text-label-xs text-secondary-text">{tr("Practici")}</p>
               </div>
             </div>
           </div>
@@ -133,8 +135,8 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
           <div className="lg:col-span-2 space-y-6">
             {/* Bio */}
             <div className="card p-6">
-              <h2 className="font-heading text-h3 text-deep-green mb-4">Despre {facilitator.name.split(" ")[0]}</h2>
-              <p className="font-body text-body-md text-secondary-text leading-relaxed">{facilitator.bio}</p>
+              <h2 className="font-heading text-h3 text-deep-green mb-4">{tr("Despre")} {facilitator.name.split(" ")[0]}</h2>
+              <p className="font-body text-body-md text-secondary-text leading-relaxed">{tr(facilitator.bio)}</p>
             </div>
 
             {/* Video intro placeholder */}
@@ -144,7 +146,7 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
                   <Play size={28} weight="fill" className="text-white ml-1" />
                 </div>
                 <div className="absolute bottom-4 left-4">
-                  <p className="font-body text-label-xs text-white/60">Intro video · 2 min</p>
+                  <p className="font-body text-label-xs text-white/60">{tr("Intro video · 2 min")}</p>
                 </div>
               </div>
             </div>
@@ -154,13 +156,13 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
               <div className="card p-6">
                 <h3 className="font-heading text-h3 text-deep-green mb-4 flex items-center gap-2">
                   <Certificate size={20} weight="regular" className="text-forest-green" />
-                  Certificări
+                  {tr("Certificări")}
                 </h3>
                 <ul className="space-y-2">
                   {facilitator.certifications.map((cert) => (
                     <li key={cert} className="flex items-start gap-2 font-body text-body-sm text-secondary-text">
                       <div className="w-1.5 h-1.5 rounded-full bg-forest-green mt-2 flex-shrink-0" />
-                      {cert}
+                      {tr(cert)}
                     </li>
                   ))}
                 </ul>
@@ -176,7 +178,7 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="font-heading text-h2 text-deep-green mb-8 flex items-center gap-2">
               <BookOpen size={24} weight="regular" className="text-forest-green" />
-              Practicile {genitiveName(facilitator.name)}
+              {tr("Practicile")} {locale === "en" ? facilitator.name.split(" ")[0] : genitiveName(facilitator.name)}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {practices.map((p) => (
@@ -184,9 +186,9 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
                   <div className="aspect-video bg-gradient-to-br from-forest-green/15 to-deep-green/10 rounded-xl mb-4 flex items-center justify-center">
                     <Play size={24} weight="fill" className="text-forest-green/50" />
                   </div>
-                  <span className="tag tag-green mb-2">{p.category}</span>
-                  <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1">{p.title}</h3>
-                  <p className="font-body text-label-xs text-secondary-text">{p.duration} min · {p.level}</p>
+                  <span className="tag tag-green mb-2">{tr(p.category)}</span>
+                  <h3 className="font-body font-semibold text-body-sm text-deep-green mb-1">{tr(p.title)}</h3>
+                  <p className="font-body text-label-xs text-secondary-text">{p.duration} min · {tr(p.level)}</p>
                 </div>
               ))}
             </div>

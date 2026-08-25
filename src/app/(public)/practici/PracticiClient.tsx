@@ -137,7 +137,7 @@ export default function PracticiClient({ siteContent }: Props) {
                 <motion.div key={practice.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, duration: 0.4 }}>
                   <Link href={`/practici/${practice.id}`} className="block group card card-lift overflow-hidden h-full">
                     <div className="relative aspect-video overflow-hidden">
-                      <Image src={`${practice.image}?w=600&q=80`} alt={practice.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                      <Image src={`${practice.image}?w=600&q=80`} alt={tr(practice.title)} fill className="object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-deep-green/50 via-transparent to-transparent" />
                       <div className="absolute top-3 left-3"><span className="tag tag-green shadow-sm">{tr(practice.category)}</span></div>
                       {!canAccess(plan, contentTier(practice)) && <div className="absolute top-3 right-3"><div className="w-7 h-7 bg-deep-green/80 backdrop-blur rounded-full flex items-center justify-center"><Lock size={13} weight="fill" className="text-white" /></div></div>}
@@ -146,7 +146,7 @@ export default function PracticiClient({ siteContent }: Props) {
                       </div>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-body font-semibold text-body-md text-deep-green mb-1 line-clamp-2 group-hover:text-forest-green transition-colors">{practice.title}</h3>
+                      <h3 className="font-body font-semibold text-body-md text-deep-green mb-1 line-clamp-2 group-hover:text-forest-green transition-colors">{tr(practice.title)}</h3>
                       <p className="font-body text-label-xs text-secondary-text mb-3">{practice.facilitator}</p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
