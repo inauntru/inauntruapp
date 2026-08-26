@@ -218,10 +218,10 @@ export const EMAIL_DEFAULTS: Record<string, EmailDefault> = {
   },
 
   session_followup: {
-    subject: "Cum te-ai simțit după sesiunea de azi?",
+    subject: "Cum te-ai simțit după sesiune?",
     preheader: "Notează-ți observațiile cât sunt proaspete.",
     body: SHELL(`    <h1 style="font-family:Georgia,serif;color:#1a3a0a;font-size:22px;margin:0 0 16px;">Cum a fost sesiunea, {{prenume}}?</h1>
-    <p style="color:#4a5568;font-size:16px;line-height:1.75;">Tocmai ai terminat sesiunea cu <strong>{{facilitator_nume}}</strong>. Corpul tău a trecut printr-o experiență de reglare — ia câteva minute să observi ce simți.</p>
+    <p style="color:#4a5568;font-size:16px;line-height:1.75;">Ai participat la sesiunea cu <strong>{{facilitator_nume}}</strong>. Corpul tău a trecut printr-o experiență de reglare — ia câteva minute să observi ce simți.</p>
     <p style="color:#4a5568;font-size:16px;line-height:1.75;">Fă un check-in acum și notează-ți starea — vei putea urmări evoluția în timp.</p>
     <div style="text-align:center;margin:28px 0;">
       <a href="{{link}}" style="background:#2D5016;color:#fff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:600;display:inline-block;">Fă check-in acum →</a>

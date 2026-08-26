@@ -20,7 +20,9 @@ function replaceVars(text: string, vars: Record<string, string>, templateId?: st
   return out;
 }
 
-async function getDbTemplate(templateId: string): Promise<{ subject: string; body: string } | null> {
+interface DbTemplate { subject: string; body: string; status?: "activ" | "draft" }
+
+async function getDbTemplate(templateId: string): Promise<DbTemplate | null> {
   try {
     const supabase = createServiceClient();
     const { data } = await (supabase as any)
@@ -29,28 +31,67 @@ async function getDbTemplate(templateId: string): Promise<{ subject: string; bod
       .eq("key", "email_templates")
       .maybeSingle();
     const saved = data?.value?.[templateId];
-    if (saved?.body && saved?.subject) return { subject: saved.subject, body: saved.body };
+    if (saved?.body && saved?.subject) return { subject: saved.subject, body: saved.body, status: saved.status };
   } catch {}
   return null;
 }
 
+export interface SendEmailResult {
+  sent: boolean;
+  /** de ce nu s-a trimis: "draft" (oprit din admin), "duplicate" (deja trimis), "error" */
+  reason?: "draft" | "duplicate" | "error";
+  error?: string;
+}
+
+/**
+ * Trimite un email pe baza unui șablon.
+ *
+ * `userId` + `ref` = cheia de unicitate: același utilizator, același șablon,
+ * același `ref` → se trimite O SINGURĂ DATĂ (garantat de tabelul email_log).
+ * Ex.: ref = "streak-7" pentru emailul de 7 zile consecutive, ref = "s12"
+ * pentru reminderul sesiunii 12, ref = data pentru emailuri zilnice/săptămânale.
+ */
 export async function sendEmail({
   templateId,
   to,
   vars = {},
   overrideSubject,
   overrideHtml,
+  userId,
+  ref,
 }: {
   templateId: string;
   to: string;
   vars?: Record<string, string>;
   overrideSubject?: string;
   overrideHtml?: string;
-}): Promise<void> {
+  userId?: string;
+  ref?: string;
+}): Promise<SendEmailResult> {
   const defaults = EMAIL_DEFAULTS[templateId];
   if (!defaults) throw new Error(`Unknown email template: ${templateId}`);
 
+  const isTest = overrideHtml !== undefined || overrideSubject !== undefined;
   const dbTemplate = await getDbTemplate(templateId);
+
+  // Șablon oprit din Admin → Emailuri (comutatorul Activ/Draft). Testele trec mereu.
+  if (!isTest && dbTemplate?.status === "draft") {
+    return { sent: false, reason: "draft" };
+  }
+
+  const service = createServiceClient() as any;
+  const dedupe = !isTest && !!userId && ref !== undefined;
+
+  if (dedupe) {
+    const { data: already } = await service
+      .from("email_log")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("template_id", templateId)
+      .eq("ref", ref)
+      .maybeSingle();
+    if (already) return { sent: false, reason: "duplicate" };
+  }
 
   const subject = replaceVars(overrideSubject ?? dbTemplate?.subject ?? defaults.subject, vars, templateId);
   const html = replaceVars(overrideHtml ?? dbTemplate?.body ?? defaults.body, vars, templateId);
@@ -69,4 +110,11 @@ export async function sendEmail({
   });
 
   if (error) throw new Error(error.message);
+
+  if (dedupe) {
+    // Conflictul de unicitate (două procese în același moment) nu e o eroare
+    await service.from("email_log").insert({ user_id: userId, template_id: templateId, ref });
+  }
+
+  return { sent: true };
 }

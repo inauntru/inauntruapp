@@ -88,6 +88,8 @@ export async function POST(req: NextRequest) {
       await sendEmail({
         templateId: "session_booked",
         to: email,
+        userId: user.id,
+        ref: `s${sessionId}-${Date.now()}`,
         vars: {
           prenume: prof?.first_name || authData.user?.user_metadata?.first_name || "acolo",
           sesiune_titlu: session.title,

@@ -32,6 +32,8 @@ export async function POST(req: NextRequest) {
         await sendEmail({
           templateId: "welcome",
           to: email,
+          userId: record.id,
+          ref: "once",
           vars: {
             prenume: firstName || "acolo",
             email,

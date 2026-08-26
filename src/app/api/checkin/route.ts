@@ -94,6 +94,7 @@ export async function POST(req: NextRequest) {
     .eq("id", user.id)
     .single() as { data: { check_ins_count: number; first_name: string | null } | null };
 
+  let streak = 0;
   if (profile !== null) {
     const wasFirst = (profile.check_ins_count ?? 0) === 0;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -102,24 +103,52 @@ export async function POST(req: NextRequest) {
       .update({ check_ins_count: (profile.check_ins_count ?? 0) + 1 })
       .eq("id", user.id);
 
-    if (wasFirst) {
-      try {
-        const { data: authData } = await serviceClient.auth.admin.getUserById(user.id);
-        const email = authData.user?.email;
-        if (email) {
-          const { sendEmail } = await import("@/lib/email");
-          await sendEmail({
-            templateId: "first_checkin",
-            to: email,
-            vars: {
-              prenume: profile.first_name || authData.user?.user_metadata?.first_name || "acolo",
-              link: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro"}/dashboard`,
-            },
-          });
-        }
-      } catch {}
+    // Emailuri automate — best-effort, nu blochează check-in-ul
+    try {
+      const { sendEmail } = await import("@/lib/email");
+      const { computeStreak, getRecipient, SITE_URL } = await import("@/lib/email-recipient");
+
+      // Seria reală de zile consecutive, inclusiv check-in-ul de azi
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: allCheckins } = await (serviceClient as any)
+        .from("check_ins")
+        .select("created_at")
+        .eq("user_id", user.id);
+      streak = computeStreak((allCheckins ?? []).map((c: { created_at: string }) => c.created_at));
+
+      const rcpt = wasFirst || STREAK_MILESTONES.includes(streak)
+        ? await getRecipient(serviceClient, user.id)
+        : null;
+
+      if (rcpt && wasFirst) {
+        await sendEmail({
+          templateId: "first_checkin",
+          to: rcpt.email,
+          userId: user.id,
+          ref: "once",
+          vars: { prenume: rcpt.prenume, link: `${SITE_URL}/dashboard` },
+        });
+      }
+
+      // Emailul de serie se trimite DOAR când seria chiar atinge pragul.
+      // ref = prag + ziua → o serie refăcută mai târziu primește din nou felicitarea.
+      if (rcpt && STREAK_MILESTONES.includes(streak)) {
+        const { dayKey } = await import("@/lib/email-recipient");
+        await sendEmail({
+          templateId: "practice_streak",
+          to: rcpt.email,
+          userId: user.id,
+          ref: `streak-${streak}-${dayKey(Date.now())}`,
+          vars: { prenume: rcpt.prenume, nr_zile: String(streak), link: `${SITE_URL}/dashboard` },
+        });
+      }
+    } catch (e) {
+      console.error("[checkin] email", e);
     }
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, streak });
 }
+
+/** Pragurile la care felicităm seria de zile consecutive de check-in. */
+const STREAK_MILESTONES = [3, 7, 14, 21, 30, 60, 100];

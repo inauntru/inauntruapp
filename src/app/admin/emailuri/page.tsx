@@ -59,12 +59,12 @@ const CATEGORIES: Category[] = [
     id: "auth",
     label: "Autentificare (Sistem)",
     Icon: ShieldCheck,
-    note: "Emailuri trimise automat de Supabase Auth. Modificările se salvează direct în Supabase la apăsarea butonului Salvează.",
+    note: "Emailuri trimise automat de Supabase Auth, de pe hello@withinapp.ro. Modificările se salvează direct în Supabase la apăsarea butonului Salvează.",
     emails: [
-      { id: "verify_email",   label: "Confirmare cont",  desc: "La înregistrare",       isSystem: true },
-      { id: "reset_password", label: "Resetare parolă",  desc: "La cerere resetare",    isSystem: true },
+      { id: "verify_email",   label: "Confirmare cont",  desc: "Nefolosit — conturile se activează fără confirmare", isSystem: true },
+      { id: "reset_password", label: "Resetare parolă",  desc: "La „Am uitat parola”",  isSystem: true },
       { id: "change_email",   label: "Schimbare email",  desc: "La schimbare adresă",   isSystem: true },
-      { id: "invite_user",    label: "Invitație admin",  desc: "La invitare echipă",    isSystem: true },
+      { id: "invite_user",    label: "Invitație admin",  desc: "Nefolosit momentan",    isSystem: true },
     ],
   },
   {
@@ -72,8 +72,8 @@ const CATEGORIES: Category[] = [
     label: "Onboarding",
     Icon: UserCircle,
     emails: [
-      { id: "welcome",         label: "Bun venit",       desc: "Imediat după confirmare cont" },
-      { id: "getting_started", label: "Ghid de start",   desc: "A doua zi după înregistrare" },
+      { id: "welcome",         label: "Bun venit",       desc: "Imediat după crearea contului" },
+      { id: "getting_started", label: "Ghid de start",   desc: "La 1–3 zile după înregistrare, dacă nu a făcut niciun check-in" },
       { id: "first_checkin",   label: "Primul check-in", desc: "La primul check-in completat" },
     ],
   },
@@ -82,9 +82,9 @@ const CATEGORIES: Category[] = [
     label: "Progres & Engagement",
     Icon: Sparkle,
     emails: [
-      { id: "weekly_summary",  label: "Rezumat săptămânal", desc: "Luni dimineața" },
-      { id: "practice_streak", label: "Streak practici",    desc: "La 3/7/30 zile consecutive" },
-      { id: "reactivation",    label: "Reactivare",         desc: "După 7 zile inactivitate" },
+      { id: "weekly_summary",  label: "Rezumat săptămânal", desc: "Luni la 10:00, celor activi în ultimele 7 zile" },
+      { id: "practice_streak", label: "Serie de zile",      desc: "Când seria de check-in atinge 3, 7, 14, 21, 30, 60 sau 100 de zile" },
+      { id: "reactivation",    label: "Revenire",           desc: "După 7 zile fără activitate, apoi la 14 zile — maxim 3" },
     ],
   },
   {
@@ -93,14 +93,15 @@ const CATEGORIES: Category[] = [
     Icon: CalendarBlank,
     emails: [
       { id: "session_booked",   label: "Confirmare rezervare", desc: "Imediat după rezervare" },
-      { id: "session_reminder", label: "Reminder sesiune",     desc: "Cu 24h înainte" },
-      { id: "session_followup", label: "Follow-up sesiune",    desc: "La 2h după sesiune" },
+      { id: "session_reminder", label: "Reminder sesiune",     desc: "În dimineața zilei dinaintea sesiunii" },
+      { id: "session_followup", label: "Follow-up sesiune",    desc: "În dimineața de după sesiune" },
     ],
   },
   {
     id: "billing",
     label: "Abonamente",
     Icon: CreditCard,
+    note: "Se activează automat odată cu plățile online (Stripe). Până atunci nu se trimit.",
     emails: [
       { id: "sub_activated",  label: "Abonament activat",       desc: "La upgrade plan" },
       { id: "trial_ending",   label: "Trial pe cale să expire", desc: "Cu 3 zile înainte" },

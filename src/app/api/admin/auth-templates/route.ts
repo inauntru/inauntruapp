@@ -3,11 +3,33 @@ import { cookies } from "next/headers";
 
 // Maps our template IDs → Supabase Management API field names
 const TEMPLATE_MAP: Record<string, { subject: string; body: string }> = {
-  verify_email:    { subject: "email_subject_confirmation",  body: "email_template_confirmation"  },
-  reset_password:  { subject: "email_subject_recovery",      body: "email_template_recovery"      },
-  change_email:    { subject: "email_subject_email_change",  body: "email_template_email_change"  },
-  invite_user:     { subject: "email_subject_invite",        body: "email_template_invite"        },
+  verify_email:    { subject: "mailer_subjects_confirmation",  body: "mailer_templates_confirmation_content"  },
+  reset_password:  { subject: "mailer_subjects_recovery",      body: "mailer_templates_recovery_content"      },
+  change_email:    { subject: "mailer_subjects_email_change",  body: "mailer_templates_email_change_content"  },
+  invite_user:     { subject: "mailer_subjects_invite",        body: "mailer_templates_invite_content"        },
 };
+
+// Variabilele noastre ({{link}}) ↔ variabilele Go ale Supabase ({{ .ConfirmationURL }})
+const VAR_TO_SUPABASE: Array<[string, string]> = [
+  ["{{link}}",    "{{ .ConfirmationURL }}"],
+  ["{{email}}",   "{{ .Email }}"],
+  ["{{prenume}}", "{{ .Data.first_name }}"],
+];
+function toSupabase(text: string, id: string): string {
+  let out = text;
+  for (const [ours, theirs] of VAR_TO_SUPABASE) {
+    // la schimbarea emailului, {{email}} înseamnă noua adresă
+    const target = ours === "{{email}}" && id === "change_email" ? "{{ .NewEmail }}" : theirs;
+    out = out.replaceAll(ours, target);
+  }
+  return out;
+}
+function fromSupabase(text: string): string {
+  return text
+    .replace(/\{\{\s*\.ConfirmationURL\s*\}\}/g, "{{link}}")
+    .replace(/\{\{\s*\.(?:New)?Email\s*\}\}/g, "{{email}}")
+    .replace(/\{\{\s*\.Data\.first_name\s*\}\}/g, "{{prenume}}");
+}
 
 function getProjectRef() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -51,7 +73,7 @@ export async function GET() {
     for (const [id, keys] of Object.entries(TEMPLATE_MAP)) {
       templates[id] = {
         subject: config[keys.subject] ?? "",
-        body: config[keys.body] ?? "",
+        body: fromSupabase(config[keys.body] ?? ""),
       };
     }
 
@@ -76,8 +98,8 @@ export async function PUT(req: NextRequest) {
     for (const [id, tpl] of Object.entries(body)) {
       const keys = TEMPLATE_MAP[id];
       if (!keys) continue;
-      if (tpl.subject !== undefined) patch[keys.subject] = tpl.subject;
-      if (tpl.body !== undefined) patch[keys.body] = tpl.body;
+      if (tpl.subject !== undefined) patch[keys.subject] = toSupabase(tpl.subject, id);
+      if (tpl.body !== undefined) patch[keys.body] = toSupabase(tpl.body, id);
     }
 
     if (Object.keys(patch).length === 0) {
