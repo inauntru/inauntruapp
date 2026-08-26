@@ -97,7 +97,9 @@ export async function sendEmail({
   const html = replaceVars(overrideHtml ?? dbTemplate?.body ?? defaults.body, vars, templateId);
 
   // Headere de deliverabilitate: List-Unsubscribe e cerut de Gmail/Yahoo
-  // pentru expeditorii în masă și ajută reputația domeniului
+  // pentru expeditorii în masă și ajută reputația domeniului.
+  // X-Entity-Ref-ID unic → Gmail NU grupează emailurile cu același subiect
+  // într-o conversație (și deci nu mai „pliază" conținutul repetat).
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to,
@@ -106,6 +108,7 @@ export async function sendEmail({
     replyTo: "hello@withinapp.ro",
     headers: {
       "List-Unsubscribe": "<https://withinapp.ro/dashboard/cont>",
+      "X-Entity-Ref-ID": crypto.randomUUID(),
     },
   });
 
