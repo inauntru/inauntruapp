@@ -45,11 +45,17 @@ export async function sendEmail({
   const subject = replaceVars(overrideSubject ?? dbTemplate?.subject ?? defaults.subject, vars);
   const html = replaceVars(overrideHtml ?? dbTemplate?.body ?? defaults.body, vars);
 
+  // Headere de deliverabilitate: List-Unsubscribe e cerut de Gmail/Yahoo
+  // pentru expeditorii în masă și ajută reputația domeniului
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to,
     subject,
     html,
+    replyTo: "hello@withinapp.ro",
+    headers: {
+      "List-Unsubscribe": "<https://withinapp.ro/dashboard/cont>",
+    },
   });
 
   if (error) throw new Error(error.message);

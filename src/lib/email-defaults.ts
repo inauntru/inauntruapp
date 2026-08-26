@@ -11,7 +11,7 @@ export const SHELL = (body: string) => `<!DOCTYPE html>
   <div style="max-width:540px;margin:0 auto;background:#fff;border-radius:16px;padding:40px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
 ${body}
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0 20px;">
-    <p style="color:#b0b8c1;font-size:12px;text-align:center;margin:0;">© 2026 WithIn · România &nbsp;·&nbsp; <a href="#" style="color:#b0b8c1;">Dezabonare</a></p>
+    <p style="color:#b0b8c1;font-size:12px;text-align:center;margin:0;">© 2026 WithIn · România &nbsp;·&nbsp; <a href="https://withinapp.ro/dashboard/cont" style="color:#b0b8c1;">Dezabonare</a></p>
   </div>
 </body>
 </html>`;
