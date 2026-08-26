@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
           link: `${SITE_URL}/dashboard`,
         },
       });
-      r.sent ? sent++ : skipped++;
+      if (r.sent) sent++; else skipped++;
     } catch (e) {
       console.error("[cron/weekly-summary]", userId, e);
     }

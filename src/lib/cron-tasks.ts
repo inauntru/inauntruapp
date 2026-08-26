@@ -144,7 +144,7 @@ export async function runGettingStarted(service: any, now = Date.now()): Promise
         ref: "once",
         vars: { prenume: rcpt.prenume, link: `${SITE_URL}/dashboard` },
       });
-      r.sent ? result.sent++ : result.skipped++;
+      if (r.sent) result.sent++; else result.skipped++;
     } catch (e) {
       console.error("[cron/getting_started]", profile.id, e);
     }
@@ -207,7 +207,7 @@ export async function runSessionReminders(service: any, now = Date.now()): Promi
             link: s.meeting_url || `${SITE_URL}/sesiuni-live`,
           },
         });
-        r.sent ? result.sent++ : result.skipped++;
+        if (r.sent) result.sent++; else result.skipped++;
       } catch (e) {
         console.error("[cron/session_reminder]", s.id, userId, e);
       }
@@ -254,7 +254,7 @@ export async function runSessionFollowups(service: any, now = Date.now()): Promi
             link: `${SITE_URL}/dashboard`,
           },
         });
-        r.sent ? result.sent++ : result.skipped++;
+        if (r.sent) result.sent++; else result.skipped++;
       } catch (e) {
         console.error("[cron/session_followup]", s.id, userId, e);
       }
