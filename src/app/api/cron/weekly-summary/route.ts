@@ -37,9 +37,12 @@ export async function GET(req: NextRequest) {
     try {
       const { data: profile } = await (supabase as any)
         .from("profiles")
-        .select("first_name")
+        .select("first_name, notification_prefs")
         .eq("id", userId)
-        .single() as { data: { first_name: string | null } | null };
+        .single() as { data: { first_name: string | null; notification_prefs: Record<string, boolean> | null } | null };
+
+      // Respectăm opțiunea „Rezumat săptămânal" din Contul meu → Notificări
+      if (profile?.notification_prefs?.weeklyDigest === false) continue;
 
       const { data: authData } = await supabase.auth.admin.getUserById(userId);
       const email = authData.user?.email;

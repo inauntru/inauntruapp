@@ -3,11 +3,21 @@ import { resend, FROM_EMAIL } from "./resend";
 import { EMAIL_DEFAULTS } from "./email-defaults";
 import { createServiceClient } from "./supabase";
 
-function replaceVars(text: string, vars: Record<string, string>): string {
-  return Object.entries(vars).reduce(
+const PLACEHOLDER = /\{\{\s*[a-zA-Z0-9_]+\s*\}\}/g;
+
+function replaceVars(text: string, vars: Record<string, string>, templateId?: string): string {
+  const out = Object.entries(vars).reduce(
     (str, [key, val]) => str.replaceAll(`{{${key}}}`, val),
     text
   );
+  // Plasă de siguranță: un client nu trebuie să vadă niciodată „{{nr_zile}}".
+  // Dacă o variabilă nu a fost furnizată, o scoatem și semnalăm în loguri.
+  const leftover = out.match(PLACEHOLDER);
+  if (leftover) {
+    console.warn(`[email] Variabile lipsă în șablonul "${templateId ?? "?"}": ${Array.from(new Set(leftover)).join(", ")}`);
+    return out.replace(PLACEHOLDER, "").replace(/[ \t]{2,}/g, " ");
+  }
+  return out;
 }
 
 async function getDbTemplate(templateId: string): Promise<{ subject: string; body: string } | null> {
@@ -42,8 +52,8 @@ export async function sendEmail({
 
   const dbTemplate = await getDbTemplate(templateId);
 
-  const subject = replaceVars(overrideSubject ?? dbTemplate?.subject ?? defaults.subject, vars);
-  const html = replaceVars(overrideHtml ?? dbTemplate?.body ?? defaults.body, vars);
+  const subject = replaceVars(overrideSubject ?? dbTemplate?.subject ?? defaults.subject, vars, templateId);
+  const html = replaceVars(overrideHtml ?? dbTemplate?.body ?? defaults.body, vars, templateId);
 
   // Headere de deliverabilitate: List-Unsubscribe e cerut de Gmail/Yahoo
   // pentru expeditorii în masă și ajută reputația domeniului
