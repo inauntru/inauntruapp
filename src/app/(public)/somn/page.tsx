@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getSiteContent } from "@/lib/siteContent";
+import { SOMN_PAGE_ENABLED } from "@/lib/features";
 import SomnClient from "./SomnClient";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
@@ -25,6 +27,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SomnPage() {
+  if (!SOMN_PAGE_ENABLED) notFound();
   const siteContent = await getSiteContent("somn");
   return <SomnClient siteContent={siteContent} />;
 }

@@ -24,11 +24,13 @@ import {
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage, I18N_ENABLED } from "@/contexts/LanguageContext";
+import { SOMN_PAGE_ENABLED } from "@/lib/features";
 
 const NAV_LINKS = [
   { href: "/practici", label: "Practici", icon: BookOpen },
   { href: "/ancore", label: "Ancore", icon: Anchor },
-  { href: "/somn", label: "Somn", icon: MoonStars },
+  // Pagina Somn e ascunsă până la lansarea audio — vezi SOMN_PAGE_ENABLED în lib/features.ts
+  ...(SOMN_PAGE_ENABLED ? [{ href: "/somn", label: "Somn", icon: MoonStars }] : []),
   { href: "/sesiuni-live", label: "Sesiuni Live", icon: Video },
   { href: "/facilitatori", label: "Facilitatori", icon: Users },
   { href: "/preturi", label: "Prețuri", icon: CurrencyCircleDollar },
