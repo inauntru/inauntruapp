@@ -78,6 +78,10 @@ const RECS_BY_MOOD: Record<string, Rec[]> = {
 /* ── Biblioteca de adormire ──────────────────────────────────────────────── */
 interface LibraryTile {
   Icon: React.ElementType;
+  img: string;
+  /** voalul de culoare peste imagine — accentul fiecărei categorii */
+  tint: string;
+  /** fundalul pastel al zonei de text */
   bg: string;
   title: string;
   desc: string;
@@ -86,12 +90,12 @@ interface LibraryTile {
 }
 
 const LIBRARY: LibraryTile[] = [
-  { Icon: MusicNotes, bg: "from-purple-100 to-purple-50",  title: "Muzică",             desc: "Compoziții ambientale pentru somn",            soon: true },
-  { Icon: Leaf,       bg: "from-emerald-100 to-teal-50",   title: "Natură",             desc: "Sunetele naturii care te liniștesc",           soon: true },
-  { Icon: WaveSine,   bg: "from-slate-200 to-slate-100",   title: "Noise",              desc: "Sunete constante care te ajută să te relaxezi", soon: true },
-  { Icon: Spiral,     bg: "from-sky-100 to-indigo-50",     title: "Frecvențe",          desc: "Frecvențe blânde și texturi sonore",           soon: true },
-  { Icon: MoonStars,  bg: "from-indigo-100 to-purple-50",  title: "Povești",            desc: "Povești de adormit, citite lent",              soon: true },
-  { Icon: BookOpen,   bg: "from-amber-100 to-orange-50",   title: "Practici pentru somn", desc: "Practici ghidate pentru relaxare profundă",  href: "/practici" },
+  { Icon: MusicNotes, img: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=600&q=80", tint: "from-purple-600/45 via-purple-400/15 to-transparent",  bg: "from-purple-50 to-white",  title: "Muzică",               desc: "Compoziții ambientale pentru somn",             soon: true },
+  { Icon: Leaf,       img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80", tint: "from-emerald-700/45 via-emerald-400/15 to-transparent", bg: "from-emerald-50 to-white", title: "Natură",               desc: "Sunetele naturii care te liniștesc",            soon: true },
+  { Icon: WaveSine,   img: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=600&q=80", tint: "from-slate-700/50 via-slate-400/15 to-transparent",     bg: "from-slate-50 to-white",   title: "Noise",                desc: "Sunete constante care te ajută să te relaxezi", soon: true },
+  { Icon: Spiral,     img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80", tint: "from-sky-600/45 via-indigo-400/15 to-transparent",      bg: "from-sky-50 to-white",     title: "Frecvențe",            desc: "Frecvențe blânde și texturi sonore",            soon: true },
+  { Icon: MoonStars,  img: "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=600&q=80", tint: "from-indigo-700/45 via-purple-400/15 to-transparent",   bg: "from-indigo-50 to-white",  title: "Povești",              desc: "Povești de adormit, citite lent",               soon: true },
+  { Icon: BookOpen,   img: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=600&q=80", tint: "from-amber-600/40 via-orange-400/15 to-transparent",    bg: "from-amber-50 to-white",   title: "Practici pentru somn", desc: "Practici ghidate pentru relaxare profundă",     href: "/practici" },
 ];
 
 const SLEEP_EMOJIS = ["😣", "😕", "😐", "🙂", "😊"] as const;
@@ -277,13 +281,20 @@ export default function SomnClient({ siteContent }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {LIBRARY.map((c, i) => {
               const body = (
-                <div className={`card card-lift h-full p-5 text-left bg-gradient-to-br ${c.bg} relative`}>
-                  {c.soon && <span className="absolute top-3 right-3 tag tag-outline text-[9px] uppercase tracking-wide">{tr("În curând")}</span>}
-                  <div className="w-11 h-11 rounded-full bg-white/70 flex items-center justify-center mb-4">
-                    <c.Icon size={22} weight="duotone" className="text-deep-green" />
+                <div className="card card-lift h-full overflow-hidden text-left relative">
+                  <div className="relative aspect-[4/3]">
+                    <Image src={c.img} alt={tr(c.title)} fill className="object-cover" sizes="(max-width: 768px) 50vw, 200px" />
+                    {/* voalul de culoare al categoriei, peste imagine */}
+                    <div className={`absolute inset-0 bg-gradient-to-t ${c.tint}`} />
+                    <span className="absolute bottom-2.5 left-2.5 w-8 h-8 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center">
+                      <c.Icon size={16} weight="duotone" className="text-deep-green" />
+                    </span>
+                    {c.soon && <span className="absolute top-2.5 right-2.5 tag bg-white/85 backdrop-blur-sm text-deep-green text-[9px] uppercase tracking-wide">{tr("În curând")}</span>}
                   </div>
-                  <p className="font-body font-semibold text-body-sm text-deep-green mb-1">{tr(c.title)}</p>
-                  <p className="font-body text-label-xs text-secondary-text leading-relaxed">{tr(c.desc)}</p>
+                  <div className={`p-4 bg-gradient-to-br ${c.bg}`}>
+                    <p className="font-body font-semibold text-body-sm text-deep-green mb-1">{tr(c.title)}</p>
+                    <p className="font-body text-label-xs text-secondary-text leading-relaxed">{tr(c.desc)}</p>
+                  </div>
                 </div>
               );
               return (
