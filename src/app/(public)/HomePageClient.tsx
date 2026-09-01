@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import dynamic from "next/dynamic";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
+import BackgroundVideo from "@/components/ui/BackgroundVideo";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { TESTIMONIALS, PRICING_PLANS, FAQ_ITEMS, INTENT_CARDS } from "@/lib/mockData";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
@@ -66,9 +67,7 @@ export default function HomePageClient({ siteContent }: Props) {
 
       {/* ── HERO ── */}
       <section className="relative sticky top-0 z-0 h-screen min-h-[640px] flex items-center overflow-hidden -mt-16 lg:-mt-20">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="/hero-video-2.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="/hero-video-2.mp4" poster="/hero-poster.jpg" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to right, rgba(15,46,26,0.82) 0%, rgba(15,46,26,0.76) 35%, rgba(15,46,26,0.45) 58%, rgba(15,46,26,0.05) 80%, transparent 100%)" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-deep-green/60 via-transparent to-transparent pointer-events-none" />
         <div className="absolute -top-20 -left-20 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "rgba(200,235,211,0.12)", filter: "blur(80px)" }} />
@@ -210,9 +209,7 @@ export default function HomePageClient({ siteContent }: Props) {
 
       {/* ── HOW IT WORKS ── */}
       <section id="cum-functioneaza" className="py-16 lg:py-24 relative overflow-hidden">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="/journey-video.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="/journey-video.mp4" poster="/journey-poster.jpg" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: "rgba(230,245,237,0.45)" }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <AnimateIn once={false} from="bottom">

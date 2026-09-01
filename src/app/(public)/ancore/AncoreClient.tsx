@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check, Clock, X } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
+import BackgroundVideo from "@/components/ui/BackgroundVideo";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { recordAncoraCompletion } from "@/lib/ancore-sync";
@@ -265,11 +266,12 @@ export default function AncoreClient({ siteContent }: Props) {
 
       {/* ── Hero ── */}
       <section className="relative h-[55vh] min-h-[400px] max-h-[600px] overflow-hidden">
-        <video autoPlay muted loop playsInline
+        <BackgroundVideo
+          src="/header-ancore.mp4"
+          poster="/ancore-poster.jpg"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: "center center" }}>
-          <source src="/header-ancore.mp4" type="video/mp4" />
-        </video>
+          style={{ objectPosition: "center center" }}
+        />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to right, rgba(15,46,26,0.85) 0%, rgba(15,46,26,0.70) 40%, rgba(15,46,26,0.30) 70%, transparent 100%)" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-deep-green/70 via-transparent to-transparent pointer-events-none" />
