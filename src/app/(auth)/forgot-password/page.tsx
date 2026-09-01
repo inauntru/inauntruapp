@@ -23,7 +23,20 @@ export default function ForgotPasswordPage() {
     });
     setLoading(false);
     if (authError) {
-      setError(authError.message);
+      // Mesajele Supabase vin în engleză — le traducem pe cele întâlnite des
+      const m = authError.message;
+      const seconds = m.match(/after (\d+) second/)?.[1];
+      if (/security purposes|rate limit|too many/i.test(m)) {
+        setError(
+          seconds
+            ? `Din motive de securitate, mai așteaptă ${seconds} secunde și încearcă din nou.`
+            : "Prea multe încercări — mai așteaptă câteva secunde și încearcă din nou."
+        );
+      } else if (/invalid/i.test(m)) {
+        setError("Adresa de email nu pare validă — verific-o și încearcă din nou.");
+      } else {
+        setError(m);
+      }
     } else {
       setSent(true);
     }
@@ -106,6 +119,12 @@ export default function ForgotPasswordPage() {
               <Link href="/login" className="btn btn-primary w-full">
                 {tr("Înapoi la autentificare")}
               </Link>
+              <button
+                onClick={() => { setSent(false); setError(""); }}
+                className="mt-4 font-body text-body-sm text-secondary-text hover:text-forest-green transition-colors"
+              >
+                {tr("Ai greșit adresa? Trimite din nou")}
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
