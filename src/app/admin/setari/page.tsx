@@ -905,6 +905,17 @@ const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
     subtitle: "Trei intrebari scurte. Ancora potrivita pentru tine acum.",
     cta_button: "Descopera ancora ta",
   },
+  somn: {
+    label: "Somn",
+    title: "Lasă ziua să se încheie.",
+    subtitle: "Sunete, muzică și practici blânde pentru serile în care corpul s-a oprit, dar mintea încă nu.",
+    cta1: "Începe seara",
+    cta2: "Explorează sunetele",
+    note: "Recomandăm căști pentru anumite experiențe audio.",
+    band_title: "Somnul face parte din echilibru.",
+    band_sub: "Ai grijă de ziua ta. Noi avem grijă de serile tale.",
+    band_cta: "Explorează WithIn",
+  },
 };
 
 function SiteTextTabEditor() {
