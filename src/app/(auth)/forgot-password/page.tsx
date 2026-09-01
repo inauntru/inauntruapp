@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Envelope, ArrowRight, ArrowLeft, Check } from "@phosphor-icons/react";
@@ -13,6 +13,14 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [expired, setExpired] = useState(false);
+
+  // Venit aici cu un link de resetare expirat → explicăm de ce
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get("expired") === "1") setExpired(true);
+    } catch {}
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +70,12 @@ export default function ForgotPasswordPage() {
                   {tr("Introdu email-ul asociat contului și îți trimitem un link de resetare.")}
                 </p>
               </div>
+
+              {expired && (
+                <p className="font-body text-body-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-4">
+                  {tr("Linkul de resetare a expirat (e valabil o oră). Introdu adresa și îți trimitem unul nou.")}
+                </p>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

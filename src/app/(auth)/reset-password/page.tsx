@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Lock, ArrowRight, Check } from "@phosphor-icons/react";
@@ -15,14 +16,28 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [linkState, setLinkState] = useState<"checking" | "ok" | "invalid">("checking");
 
-  // Supabase puts the session tokens in the URL hash after redirect
+  // Supabase pune sesiunea în hash-ul URL-ului după click pe linkul din email.
+  // Verificăm că linkul e valid înainte să arătăm formularul — un link expirat
+  // afișa formularul degeaba și eșua criptic la salvare.
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        // Session is set — user can now call updateUser
-      }
+    if (window.location.hash.includes("error")) {
+      setLinkState("invalid");
+      return;
+    }
+    let active = true;
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      if (event === "PASSWORD_RECOVERY" || session) setLinkState("ok");
     });
+    supabase.auth.getSession().then(({ data }) => {
+      if (active && data.session) setLinkState("ok");
+    });
+    const timer = setTimeout(() => {
+      if (active) setLinkState((s) => (s === "checking" ? "invalid" : s));
+    }, 4000);
+    return () => { active = false; sub.subscription.unsubscribe(); clearTimeout(timer); };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +55,16 @@ export default function ResetPasswordPage() {
     const { error: updateError } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (updateError) {
-      setError(updateError.message);
+      const m = updateError.message;
+      if (/session missing|not authenticated/i.test(m)) {
+        setError("Linkul de resetare nu mai este valid. Cere unul nou din pagina „Am uitat parola”.");
+      } else if (/different from the old/i.test(m)) {
+        setError("Parola nouă trebuie să fie diferită de cea veche.");
+      } else if (/at least/i.test(m)) {
+        setError("Parola trebuie să aibă cel puțin 6 caractere.");
+      } else {
+        setError(m);
+      }
     } else {
       setDone(true);
       setTimeout(() => router.push("/login"), 2500);
@@ -55,7 +79,20 @@ export default function ResetPasswordPage() {
       className="w-full max-w-md"
     >
       <div className="card p-8 md:p-10">
-        {done ? (
+        {linkState === "invalid" && !done ? (
+          <div className="text-center py-4">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Lock size={28} weight="regular" className="text-red-500" />
+            </div>
+            <h2 className="font-heading text-h2 text-deep-green mb-3">{tr("Linkul a expirat")}</h2>
+            <p className="font-body text-body-md text-secondary-text mb-6">
+              {tr("Linkul de resetare este valabil o oră și poate fi folosit o singură dată. Cere unul nou — durează câteva secunde.")}
+            </p>
+            <Link href="/forgot-password" className="btn btn-primary w-full">
+              {tr("Cere un link nou")}
+            </Link>
+          </div>
+        ) : done ? (
           <div className="text-center py-4">
             <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-6">
               <Check size={28} weight="bold" className="text-forest-green" />
