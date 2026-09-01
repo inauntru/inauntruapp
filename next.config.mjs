@@ -3,9 +3,10 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   images: {
+    // Orice link https direct de imagine e acceptat — adminul poate lipi
+    // link-uri din orice sursă, nu doar Unsplash/Supabase
     remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "hhjorfolzpdvfgziehxb.supabase.co" },
+      { protocol: "https", hostname: "**" },
     ],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60,
