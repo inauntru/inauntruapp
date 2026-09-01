@@ -7,6 +7,7 @@
  */
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Clock, Calendar, BookOpen, ArrowRight } from "@phosphor-icons/react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { dateLocale } from "@/lib/i18n/date";
@@ -77,12 +78,18 @@ export default function BlogPostClient({ post, related }: Props) {
             </span>
           </div>
 
-          {/* Hero image */}
-          <div className="aspect-video bg-gradient-to-br from-forest-green/20 to-deep-green/10 rounded-card flex items-center justify-center">
-            <div className="w-20 h-20 rounded-full bg-forest-green/20 flex items-center justify-center">
-              <BookOpen size={36} weight="regular" className="text-forest-green/50" />
+          {/* Hero image — poza articolului din admin; fallback decorativ dacă lipsește */}
+          {post.image ? (
+            <div className="aspect-video rounded-card overflow-hidden relative">
+              <Image src={post.image} alt={post.title} fill className="object-cover" priority />
             </div>
-          </div>
+          ) : (
+            <div className="aspect-video bg-gradient-to-br from-forest-green/20 to-deep-green/10 rounded-card flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-forest-green/20 flex items-center justify-center">
+                <BookOpen size={36} weight="regular" className="text-forest-green/50" />
+              </div>
+            </div>
+          )}
         </header>
 
         {/* Content */}
