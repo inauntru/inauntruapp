@@ -1051,21 +1051,7 @@ function SiteTextTabEditor() {
 // ──────────────────────────────────────────────────────────────────────────────
 
 function SiteTextTab() {
-  return (
-    <div className="space-y-4">
-      <div className="card bg-amber-50 border-amber-200 p-5">
-        <p className="font-body font-semibold text-body-md text-amber-800 mb-1">⏸ Funcție dezactivată temporar</p>
-        <p className="font-body text-label-xs text-amber-700">
-          Textele site-ului vin acum exclusiv din cod, unde au și traducerea în engleză.
-          Editarea de aici ar afișa versiuni netraduse pe EN. Funcția rămâne pregătită și
-          poate fi reactivată când sistemul de traduceri va acoperi și textele editate din admin.
-        </p>
-      </div>
-      <div className="opacity-40 pointer-events-none select-none">
-        <SiteTextTabEditor />
-      </div>
-    </div>
-  );
+  return <SiteTextTabEditor />;
 }
 
 export default function AdminSettingsPage() {

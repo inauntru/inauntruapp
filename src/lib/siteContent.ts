@@ -2,11 +2,10 @@ import { createServiceClient } from "./supabase";
 
 /**
  * Suprascrierea textelor din Admin → Texte site.
- * DEZACTIVAT (2026-08): textele editate din admin nu se traduc în EN (sunt
- * scrise diferit față de dicționar), așa că textele vin exclusiv din cod,
- * unde au și traducere. Pune true ca să reactivezi funcția.
+ * REACTIVAT (2026-09): site-ul rulează doar în română (I18N_ENABLED = false),
+ * deci textele editate din admin nu mai intră în conflict cu traducerea EN.
  */
-export const SITE_CONTENT_OVERRIDES_ENABLED = false;
+export const SITE_CONTENT_OVERRIDES_ENABLED = true;
 
 export async function getSiteContent(page: string): Promise<Record<string, string>> {
   if (!SITE_CONTENT_OVERRIDES_ENABLED) return {};

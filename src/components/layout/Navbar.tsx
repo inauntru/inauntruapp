@@ -22,7 +22,7 @@ import {
   Gear,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, I18N_ENABLED } from "@/contexts/LanguageContext";
 
 const NAV_LINKS = [
   { href: "/practici", label: "Practici", icon: BookOpen },
@@ -92,7 +92,7 @@ export default function Navbar() {
   // true = over hero video, show glass transparent
   const glass = isHomePage && !scrolled;
 
-  const langSwitch = (
+  const langSwitch = !I18N_ENABLED ? null : (
     <div className={`flex items-center rounded-full border overflow-hidden ${glass ? "border-white/25" : "border-sage-border"}`}>
       {(["ro", "en"] as const).map(l => (
         <button
