@@ -13,6 +13,11 @@ export function createServiceClient() {
   return createClient<Database>(
     supabaseUrl,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
+    {
+      auth: { autoRefreshToken: false, persistSession: false },
+      // no-store: ocolește Data Cache-ul Vercel/Next (persistă între deploy-uri)
+      // — citirile de pe server reflectă mereu baza de date curentă
+      global: { fetch: (url, options) => fetch(url, { ...options, cache: "no-store" }) },
+    }
   );
 }
