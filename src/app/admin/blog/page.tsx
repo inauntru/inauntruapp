@@ -9,6 +9,7 @@ import {
 import dynamic from "next/dynamic";
 
 const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), { ssr: false });
+import ImageUploadField from "@/components/ui/ImageUploadField";
 
 interface BlogPost {
   id: number;
@@ -249,8 +250,8 @@ export default function AdminBlogPage() {
                     <input type="number" className="input w-full" value={form.read_time} onChange={(e) => upd("read_time", e.target.value)} placeholder="5" min={1} />
                   </div>
                   <div className="md:col-span-2">
-                    <label className={labelCls}>URL imagine copertă</label>
-                    <input className="input w-full" value={form.image_url} onChange={(e) => upd("image_url", e.target.value)} placeholder="https://..." />
+                    <label className={labelCls}>Imagine copertă</label>
+                    <ImageUploadField value={form.image_url} onChange={(url) => upd("image_url", url)} />
                   </div>
                   <div className="md:col-span-2">
                     <label className={labelCls}>Rezumat scurt</label>

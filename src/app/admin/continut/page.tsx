@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ImageUploadField from "@/components/ui/ImageUploadField";
 import {
   Plus, MagnifyingGlass, Eye, PencilSimple, Trash, X, FilmSlate,
 } from "@phosphor-icons/react";
@@ -357,14 +358,8 @@ export default function AdminContentPage() {
                   />
                 </div>
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">URL imagine</label>
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={form.image_url}
-                    onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                    className="input w-full"
-                  />
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Imagine</label>
+                  <ImageUploadField value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
                 </div>
                 <div className="col-span-2">
                   <label className="font-body text-label-sm text-on-surface mb-1.5 block">Descriere</label>
