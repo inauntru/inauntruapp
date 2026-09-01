@@ -15,6 +15,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const body = await req.json() as Partial<BlogPost>;
   const serviceClient = createServiceClient();
 
+  // Data publicării se setează doar la PRIMA publicare — o editare ulterioară
+  // nu mută articolul în fruntea listei ca „cel mai nou".
+  const { data: existing } = await (serviceClient as any)
+    .from("blog_posts")
+    .select("published_at")
+    .eq("id", params.id)
+    .maybeSingle() as { data: { published_at: string | null } | null };
+
   const patch: Partial<BlogPost> & { updated_at: string } = {
     ...(body.title !== undefined && { title: body.title }),
     ...(body.slug !== undefined && { slug: body.slug }),
@@ -26,7 +34,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     ...(body.image_url !== undefined && { image_url: body.image_url }),
     ...(body.read_time !== undefined && { read_time: body.read_time }),
     ...(body.published !== undefined && { published: body.published }),
-    ...(body.published !== undefined && body.published && { published_at: new Date().toISOString() }),
+    ...(body.published !== undefined && body.published && !existing?.published_at && { published_at: new Date().toISOString() }),
     updated_at: new Date().toISOString(),
   };
 
