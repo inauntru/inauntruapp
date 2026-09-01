@@ -15,6 +15,7 @@ import {
   MoonStars, Headphones, Play, Clock, Brain, Lightning, CloudMoon, Bed,
   Sparkle, MusicNotes, Leaf, WaveSine, Spiral, BookOpen, ArrowRight,
   ShuffleAngular, Waves, Fire, PianoKeys, Heart, PencilSimple, CheckCircle,
+  SmileySad, SmileyNervous, SmileyMeh, Smiley, SmileyWink,
 } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -42,28 +43,29 @@ const STARS = [
 
 /* ── Stările de seară ────────────────────────────────────────────────────── */
 const MOODS = [
-  { key: "minte",  Icon: Brain,     bg: "from-purple-100 to-purple-50",  title: "Mintea mea nu se oprește",    desc: "Am prea multe gânduri." },
-  { key: "corp",   Icon: Lightning, bg: "from-amber-100 to-orange-50",   title: "Corpul meu e încă în alertă", desc: "Sunt obosită, dar încă simt tensiune." },
-  { key: "adorm",  Icon: CloudMoon, bg: "from-sky-100 to-indigo-50",     title: "Vreau doar să adorm",         desc: "Nu vreau să fac nimic. Doar play." },
-  { key: "trezit", Icon: Bed,       bg: "from-emerald-100 to-teal-50",   title: "Mă trezesc în timpul nopții", desc: "Am nevoie de ceva blând care să mă țină în somn." },
-  { key: "noapte", Icon: Sparkle,   bg: "from-slate-200 to-slate-100",   title: "Vreau un sunet pentru toată noaptea", desc: "Fără ghidaj. Fără efort." },
+  { key: "minte",  Icon: Brain,     dark: false, bg: "from-purple-100 to-purple-50",  title: "Mintea mea nu se oprește",    desc: "Am prea multe gânduri." },
+  { key: "corp",   Icon: Lightning, dark: false, bg: "from-amber-100 to-orange-50",   title: "Corpul meu e încă în alertă", desc: "Sunt obosită, dar încă simt tensiune." },
+  { key: "adorm",  Icon: CloudMoon, dark: false, bg: "from-sky-100 to-indigo-50",     title: "Vreau doar să adorm",         desc: "Nu vreau să fac nimic. Doar play." },
+  { key: "trezit", Icon: Bed,       dark: false, bg: "from-emerald-100 to-teal-50",   title: "Mă trezesc în timpul nopții", desc: "Am nevoie de ceva blând care să mă țină în somn." },
+  // Cardul „noapte" e întunecat, cu cer înstelat — ca în machetă
+  { key: "noapte", Icon: Sparkle,   dark: true,  bg: "from-[#0d1530] to-[#1d2b55]",   title: "Vreau un sunet pentru toată noaptea", desc: "Fără ghidaj. Fără efort." },
 ] as const;
 
 type MoodKey = typeof MOODS[number]["key"] | null;
 
 /* ── Recomandări ─────────────────────────────────────────────────────────── */
-interface Rec { tag: string; title: string; dur: string; img: string; href?: string; soon?: boolean }
+interface Rec { tag: string; title: string; dur: string; img: string; tint: string; href?: string; soon?: boolean }
 
 const POOL: Record<string, Rec> = {
-  rain:    { tag: "Natură",   title: "Ploaie la fereastră",              dur: "8 ore",   img: IMG.rain,  soon: true },
-  ritual:  { tag: "Practică", title: "Lasă ziua să plece",               dur: "10 min",  img: IMG.dusk,  href: "/practici/4" },
-  soft:    { tag: "Muzică",   title: "Soft Landing",                     dur: "45 min",  img: IMG.piano, soon: true },
-  nsdr:    { tag: "Practică", title: "NSDR — repaus profund non-somn",   dur: "20 min",  img: IMG.lotus, href: "/practici/9" },
-  scan:    { tag: "Practică", title: "Scanarea corpului",                dur: "15 min",  img: IMG.scan,  href: "/practici/2" },
-  sleep:   { tag: "Practică", title: "Ritual de adormire",               dur: "10 min",  img: IMG.sleep, href: "/practici/4" },
-  stories: { tag: "Povești",  title: "Povești de adormit",               dur: "30 min",  img: IMG.moon,  soon: true },
-  noise:   { tag: "Noise",    title: "Deep Brown Noise",                 dur: "toată noaptea", img: IMG.stars,  soon: true },
-  freq:    { tag: "Frecvențe", title: "Unde Delta — somn profund",       dur: "toată noaptea", img: IMG.galaxy, soon: true },
+  rain:    { tag: "Natură",   title: "Ploaie la fereastră",              dur: "8 ore",   img: IMG.rain,  tint: "from-sky-950/70 via-sky-900/30 to-sky-700/10",        soon: true },
+  ritual:  { tag: "Practică", title: "Lasă ziua să plece",               dur: "10 min",  img: IMG.dusk,  tint: "from-purple-950/65 via-fuchsia-900/25 to-purple-700/10", href: "/practici/4" },
+  soft:    { tag: "Muzică",   title: "Soft Landing",                     dur: "45 min",  img: IMG.piano, tint: "from-indigo-950/70 via-purple-900/30 to-indigo-700/10",  soon: true },
+  nsdr:    { tag: "Practică", title: "NSDR — repaus profund non-somn",   dur: "20 min",  img: IMG.lotus, tint: "from-slate-950/65 via-slate-900/25 to-slate-700/10",  href: "/practici/9" },
+  scan:    { tag: "Practică", title: "Scanarea corpului",                dur: "15 min",  img: IMG.scan,  tint: "from-emerald-950/65 via-emerald-900/25 to-emerald-700/10", href: "/practici/2" },
+  sleep:   { tag: "Practică", title: "Ritual de adormire",               dur: "10 min",  img: IMG.sleep, tint: "from-amber-950/60 via-amber-900/25 to-amber-700/10",  href: "/practici/4" },
+  stories: { tag: "Povești",  title: "Povești de adormit",               dur: "30 min",  img: IMG.moon,  tint: "from-indigo-950/65 via-indigo-900/25 to-indigo-700/10", soon: true },
+  noise:   { tag: "Noise",    title: "Deep Brown Noise",                 dur: "toată noaptea", img: IMG.stars,  tint: "from-slate-950/70 via-slate-900/30 to-slate-700/10", soon: true },
+  freq:    { tag: "Frecvențe", title: "Unde Delta — somn profund",       dur: "toată noaptea", img: IMG.galaxy, tint: "from-violet-950/65 via-violet-900/25 to-violet-700/10", soon: true },
 };
 
 const RECS_BY_MOOD: Record<string, Rec[]> = {
@@ -98,7 +100,9 @@ const LIBRARY: LibraryTile[] = [
   { Icon: BookOpen,   img: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=600&q=80", tint: "from-amber-600/40 via-orange-400/15 to-transparent",    bg: "from-amber-50 to-white",   title: "Practici pentru somn", desc: "Practici ghidate pentru relaxare profundă",     href: "/practici" },
 ];
 
-const SLEEP_EMOJIS = ["😣", "😕", "😐", "🙂", "😊"] as const;
+/* Fețele pentru „Cum ai dormit?" — iconițe conturate, ca în machetă */
+const SLEEP_FACES = [SmileySad, SmileyNervous, SmileyMeh, Smiley, SmileyWink] as const;
+const SLEEP_LABELS = ["Foarte prost", "Agitat", "Așa și așa", "Bine", "Excelent"] as const;
 
 interface Props { siteContent: Record<string, string> }
 
@@ -124,8 +128,9 @@ export default function SomnClient({ siteContent }: Props) {
 
   return (
     <div className="min-h-screen bg-bg-main">
-      {/* ── HERO nocturn ───────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden" style={{ background: "linear-gradient(180deg,#070d1d 0%,#0b1428 46%,#12203f 78%,#0a1122 100%)" }}>
+      {/* ── HERO nocturn — card rotunjit, ca în machetă ────────────────── */}
+      <section className="px-3 sm:px-5 lg:px-8 pt-3 lg:pt-5">
+        <div className="relative overflow-hidden rounded-[28px] max-w-7xl mx-auto" style={{ background: "linear-gradient(180deg,#070d1d 0%,#0b1428 46%,#12203f 78%,#0a1122 100%)" }}>
         {/* stele */}
         {STARS.map(([x, y], i) => (
           <span
@@ -166,8 +171,8 @@ export default function SomnClient({ siteContent }: Props) {
                 {t("subtitle", "Sunete, muzică și practici blânde pentru serile în care corpul s-a oprit, dar mintea încă nu.")}
               </p>
               <div className="flex flex-wrap items-center gap-3 mb-8">
-                <Link href="/practici/4" className="btn btn-primary gap-2">
-                  <Play size={16} weight="fill" />
+                <Link href="/practici/4" className="rounded-full bg-primary-fixed text-deep-green font-body text-body-sm font-semibold px-6 py-3 inline-flex items-center gap-2 hover:bg-white transition-colors">
+                  <Play size={15} weight="fill" />
                   {t("cta1", "Începe seara")}
                 </Link>
                 <a href="#biblioteca" className="btn gap-2 border border-white/30 text-white hover:bg-white/10 rounded-full px-6 py-3 font-body text-body-sm font-semibold transition-colors">
@@ -180,6 +185,7 @@ export default function SomnClient({ siteContent }: Props) {
               </p>
             </div>
           </AnimateIn>
+        </div>
         </div>
       </section>
 
@@ -203,17 +209,20 @@ export default function SomnClient({ siteContent }: Props) {
               <AnimateIn key={m.key} from="bottom" delay={i * 0.05}>
                 <button
                   onClick={() => setMood(mood === m.key ? null : m.key)}
-                  className={`card card-lift w-full h-full text-left p-5 bg-gradient-to-br ${m.bg} border-2 transition-colors ${
+                  className={`card card-lift w-full h-full text-left p-5 bg-gradient-to-br ${m.bg} border-2 transition-colors relative overflow-hidden ${
                     mood === m.key ? "border-forest-green" : "border-transparent"
                   }`}
                 >
-                  <div className="w-11 h-11 rounded-full bg-white/70 flex items-center justify-center mb-4">
-                    <m.Icon size={22} weight="duotone" className="text-deep-green" />
+                  {m.dark && STARS.slice(0, 14).map(([x, y], si) => (
+                    <span key={si} className="absolute rounded-full bg-white" style={{ left: `${x}%`, top: `${y}%`, width: si % 4 === 0 ? 2 : 1.5, height: si % 4 === 0 ? 2 : 1.5, opacity: si % 3 === 0 ? 0.9 : 0.4 }} />
+                  ))}
+                  <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-4 relative ${m.dark ? "bg-white/15" : "bg-white/70"}`}>
+                    <m.Icon size={22} weight="duotone" className={m.dark ? "text-white" : "text-deep-green"} />
                   </div>
-                  <p className="font-body font-semibold text-body-sm text-deep-green mb-1 leading-snug">{tr(m.title)}</p>
-                  <p className="font-body text-label-xs text-secondary-text">{tr(m.desc)}</p>
+                  <p className={`font-body font-semibold text-body-sm mb-1 leading-snug relative ${m.dark ? "text-white" : "text-deep-green"}`}>{tr(m.title)}</p>
+                  <p className={`font-body text-label-xs relative ${m.dark ? "text-white/60" : "text-secondary-text"}`}>{tr(m.desc)}</p>
                   {mood === m.key && (
-                    <p className="flex items-center gap-1 mt-3 text-label-xs font-body font-semibold text-forest-green">
+                    <p className={`flex items-center gap-1 mt-3 text-label-xs font-body font-semibold relative ${m.dark ? "text-primary-fixed" : "text-forest-green"}`}>
                       <CheckCircle size={13} weight="fill" /> {tr("Ales")}
                     </p>
                   )}
@@ -243,8 +252,9 @@ export default function SomnClient({ siteContent }: Props) {
               {recs.map((r) => {
                 const inner = (
                   <div className="relative aspect-[16/10] rounded-card overflow-hidden group">
-                    <Image src={r.img} alt={tr(r.title)} fill className="object-cover brightness-[0.72] group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/20" />
+                    <Image src={r.img} alt={tr(r.title)} fill className="object-cover brightness-[0.85] group-hover:scale-105 transition-transform duration-500" />
+                    {/* voalul de culoare al recomandării — ca în machetă */}
+                    <div className={`absolute inset-0 bg-gradient-to-t ${r.tint}`} />
                     <span className="absolute top-4 left-4 tag bg-white/20 text-white border border-white/25 backdrop-blur-sm text-[10px] uppercase tracking-wider">{tr(r.tag)}</span>
                     {r.soon && (
                       <span className="absolute top-4 right-4 tag bg-amber-300/90 text-deep-green text-[10px] font-semibold">{tr("În curând")}</span>
@@ -254,7 +264,7 @@ export default function SomnClient({ siteContent }: Props) {
                         <p className="font-heading text-h3 text-white leading-snug mb-1">{tr(r.title)}</p>
                         <p className="flex items-center gap-1.5 font-body text-label-xs text-white/75"><Clock size={12} /> {tr(r.dur)}</p>
                       </div>
-                      <span className="w-11 h-11 rounded-full bg-white/25 backdrop-blur-sm border border-white/30 flex items-center justify-center flex-shrink-0 group-hover:bg-forest-green transition-colors">
+                      <span className="w-11 h-11 rounded-full bg-indigo/85 backdrop-blur-sm border border-white/25 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-dark transition-colors">
                         <Play size={16} weight="fill" className="text-white ml-0.5" />
                       </span>
                     </div>
@@ -341,12 +351,12 @@ export default function SomnClient({ siteContent }: Props) {
                     </div>
                   ))}
                 </div>
-                <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
                   <Link href="/practici/2" className="btn btn-primary gap-2">
                     <Play size={15} weight="fill" /> {tr("Continuă ritualul")}
                   </Link>
-                  <span className="flex items-center gap-1.5 font-body text-body-sm text-secondary-text/70 cursor-not-allowed" title={tr("În curând")}>
-                    <PencilSimple size={14} /> {tr("Editează ritualul")} · {tr("în curând")}
+                  <span className="flex items-center gap-1.5 font-body text-body-sm text-forest-green/70 cursor-not-allowed" title={tr("În curând")}>
+                    <PencilSimple size={14} /> {tr("Editează ritualul")} →
                   </span>
                 </div>
               </div>
@@ -369,20 +379,21 @@ export default function SomnClient({ siteContent }: Props) {
                   <p className="font-body text-label-sm text-secondary-text mb-3">{tr("Cum ai dormit?")}</p>
                   {rating === null ? (
                     <div className="flex items-center justify-between">
-                      {SLEEP_EMOJIS.map((e, i) => (
+                      {SLEEP_FACES.map((Face, i) => (
                         <button
                           key={i}
                           onClick={() => rate(i)}
-                          aria-label={`${tr("Notează somnul")} ${i + 1}/5`}
-                          className="w-10 h-10 rounded-full text-xl hover:bg-light-green hover:scale-110 transition-all"
+                          aria-label={tr(SLEEP_LABELS[i])}
+                          title={tr(SLEEP_LABELS[i])}
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-amber-500 hover:bg-amber-50 hover:scale-110 transition-all"
                         >
-                          {e}
+                          <Face size={26} />
                         </button>
                       ))}
                     </div>
                   ) : (
                     <p className="font-body text-body-sm text-forest-green flex items-center gap-2">
-                      <CheckCircle size={16} weight="fill" /> {tr("Mulțumim! Ne ajută să-ți recomandăm serile potrivite.")} {SLEEP_EMOJIS[rating]}
+                      <CheckCircle size={16} weight="fill" /> {tr("Mulțumim! Ne ajută să-ți recomandăm serile potrivite.")}
                     </p>
                   )}
                 </div>
@@ -425,23 +436,26 @@ export default function SomnClient({ siteContent }: Props) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <AnimateIn from="bottom">
-              <div className="card p-6 h-full bg-gradient-to-br from-light-green to-surface-container-low">
+              <div className="card p-6 h-full bg-gradient-to-br from-light-green to-surface-container-low flex flex-col items-start">
                 <p className="font-heading text-h2 text-deep-green mb-2">{tr("Creează-ți sunetul")}</p>
                 <p className="font-body text-body-sm text-secondary-text mb-4">{tr("Fă-ți seara să sune exact cum îți place.")}</p>
-                <span className="tag bg-amber-200/50 text-deep-green border border-amber-300/70 text-[11px] font-semibold">{tr("Disponibil în curând")}</span>
+                <span className="tag bg-amber-200/60 text-amber-900 border border-amber-300/70 text-[11px] font-semibold mb-5">{tr("Disponibil în curând")}</span>
+                <a href="#biblioteca" className="mt-auto rounded-full bg-white text-deep-green font-body text-body-sm font-semibold px-5 py-2.5 border border-sage-border hover:bg-light-green transition-colors">
+                  {tr("Află mai multe")}
+                </a>
               </div>
             </AnimateIn>
             <AnimateIn from="bottom" delay={0.06}>
               <div className="card p-6 h-full space-y-5">
                 {[
-                  { key: "ploaie" as const, Icon: Waves,     label: "Ploaie" },
-                  { key: "ocean"  as const, Icon: WaveSine,  label: "Ocean" },
-                  { key: "foc"    as const, Icon: Fire,      label: "Foc" },
-                  { key: "pian"   as const, Icon: PianoKeys, label: "Pian" },
+                  { key: "ploaie" as const, Icon: Waves,     label: "Ploaie", chip: "bg-purple-100 text-purple-700" },
+                  { key: "ocean"  as const, Icon: WaveSine,  label: "Ocean",  chip: "bg-sky-100 text-sky-700" },
+                  { key: "foc"    as const, Icon: Fire,      label: "Foc",    chip: "bg-orange-100 text-orange-600" },
+                  { key: "pian"   as const, Icon: PianoKeys, label: "Pian",   chip: "bg-slate-200 text-slate-700" },
                 ].map((s) => (
                   <div key={s.key} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-light-green flex items-center justify-center flex-shrink-0">
-                      <s.Icon size={15} weight="duotone" className="text-forest-green" />
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${s.chip}`}>
+                      <s.Icon size={15} weight="duotone" />
                     </div>
                     <span className="font-body text-body-sm text-deep-green w-14">{tr(s.label)}</span>
                     <input
@@ -474,17 +488,17 @@ export default function SomnClient({ siteContent }: Props) {
       <section className="py-14 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn from="bottom">
-            <div className="card p-8 lg:p-10 bg-gradient-to-r from-light-green via-surface-container-low to-indigo-light flex flex-wrap items-center justify-between gap-6">
+            <div className="card p-8 lg:p-10 bg-indigo-light flex flex-wrap items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center flex-shrink-0">
-                  <MoonStars size={22} weight="duotone" className="text-forest-green" />
+                  <MoonStars size={22} weight="duotone" className="text-indigo" />
                 </div>
                 <div>
                   <p className="font-heading text-h3 text-deep-green">{t("band_title", "Somnul face parte din echilibru.")}</p>
                   <p className="font-body text-body-sm text-secondary-text">{t("band_sub", "Ai grijă de ziua ta. Noi avem grijă de serile tale.")}</p>
                 </div>
               </div>
-              <Link href="/dashboard" className="btn btn-primary gap-2">
+              <Link href="/dashboard" className="rounded-full bg-indigo text-white font-body text-body-sm font-semibold px-6 py-3 inline-flex items-center gap-2 hover:bg-indigo-dark transition-colors">
                 {t("band_cta", "Explorează WithIn")} <ArrowRight size={15} weight="bold" />
               </Link>
             </div>
