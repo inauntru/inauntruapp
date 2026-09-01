@@ -4,11 +4,9 @@ import { createServiceClient } from "@/lib/supabase";
 import type { BlogPost } from "@/lib/database.types";
 import BlogPostClient, { type NormalizedPost } from "./BlogPostClient";
 
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  return BLOG_POSTS.map((p) => ({ slug: p.slug }));
-}
+// Articolele se citesc mereu proaspăt din Supabase — o editare din admin
+// apare pe site imediat, fără redeploy (fără cache static la build).
+export const dynamic = "force-dynamic";
 
 async function getPost(slug: string): Promise<NormalizedPost | null> {
   try {

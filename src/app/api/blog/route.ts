@@ -3,6 +3,9 @@ import { createServiceClient } from "@/lib/supabase";
 import { BLOG_POSTS } from "@/lib/mockData";
 import type { BlogPost } from "@/lib/database.types";
 
+// Fără cache static: lista de articole reflectă imediat editările din admin
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const supabase = createServiceClient();
   const { data, error } = await supabase
