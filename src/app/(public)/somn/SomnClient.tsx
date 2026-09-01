@@ -15,7 +15,7 @@ import {
   MoonStars, Headphones, Play, Clock, Brain, Lightning, CloudMoon, Bed,
   Sparkle, MusicNotes, Leaf, WaveSine, Spiral, BookOpen, ArrowRight,
   ShuffleAngular, Waves, Fire, PianoKeys, Heart, PencilSimple, CheckCircle,
-  SmileySad, SmileyNervous, SmileyMeh, Smiley, SmileyWink,
+  SmileySad, SmileyNervous, SmileyMeh, Smiley, SmileyWink, CaretLeft, CaretRight,
 } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -68,14 +68,16 @@ const POOL: Record<string, Rec> = {
   freq:    { tag: "Frecvențe", title: "Unde Delta — somn profund",       dur: "toată noaptea", img: IMG.galaxy, tint: "from-violet-950/65 via-violet-900/25 to-violet-700/10", soon: true },
 };
 
+/* 8 recomandări per stare (2 „pagini" de câte 4 în carusel), cele mai potrivite primele */
 const RECS_BY_MOOD: Record<string, Rec[]> = {
-  default: [POOL.rain, POOL.ritual, POOL.soft],
-  minte:   [POOL.nsdr, POOL.rain, POOL.soft],
-  corp:    [POOL.scan, POOL.sleep, POOL.rain],
-  adorm:   [POOL.sleep, POOL.rain, POOL.soft],
-  trezit:  [POOL.nsdr, POOL.stories, POOL.noise],
-  noapte:  [POOL.rain, POOL.noise, POOL.freq],
+  default: [POOL.rain, POOL.ritual, POOL.soft, POOL.nsdr, POOL.scan, POOL.stories, POOL.noise, POOL.freq],
+  minte:   [POOL.nsdr, POOL.rain, POOL.soft, POOL.ritual, POOL.stories, POOL.noise, POOL.scan, POOL.freq],
+  corp:    [POOL.scan, POOL.sleep, POOL.rain, POOL.nsdr, POOL.soft, POOL.noise, POOL.stories, POOL.freq],
+  adorm:   [POOL.sleep, POOL.rain, POOL.soft, POOL.stories, POOL.nsdr, POOL.noise, POOL.freq, POOL.scan],
+  trezit:  [POOL.nsdr, POOL.stories, POOL.noise, POOL.freq, POOL.rain, POOL.soft, POOL.sleep, POOL.scan],
+  noapte:  [POOL.rain, POOL.noise, POOL.freq, POOL.stories, POOL.soft, POOL.nsdr, POOL.sleep, POOL.scan],
 };
+const PAGE_SIZE = 4;
 
 /* ── Biblioteca de adormire ──────────────────────────────────────────────── */
 interface LibraryTile {
@@ -110,11 +112,27 @@ export default function SomnClient({ siteContent }: Props) {
   const { tr } = useLanguage();
   const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
 
-  const [mood, setMood] = useState<MoodKey>(null);
+  const [mood, setMoodState] = useState<MoodKey>(null);
   const [rating, setRating] = useState<number | null>(null);
   const [mix, setMix] = useState({ ploaie: 70, ocean: 40, foc: 20, pian: 55 });
+  const [page, setPage] = useState(0);
+  const [dir, setDir] = useState(1);
 
   const recs = useMemo(() => RECS_BY_MOOD[mood ?? "default"] ?? RECS_BY_MOOD.default, [mood]);
+  const pageCount = Math.ceil(recs.length / PAGE_SIZE);
+  const visible = recs.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+
+  function setMood(next: MoodKey) {
+    setMoodState(next);
+    setDir(1);
+    setPage(0);
+  }
+
+  /** Pagina următoare/anterioară în carusel, cu învârtire circulară. */
+  function flip(d: 1 | -1) {
+    setDir(d);
+    setPage((p) => (p + d + pageCount) % pageCount);
+  }
 
   function surprise() {
     const pick = MOODS[Math.floor(Math.random() * MOODS.length)].key;
@@ -128,9 +146,8 @@ export default function SomnClient({ siteContent }: Props) {
 
   return (
     <div className="min-h-screen bg-bg-main">
-      {/* ── HERO nocturn — card rotunjit, ca în machetă ────────────────── */}
-      <section className="px-3 sm:px-5 lg:px-8 pt-3 lg:pt-5">
-        <div className="relative overflow-hidden rounded-[28px] max-w-7xl mx-auto" style={{ background: "linear-gradient(180deg,#070d1d 0%,#0b1428 46%,#12203f 78%,#0a1122 100%)" }}>
+      {/* ── HERO nocturn ───────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden" style={{ background: "linear-gradient(180deg,#070d1d 0%,#0b1428 46%,#12203f 78%,#0a1122 100%)" }}>
         {/* stele */}
         {STARS.map(([x, y], i) => (
           <span
@@ -186,7 +203,6 @@ export default function SomnClient({ siteContent }: Props) {
             </div>
           </AnimateIn>
         </div>
-        </div>
       </section>
 
       {/* ── Cum e seara ta? ────────────────────────────────────────────── */}
@@ -233,51 +249,89 @@ export default function SomnClient({ siteContent }: Props) {
         </div>
       </section>
 
-      {/* ── Recomandări ────────────────────────────────────────────────── */}
+      {/* ── Recomandări — carusel cu swipe ─────────────────────────────── */}
       <section className="py-4 lg:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <h2 className="font-heading text-h1 text-deep-green">{tr("Pentru seara asta, încearcă...")}</h2>
-            <Link href="/practici" className="font-body text-body-sm font-semibold text-forest-green hover:text-deep-green flex items-center gap-1 transition-colors">
-              {tr("Vezi toate recomandările")} <ArrowRight size={15} weight="bold" />
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/practici" className="font-body text-body-sm font-semibold text-forest-green hover:text-deep-green flex items-center gap-1 transition-colors">
+                {tr("Vezi toate recomandările")} <ArrowRight size={15} weight="bold" />
+              </Link>
+              <div className="flex items-center gap-2">
+                <button onClick={() => flip(-1)} aria-label={tr("Recomandările anterioare")}
+                  className="w-10 h-10 rounded-full border border-sage-border bg-white flex items-center justify-center text-deep-green hover:bg-light-green hover:scale-105 active:scale-95 transition-all">
+                  <CaretLeft size={16} weight="bold" />
+                </button>
+                <button onClick={() => flip(1)} aria-label={tr("Următoarele recomandări")}
+                  className="w-10 h-10 rounded-full border border-sage-border bg-white flex items-center justify-center text-deep-green hover:bg-light-green hover:scale-105 active:scale-95 transition-all">
+                  <CaretRight size={16} weight="bold" />
+                </button>
+              </div>
+            </div>
           </div>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={mood ?? "default"}
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            >
-              {recs.map((r) => {
-                const inner = (
-                  <div className="relative aspect-[16/10] rounded-card overflow-hidden group">
-                    <Image src={r.img} alt={tr(r.title)} fill className="object-cover brightness-[0.85] group-hover:scale-105 transition-transform duration-500" />
-                    {/* voalul de culoare al recomandării — ca în machetă */}
-                    <div className={`absolute inset-0 bg-gradient-to-t ${r.tint}`} />
-                    <span className="absolute top-4 left-4 tag bg-white/20 text-white border border-white/25 backdrop-blur-sm text-[10px] uppercase tracking-wider">{tr(r.tag)}</span>
-                    {r.soon && (
-                      <span className="absolute top-4 right-4 tag bg-amber-300/90 text-deep-green text-[10px] font-semibold">{tr("În curând")}</span>
-                    )}
-                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
-                      <div>
-                        <p className="font-heading text-h3 text-white leading-snug mb-1">{tr(r.title)}</p>
-                        <p className="flex items-center gap-1.5 font-body text-label-xs text-white/75"><Clock size={12} /> {tr(r.dur)}</p>
+          <div className="overflow-hidden -mx-2 px-2 pb-2">
+            <AnimatePresence mode="popLayout" custom={dir} initial={false}>
+              <motion.div
+                key={`${mood ?? "default"}-${page}`}
+                custom={dir}
+                variants={{
+                  enter: (d: number) => ({ x: d * 120, opacity: 0 }),
+                  center: { x: 0, opacity: 1 },
+                  exit: (d: number) => ({ x: d * -120, opacity: 0 }),
+                }}
+                initial="enter" animate="center" exit="exit"
+                transition={{ type: "spring", stiffness: 260, damping: 28 }}
+                drag="x" dragConstraints={{ left: 0, right: 0 }} dragElastic={0.15}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x < -60) flip(1);
+                  else if (info.offset.x > 60) flip(-1);
+                }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 cursor-grab active:cursor-grabbing"
+              >
+                {visible.map((r, ri) => {
+                  const inner = (
+                    <motion.div
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 + ri * 0.06, type: "spring", stiffness: 220, damping: 22 }}
+                      whileHover={{ y: -8 }}
+                      className="relative aspect-[16/11] rounded-card overflow-hidden group shadow-card"
+                    >
+                      <Image src={r.img} alt={tr(r.title)} fill className="object-cover brightness-[0.85] group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px" draggable={false} />
+                      {/* voalul de culoare al recomandării */}
+                      <div className={`absolute inset-0 bg-gradient-to-t ${r.tint}`} />
+                      <span className="absolute top-3 left-3 tag bg-white/20 text-white border border-white/25 backdrop-blur-sm text-[10px] uppercase tracking-wider">{tr(r.tag)}</span>
+                      {r.soon && (
+                        <span className="absolute top-3 right-3 tag bg-amber-300/90 text-deep-green text-[10px] font-semibold">{tr("În curând")}</span>
+                      )}
+                      <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
+                        <div>
+                          <p className="font-heading text-body-lg font-semibold text-white leading-snug mb-1">{tr(r.title)}</p>
+                          <p className="flex items-center gap-1.5 font-body text-label-xs text-white/75"><Clock size={12} /> {tr(r.dur)}</p>
+                        </div>
+                        <span className="w-9 h-9 rounded-full bg-indigo/85 backdrop-blur-sm border border-white/25 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-dark transition-colors">
+                          <Play size={14} weight="fill" className="text-white ml-0.5" />
+                        </span>
                       </div>
-                      <span className="w-11 h-11 rounded-full bg-indigo/85 backdrop-blur-sm border border-white/25 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-dark transition-colors">
-                        <Play size={16} weight="fill" className="text-white ml-0.5" />
-                      </span>
-                    </div>
-                  </div>
-                );
-                return r.href ? (
-                  <Link key={r.title} href={r.href}>{inner}</Link>
-                ) : (
-                  <div key={r.title} className="cursor-default">{inner}</div>
-                );
-              })}
-            </motion.div>
-          </AnimatePresence>
+                    </motion.div>
+                  );
+                  return r.href ? (
+                    <Link key={r.title} href={r.href} draggable={false}>{inner}</Link>
+                  ) : (
+                    <div key={r.title} className="cursor-default">{inner}</div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          {/* indicatori de pagină */}
+          <div className="flex justify-center gap-2 mt-5">
+            {Array.from({ length: pageCount }, (_, i) => (
+              <button key={i} onClick={() => { setDir(i > page ? 1 : -1); setPage(i); }} aria-label={`${tr("Pagina")} ${i + 1}`}
+                className={`h-2 rounded-full transition-all ${i === page ? "w-6 bg-forest-green" : "w-2 bg-sage-border hover:bg-forest-green/40"}`} />
+            ))}
+          </div>
         </div>
       </section>
 
