@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Leaf, Eye, EyeSlash, Warning } from "@phosphor-icons/react";
 
@@ -11,6 +11,14 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [expired, setExpired] = useState(false);
+
+  // Adus aici de gardianul de sesiune → explicăm de ce
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get("expired") === "1") setExpired(true);
+    } catch {}
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +60,12 @@ export default function AdminLogin() {
         {/* Card */}
         <div className="bg-white border border-sage-border rounded-2xl p-8 shadow-card">
           <h2 className="font-heading text-xl text-deep-green mb-6">Autentificare</h2>
+
+          {expired && (
+            <p className="font-body text-body-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-4">
+              Sesiunea ta a expirat — autentifică-te din nou pentru a continua.
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

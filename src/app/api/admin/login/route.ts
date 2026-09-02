@@ -20,7 +20,7 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-const MAX_AGE = 60 * 60 * 8;
+const MAX_AGE = 60 * 60 * 24; // 24h — o zi de lucru fără re-autentificare
 
 export async function POST(req: NextRequest) {
   // Max 5 încercări / 15 minute per IP

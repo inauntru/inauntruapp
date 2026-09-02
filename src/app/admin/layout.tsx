@@ -1,4 +1,5 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminSessionGuard from "@/components/admin/AdminSessionGuard";
 import { ReactNode } from "react";
 
 export const metadata = {
@@ -8,6 +9,7 @@ export const metadata = {
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-surface-container-low">
+      <AdminSessionGuard />
       <AdminSidebar />
       <div className="lg:ml-64 pt-14 lg:pt-0">
         {children}
