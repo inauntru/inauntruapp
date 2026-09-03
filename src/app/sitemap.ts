@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { SESIUNI_LIVE_PAGE_ENABLED } from "@/lib/features";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
 
@@ -24,12 +25,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
-    {
-      url: `${BASE_URL}/sesiuni-live`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
+    ...(SESIUNI_LIVE_PAGE_ENABLED
+      ? [{
+          url: `${BASE_URL}/sesiuni-live`,
+          lastModified: now,
+          changeFrequency: "daily" as const,
+          priority: 0.8,
+        }]
+      : []),
     {
       url: `${BASE_URL}/facilitatori`,
       lastModified: now,

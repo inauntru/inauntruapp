@@ -17,6 +17,7 @@ import { getDailyQuote } from "@/lib/quotes";
 import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/DailyInfluence";
 import { fetchAncoreCompletions } from "@/lib/ancore-sync";
 import { canAccess, contentTier, TIER_LABEL, type ContentTier } from "@/lib/plan";
+import { SESIUNI_LIVE_PAGE_ENABLED } from "@/lib/features";
 
 function formatDate() {
   return new Date().toLocaleDateString(dateLocale(), {
@@ -36,7 +37,8 @@ const QUICK_ACCESS = [
   { icon: BookOpen, label: "Bibliotecă",  href: "/practici",         iconCls: "bg-forest-green/20 text-forest-green", cardCls: "bg-light-green border-sage-border/40" },
   { icon: Anchor,   label: "Ancore",      href: "/ancore",           iconCls: "bg-indigo/10 text-indigo",             cardCls: "bg-indigo-light border-indigo/10" },
   { icon: Notebook, label: "Jurnal",      href: "/dashboard/jurnal", iconCls: "bg-indigo-mid/15 text-indigo-mid",     cardCls: "bg-indigo-bg border-indigo/10" },
-  { icon: Users,    label: "Sesiuni",     href: "/sesiuni-live",     iconCls: "bg-deep-green/10 text-deep-green",     cardCls: "bg-light-green/60 border-sage-border/30" },
+  // Sesiuni Live e ascunsă momentan — vezi SESIUNI_LIVE_PAGE_ENABLED în lib/features.ts
+  ...(SESIUNI_LIVE_PAGE_ENABLED ? [{ icon: Users, label: "Sesiuni", href: "/sesiuni-live", iconCls: "bg-deep-green/10 text-deep-green", cardCls: "bg-light-green/60 border-sage-border/30" }] : []),
 ];
 
 type PracticeItem = { id: number; title: string; facilitator: string; duration: number; category: string; tier?: string; isPremium?: boolean };
@@ -200,7 +202,7 @@ export default function DashboardPage() {
                 { icon: ChartLine,   label: "Dashboard",     href: "/dashboard",         active: true },
                 { icon: BookOpen,    label: "Bibliotecă",    href: "/practici" },
                 { icon: Anchor,      label: "Ancore",        href: "/ancore" },
-                { icon: VideoCamera, label: "Sesiuni Live",  href: "/sesiuni-live" },
+                ...(SESIUNI_LIVE_PAGE_ENABLED ? [{ icon: VideoCamera, label: "Sesiuni Live", href: "/sesiuni-live" }] : []),
                 { icon: Notebook,    label: "Jurnal",        href: "/dashboard/jurnal" },
                 { icon: ChartLine,   label: "Progresul meu", href: "/dashboard/progres" },
                 { icon: GearSix,     label: "Contul meu",    href: "/dashboard/cont" },
@@ -283,7 +285,7 @@ export default function DashboardPage() {
               <div className="flex flex-col items-end gap-2">
 
                 {/* Live session pill */}
-                {upcomingSession && (
+                {SESIUNI_LIVE_PAGE_ENABLED && upcomingSession && (
                   <div ref={sessionRef} className="relative z-40">
                     <button onClick={() => setSessionExpanded(p => !p)}
                       className="flex items-center gap-2.5 bg-deep-green text-white rounded-full px-4 py-2 hover:bg-forest-green transition-colors shadow-sm">

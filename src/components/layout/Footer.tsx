@@ -11,12 +11,14 @@ import {
   Phone,
 } from "@phosphor-icons/react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SESIUNI_LIVE_PAGE_ENABLED } from "@/lib/features";
 import NewsletterForm from "@/components/layout/NewsletterForm";
 
 const FOOTER_LINKS = {
   Platformă: [
     { href: "/practici", label: "Practici" },
-    { href: "/sesiuni-live", label: "Sesiuni Live" },
+    // Sesiuni Live e ascunsă momentan — vezi SESIUNI_LIVE_PAGE_ENABLED în lib/features.ts
+    ...(SESIUNI_LIVE_PAGE_ENABLED ? [{ href: "/sesiuni-live", label: "Sesiuni Live" }] : []),
     { href: "/facilitatori", label: "Facilitatori" },
     { href: "/preturi", label: "Prețuri" },
   ],
