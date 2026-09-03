@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check, Clock, X } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
+import { ArtFulger, ArtMinte, ArtSpirala, ArtCeata, ArtFrunza, ArtStea } from "@/components/ui/ArtIcons";
 import BackgroundVideo from "@/components/ui/BackgroundVideo";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,14 +20,14 @@ interface Props { siteContent: Record<string, string> }
 const STARE_OPTIONS: {
   label: string;
   categorie: AncoreCategorie | null;
-  dotColor: string;
+  icon: React.ElementType;
 }[] = [
-  { label: "Mă simt în alertă",    categorie: "ALERTĂ",    dotColor: "#B8CDD8" },
-  { label: "Mă simt copleșită",    categorie: "ALERTĂ",    dotColor: "#B8CDD8" },
-  { label: "Mă simt blocată",      categorie: "BLOCATĂ",   dotColor: "#C8C8C8" },
-  { label: "Sunt foarte obosită",  categorie: "OBOSEALĂ",  dotColor: "#E8D8B8" },
-  { label: "Vreau puțină liniște", categorie: "LINIȘTIRE", dotColor: "#E0C8C0" },
-  { label: "Nu sunt sigură",       categorie: null,         dotColor: "#B8D8B0" },
+  { label: "Mă simt în alertă",    categorie: "ALERTĂ",    icon: ArtFulger },
+  { label: "Mă simt copleșită",    categorie: "ALERTĂ",    icon: ArtMinte },
+  { label: "Mă simt blocată",      categorie: "BLOCATĂ",   icon: ArtSpirala },
+  { label: "Sunt foarte obosită",  categorie: "OBOSEALĂ",  icon: ArtCeata },
+  { label: "Vreau puțină liniște", categorie: "LINIȘTIRE", icon: ArtFrunza },
+  { label: "Nu sunt sigură",       categorie: null,         icon: ArtStea },
 ];
 
 const ENERGIE_OPTIONS: {
@@ -320,8 +321,7 @@ export default function AncoreClient({ siteContent }: Props) {
                       onClick={() => pickStare(opt)}
                       className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 border-sage-border bg-bg-main hover:border-forest-green hover:bg-light-green/30 transition-all duration-150 text-left group"
                     >
-                      <div className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: opt.dotColor }} />
+                      <opt.icon className="w-9 h-9" />
                       <span className="font-body font-semibold text-body-sm text-deep-green group-hover:text-forest-green transition-colors">
                         {tr(opt.label)}
                       </span>
@@ -342,8 +342,7 @@ export default function AncoreClient({ siteContent }: Props) {
                   <ArrowLeft size={13} weight="bold" /> {tr("Înapoi")}
                 </button>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-3 h-3 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: selectedStare?.dotColor }} />
+                  {selectedStare && <selectedStare.icon className="w-7 h-7" />}
                   <span className="font-body text-body-sm text-secondary-text">
                     {selectedStare && tr(selectedStare.label)}
                   </span>
@@ -382,7 +381,7 @@ export default function AncoreClient({ siteContent }: Props) {
                 {/* Selecții */}
                 <div className="flex items-center gap-3 flex-wrap mb-8">
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-light-green/60 border border-forest-green/20">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: selectedStare?.dotColor }} />
+                    {selectedStare && <selectedStare.icon className="w-5 h-5" />}
                     <span className="font-body text-label-xs font-semibold text-forest-green">{selectedStare && tr(selectedStare.label)}</span>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-light-green/60 border border-forest-green/20">
@@ -481,7 +480,7 @@ export default function AncoreClient({ siteContent }: Props) {
             {/* Bar context */}
             <div className="flex items-center gap-3 flex-wrap mb-10 p-3 bg-light-green/40 rounded-xl border border-forest-green/20 w-fit">
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: selectedStare?.dotColor }} />
+                {selectedStare && <selectedStare.icon className="w-5 h-5" />}
                 <span className="font-body text-label-xs font-semibold text-forest-green">{selectedStare && tr(selectedStare.label)}</span>
               </div>
               <span className="text-secondary-text">·</span>

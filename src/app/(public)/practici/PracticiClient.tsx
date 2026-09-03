@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { MagnifyingGlass, Lock, Play, Wind, PersonSimpleWalk, Moon, Lightning, Microphone, Star, Clock, SlidersHorizontal, X, CaretDown, Check } from "@phosphor-icons/react";
+import { MagnifyingGlass, Lock, Play, Star, Clock, SlidersHorizontal, X, CaretDown, Check } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { PRACTICES } from "@/lib/mockData";
 import { useAuth } from "@/contexts/AuthContext";

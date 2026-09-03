@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, X, ArrowRight, ShieldCheck, CaretDown } from "@phosphor-icons/react";
+import { Check, X, ArrowRight, CaretDown } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
+import { ArtScut } from "@/components/ui/ArtIcons";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PRICING_PLANS } from "@/lib/mockData";
 
@@ -82,7 +83,7 @@ export default function PreturiClient({ siteContent }: Props) {
           ))}
         </StaggerChildren>
         <div className="mt-8 flex items-center justify-center gap-3 text-secondary-text font-body text-body-sm">
-          <ShieldCheck size={20} weight="fill" className="text-forest-green" />
+          <ArtScut className="w-9 h-9" />
           <span>{tr("Încearcă gratuit timp de 14 zile. Fără obligații, doar timp câștigat pentru tine.")}</span>
         </div>
       </div>

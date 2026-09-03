@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Flame, Clock, VideoCamera, BookOpen, Notebook, ChartLine, Play, Leaf,
   CalendarBlank, ArrowRight, Check, List, X, Anchor, PencilSimple, GearSix, SignOut, CaretUp,
-  CaretDown, Users,
+  CaretDown,
 } from "@phosphor-icons/react";
 import { CountUp } from "@/components/ui/AnimateIn";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,6 +18,7 @@ import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/Daily
 import { fetchAncoreCompletions } from "@/lib/ancore-sync";
 import { canAccess, contentTier, TIER_LABEL, type ContentTier } from "@/lib/plan";
 import { SESIUNI_LIVE_PAGE_ENABLED } from "@/lib/features";
+import { ArtCarte, ArtAncora, ArtJurnal, ArtOameni } from "@/components/ui/ArtIcons";
 
 function formatDate() {
   return new Date().toLocaleDateString(dateLocale(), {
@@ -34,11 +35,11 @@ function streakMessage(streak: number, tr: (ro: string) => string): string {
 }
 
 const QUICK_ACCESS = [
-  { icon: BookOpen, label: "Bibliotecă",  href: "/practici",         iconCls: "bg-forest-green/20 text-forest-green", cardCls: "bg-light-green border-sage-border/40" },
-  { icon: Anchor,   label: "Ancore",      href: "/ancore",           iconCls: "bg-indigo/10 text-indigo",             cardCls: "bg-indigo-light border-indigo/10" },
-  { icon: Notebook, label: "Jurnal",      href: "/dashboard/jurnal", iconCls: "bg-indigo-mid/15 text-indigo-mid",     cardCls: "bg-indigo-bg border-indigo/10" },
+  { icon: ArtCarte,  label: "Bibliotecă",  href: "/practici",         cardCls: "bg-light-green border-sage-border/40" },
+  { icon: ArtAncora, label: "Ancore",      href: "/ancore",           cardCls: "bg-indigo-light border-indigo/10" },
+  { icon: ArtJurnal, label: "Jurnal",      href: "/dashboard/jurnal", cardCls: "bg-indigo-bg border-indigo/10" },
   // Sesiuni Live e ascunsă momentan — vezi SESIUNI_LIVE_PAGE_ENABLED în lib/features.ts
-  ...(SESIUNI_LIVE_PAGE_ENABLED ? [{ icon: Users, label: "Sesiuni", href: "/sesiuni-live", iconCls: "bg-deep-green/10 text-deep-green", cardCls: "bg-light-green/60 border-sage-border/30" }] : []),
+  ...(SESIUNI_LIVE_PAGE_ENABLED ? [{ icon: ArtOameni, label: "Sesiuni", href: "/sesiuni-live", cardCls: "bg-light-green/60 border-sage-border/30" }] : []),
 ];
 
 type PracticeItem = { id: number; title: string; facilitator: string; duration: number; category: string; tier?: string; isPremium?: boolean };
@@ -444,9 +445,7 @@ export default function DashboardPage() {
                     return (
                       <Link key={item.label} href={item.href}
                         className={`rounded-2xl p-4 text-center flex flex-col items-center gap-2.5 border transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 ${item.cardCls}`}>
-                        <div className={`w-11 h-11 rounded-xl ${item.iconCls} flex items-center justify-center`}>
-                          <Icon size={20} weight="fill" />
-                        </div>
+                        <Icon className="w-11 h-11" />
                         <span className="font-body text-label-xs font-semibold text-on-surface">{tr(item.label)}</span>
                       </Link>
                     );

@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Heart, Leaf, MapPin, ArrowRight, Globe, Check } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
+import { ArtInima, ArtCarte, ArtOameni, ArtFrunza } from "@/components/ui/ArtIcons";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { FACILITATORS } from "@/lib/mockData";
 
@@ -21,10 +22,10 @@ export default function DespreNoiClient({ siteContent }: Props) {
   ];
 
   const values = [
-    { icon: Heart, title: t("val1_title", "Compasiune"), desc: t("val1_desc", "Fiecare persoană merită acces la practici de bunăstare, indiferent de context sau resurse.") },
-    { icon: Leaf,  title: t("val2_title", "Fundamentare"), desc: t("val2_desc", "Toate practicile sunt bazate pe cercetări validate în neuroștiință și psihoterapie somatică.") },
-    { icon: Globe, title: t("val3_title", "Accesibilitate"), desc: t("val3_desc", "Credem că vindecarea este un drept, nu un privilegiu rezervat celor cu resurse financiare mari.") },
-    { icon: Check, title: t("val4_title", "Autenticitate"), desc: t("val4_desc", "Facilitatorii noștri sunt practicieni reali cu experiență clinică verificată, nu actori sau influenceri.") },
+    { icon: ArtInima,  title: t("val1_title", "Compasiune"), desc: t("val1_desc", "Fiecare persoană merită acces la practici de bunăstare, indiferent de context sau resurse.") },
+    { icon: ArtCarte,  title: t("val2_title", "Fundamentare"), desc: t("val2_desc", "Toate practicile sunt bazate pe cercetări validate în neuroștiință și psihoterapie somatică.") },
+    { icon: ArtOameni, title: t("val3_title", "Accesibilitate"), desc: t("val3_desc", "Credem că vindecarea este un drept, nu un privilegiu rezervat celor cu resurse financiare mari.") },
+    { icon: ArtFrunza, title: t("val4_title", "Autenticitate"), desc: t("val4_desc", "Facilitatorii noștri sunt practicieni reali cu experiență clinică verificată, nu actori sau influenceri.") },
   ];
 
   return (
@@ -86,7 +87,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
               const Icon = v.icon;
               return (
                 <div key={v.title} className="card card-lift p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-light-green flex items-center justify-center mx-auto mb-4"><Icon size={22} weight="regular" className="text-forest-green" /></div>
+                  <Icon className="w-14 h-14 mx-auto mb-4" />
                   <h3 className="font-heading text-h3 text-deep-green mb-2">{v.title}</h3>
                   <p className="font-body text-body-sm text-secondary-text">{v.desc}</p>
                 </div>

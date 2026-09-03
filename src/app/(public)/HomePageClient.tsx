@@ -5,20 +5,25 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, Leaf, Moon, Wind, Sun, Heartbeat, Sparkle,
-  Star, Check, X, Play, BookOpen, VideoCamera, ChartLine,
-  ShieldCheck, CaretDown, Brain, BatteryLow, Waves, NotePencil,
+  ArrowRight, Star, Check, X, Play, CaretDown,
 } from "@phosphor-icons/react";
 import dynamic from "next/dynamic";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import BackgroundVideo from "@/components/ui/BackgroundVideo";
+import {
+  ArtFrunza, ArtLuna, ArtRespiratie, ArtSoare, ArtInima, ArtStea,
+  ArtFulger, ArtMinte, ArtCeata, ArtCorp, ArtLotus, ArtSpirala,
+  ArtCarte, ArtOameni, ArtJurnal, ArtScut,
+} from "@/components/ui/ArtIcons";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { TESTIMONIALS, PRICING_PLANS, FAQ_ITEMS, INTENT_CARDS } from "@/lib/mockData";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
 
 
+/* Iconurile ilustrate WithIN — numele din mockData → simbolul desenat */
 const INTENT_ICONS: Record<string, React.ElementType> = {
-  Leaf, Moon, Wind, Sun, Heartbeat, Sparkle,
+  Leaf: ArtFrunza, Moon: ArtLuna, Wind: ArtRespiratie,
+  Sun: ArtSoare, Heartbeat: ArtInima, Sparkle: ArtStea,
 };
 
 interface Props { siteContent: Record<string, string>; }
@@ -38,23 +43,23 @@ export default function HomePageClient({ siteContent }: Props) {
   }));
 
   const problemCards = [
-    { icon: Waves, title: t("prob_card1_title", "Tensiune Musculară"), desc: t("prob_card1_desc", "Gât, umeri și maxilar mereu încordate fără un motiv aparent.") },
-    { icon: Moon,  title: t("prob_card2_title", "Insomnie Alertă"),     desc: t("prob_card2_desc", "Ești obosit, dar corpul tău refuză să intre în starea de repaus.") },
-    { icon: Brain, title: t("prob_card3_title", "Deconectare"),          desc: t("prob_card3_desc", "Simți că trăiești de la gât în sus, ignorând semnalele corpului.") },
-    { icon: BatteryLow, title: t("prob_card4_title", "Burnout Emoțional"), desc: t("prob_card4_desc", "Reacții disproporționate la stresori mici de zi cu zi.") },
+    { icon: ArtFulger, title: t("prob_card1_title", "Tensiune Musculară"), desc: t("prob_card1_desc", "Gât, umeri și maxilar mereu încordate fără un motiv aparent.") },
+    { icon: ArtLuna,   title: t("prob_card2_title", "Insomnie Alertă"),     desc: t("prob_card2_desc", "Ești obosit, dar corpul tău refuză să intre în starea de repaus.") },
+    { icon: ArtMinte,  title: t("prob_card3_title", "Deconectare"),          desc: t("prob_card3_desc", "Simți că trăiești de la gât în sus, ignorând semnalele corpului.") },
+    { icon: ArtCeata,  title: t("prob_card4_title", "Burnout Emoțional"), desc: t("prob_card4_desc", "Reacții disproporționate la stresori mici de zi cu zi.") },
   ];
 
   const howItWorks = [
-    { step: "1", icon: Heartbeat, title: t("step1_title", "Evaluare Inițială"), desc: t("step1_desc", "Identificăm unde este blocată energia în corpul tău printr-un chestionar de autodescoperire ghidat.") },
-    { step: "2", icon: Play,      title: t("step2_title", "Practică Zilnică"),  desc: t("step2_desc", "Primești un program personalizat de 10–20 minute cu exerciții de respirație, mișcare și conștientizare.") },
-    { step: "3", icon: ChartLine, title: t("step3_title", "Monitorizare Progres"), desc: t("step3_desc", "Urmărești cum se schimbă starea ta de bine prin jurnalul de senzații și check-in-uri zilnice.") },
+    { step: "1", icon: ArtCorp,    title: t("step1_title", "Evaluare Inițială"), desc: t("step1_desc", "Identificăm unde este blocată energia în corpul tău printr-un chestionar de autodescoperire ghidat.") },
+    { step: "2", icon: ArtLotus,   title: t("step2_title", "Practică Zilnică"),  desc: t("step2_desc", "Primești un program personalizat de 10–20 minute cu exerciții de respirație, mișcare și conștientizare.") },
+    { step: "3", icon: ArtSpirala, title: t("step3_title", "Monitorizare Progres"), desc: t("step3_desc", "Urmărești cum se schimbă starea ta de bine prin jurnalul de senzații și check-in-uri zilnice.") },
   ];
 
   const platformFeatures = [
-    { icon: BookOpen,   title: t("feat1_title", "Biblioteca"),               desc: t("feat1_desc", "70+ sesiuni audio și video de la facilitatori certificați, disponibile oricând.") },
-    { icon: VideoCamera,title: t("feat2_title", "Sesiuni LIVE"),              desc: t("feat2_desc", "Cercuri de vindecare și workshop-uri interactive săptămânale cu facilitatorii noștri.") },
-    { icon: Heartbeat,  title: t("feat3_title", "Check-in Zilnic"),           desc: t("feat3_desc", "Sistem inteligent care îți recomandă practica potrivită stării tale de azi.") },
-    { icon: NotePencil, title: t("feat4_title", "Monitorizarea progresului"), desc: t("feat4_desc", "Notează cum te simți și urmărește-ți evoluția pas cu pas.") },
+    { icon: ArtCarte,  title: t("feat1_title", "Biblioteca"),               desc: t("feat1_desc", "70+ sesiuni audio și video de la facilitatori certificați, disponibile oricând.") },
+    { icon: ArtOameni, title: t("feat2_title", "Sesiuni LIVE"),              desc: t("feat2_desc", "Cercuri de vindecare și workshop-uri interactive săptămânale cu facilitatorii noștri.") },
+    { icon: ArtInima,  title: t("feat3_title", "Check-in Zilnic"),           desc: t("feat3_desc", "Sistem inteligent care îți recomandă practica potrivită stării tale de azi.") },
+    { icon: ArtJurnal, title: t("feat4_title", "Monitorizarea progresului"), desc: t("feat4_desc", "Notează cum te simți și urmărește-ți evoluția pas cu pas.") },
   ];
 
   const faqItems = Array.from({ length: 8 }, (_, i) => ({
@@ -142,7 +147,7 @@ export default function HomePageClient({ siteContent }: Props) {
           </AnimateIn>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {intentCards.map((card, i) => {
-              const Icon = INTENT_ICONS[card.icon] || Leaf;
+              const Icon = INTENT_ICONS[card.icon] || ArtFrunza;
               const isSelected = selectedIntent === card.id;
               return (
                 <motion.button
@@ -151,10 +156,10 @@ export default function HomePageClient({ siteContent }: Props) {
                   transition={{ delay: i * 0.08, duration: 0.5, ease: "easeOut" }}
                   onClick={() => setSelectedIntent(isSelected ? null : card.id)}
                   whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                  className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-2xl border transition-colors duration-200 min-h-[90px] sm:min-h-[110px] ${isSelected ? "bg-forest-green border-forest-green" : "bg-white border-sage-border hover:border-forest-green hover:bg-light-green/30"}`}
+                  className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-2xl border-2 transition-colors duration-200 min-h-[90px] sm:min-h-[110px] ${isSelected ? "bg-light-green border-forest-green" : "bg-white border-sage-border/60 hover:border-forest-green hover:bg-light-green/30"}`}
                 >
-                  <Icon size={26} weight="regular" className={isSelected ? "text-white" : "text-forest-green"} />
-                  <span className={`font-body text-label-sm font-semibold text-center leading-snug min-h-[2.5em] flex items-center justify-center ${isSelected ? "text-white" : "text-deep-green"}`}>
+                  <Icon className="w-11 h-11 sm:w-12 sm:h-12" />
+                  <span className="font-body text-label-sm font-semibold text-center leading-snug min-h-[2.5em] flex items-center justify-center text-deep-green">
                     {card.title}
                   </span>
                 </motion.button>
@@ -194,9 +199,7 @@ export default function HomePageClient({ siteContent }: Props) {
                 const Icon = card.icon;
                 return (
                   <div key={card.title} className="p-6 bg-white border border-indigo-light rounded-2xl flex flex-col h-full card-lift">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-light flex items-center justify-center mb-3 flex-shrink-0">
-                      <Icon size={22} weight="regular" className="text-indigo" />
-                    </div>
+                    <Icon className="w-12 h-12 mb-3" />
                     <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">{card.title}</h3>
                     <p className="font-body text-body-sm text-secondary-text flex-1">{card.desc}</p>
                   </div>
@@ -223,9 +226,12 @@ export default function HomePageClient({ siteContent }: Props) {
               {howItWorks.map((step) => (
                 <div key={step.step} className="flex flex-row lg:flex-col items-start lg:items-center gap-5 lg:gap-0 text-left lg:text-center">
                   <div className="relative mb-0 lg:mb-8 flex-shrink-0">
-                    <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo text-white rounded-full flex items-center justify-center font-heading text-xl lg:text-2xl font-bold shadow-button ring-8 ring-indigo-bg">
-                      {step.step}
+                    <div className="w-14 h-14 lg:w-16 lg:h-16 bg-white rounded-full flex items-center justify-center shadow-button ring-8 ring-indigo-bg">
+                      <step.icon className="w-9 h-9 lg:w-10 lg:h-10" />
                     </div>
+                    <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-indigo text-white font-heading text-sm font-bold flex items-center justify-center shadow">
+                      {step.step}
+                    </span>
                   </div>
                   <div>
                     <h3 className="font-heading text-h3 text-deep-green mb-2 lg:mb-3">{step.title}</h3>
@@ -261,7 +267,9 @@ export default function HomePageClient({ siteContent }: Props) {
               const Icon = f.icon;
               return (
                 <div key={f.title} className="h-full bg-white/10 backdrop-blur-lg p-6 rounded-2xl border border-white/10 hover:bg-white/20 transition-all group cursor-default">
-                  <Icon size={36} weight="regular" className="text-white mb-5 group-hover:scale-110 transition-transform duration-300" />
+                  <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="w-9 h-9" />
+                  </div>
                   <h3 className="font-heading text-h3 text-white mb-2">{f.title}</h3>
                   <p className="font-body text-body-sm" style={{ color: "rgba(200,235,211,0.8)" }}>{f.desc}</p>
                 </div>
@@ -412,7 +420,7 @@ export default function HomePageClient({ siteContent }: Props) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimateIn once={false} from="scale">
             <div className="flex items-center justify-center mb-4">
-              <ShieldCheck size={48} weight="fill" className="text-deep-green" />
+              <ArtScut className="w-16 h-16" />
             </div>
             <h2 className="font-heading text-h2 text-deep-green mb-3">
               {t("guarantee_title", "Testează gratuit timp de 14 zile.")}

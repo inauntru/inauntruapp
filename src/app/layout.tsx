@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { fontVariables } from "@/lib/fonts";
 import Providers from "@/components/Providers";
+import { ArtDefs } from "@/components/ui/ArtIcons";
 import "./globals.css";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
@@ -63,6 +64,8 @@ export default function RootLayout({
   return (
     <html lang="ro" className={`scroll-smooth ${fontVariables}`}>
       <body className="font-body antialiased bg-background text-on-background">
+        {/* Gradienții/filtrele globale ale iconurilor ilustrate — vezi ui/ArtIcons.tsx */}
+        <ArtDefs />
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -18,49 +18,11 @@ import {
   SmileySad, SmileyNervous, SmileyMeh, Smiley, SmileyWink, CaretLeft, CaretRight,
 } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
+import {
+  ArtMinte, ArtFulger, ArtCeata, ArtFrunza,
+  ArtCopaci, ArtMuzica, ArtUnde, ArtInele,
+} from "@/components/ui/ArtIcons";
 import { useLanguage } from "@/contexts/LanguageContext";
-
-/* ── Definiții SVG partajate (gradienți + granulație) ────────────────────────
-   Culorile simbolurilor sunt aliniate la brand: lavanda machetei → indigo
-   (#6668CC → #3D3FAA), verdele → verdele WithIN (#4AAA78 → #2B8C5C).
-   Ambra (luna, focul) și albastrul nopții rămân ilustrative, ca în machetă. */
-function SomnDefs() {
-  return (
-    <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
-      <defs>
-        <filter id="somn-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-          <feComponentTransfer><feFuncA type="linear" slope="0.42" /></feComponentTransfer>
-        </filter>
-        <filter id="somn-soft"><feGaussianBlur stdDeviation="3" /></filter>
-        <filter id="somn-softer"><feGaussianBlur stdDeviation="9" /></filter>
-
-        <linearGradient id="somn-gInd" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6668CC" /><stop offset="1" stopColor="#3D3FAA" />
-        </linearGradient>
-        <linearGradient id="somn-gAmber" x1="0" y1="0" x2="0.4" y2="1">
-          <stop offset="0" stopColor="#F5C46B" /><stop offset="1" stopColor="#C97F2E" />
-        </linearGradient>
-        <linearGradient id="somn-gBlue" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#8FA9C4" /><stop offset="1" stopColor="#51708F" />
-        </linearGradient>
-        <linearGradient id="somn-gGreen" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#4AAA78" /><stop offset="1" stopColor="#2B8C5C" />
-        </linearGradient>
-        <radialGradient id="somn-gMoonFace" cx="36%" cy="30%">
-          <stop offset="0" stopColor="#FDF6E7" /><stop offset="55%" stopColor="#E4D3B0" />
-          <stop offset="100%" stopColor="#B9A784" />
-        </radialGradient>
-        <radialGradient id="somn-gHalo" cx="50%" cy="50%">
-          <stop offset="0" stopColor="#E8D6AE" stopOpacity=".55" />
-          <stop offset="55%" stopColor="#C6B48E" stopOpacity=".14" />
-          <stop offset="100%" stopColor="#0C1626" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-    </svg>
-  );
-}
 
 /* ── Luna peste mare — arta din hero (din macheta v4) ────────────────────── */
 function HeroArt() {
@@ -91,9 +53,9 @@ function HeroArt() {
       </g>
 
       {/* halo + lună */}
-      <circle cx="838" cy="152" r="190" fill="url(#somn-gHalo)" />
-      <circle cx="838" cy="152" r="60" fill="url(#somn-gMoonFace)" />
-      <g fill="#B6A484" opacity=".30" filter="url(#somn-soft)">
+      <circle cx="838" cy="152" r="190" fill="url(#art-gHalo)" />
+      <circle cx="838" cy="152" r="60" fill="url(#art-gMoonFace)" />
+      <g fill="#B6A484" opacity=".30" filter="url(#art-soft)">
         <ellipse cx="820" cy="134" rx="17" ry="13" />
         <ellipse cx="853" cy="160" rx="12" ry="10" />
         <ellipse cx="826" cy="174" rx="9" ry="7" />
@@ -103,7 +65,7 @@ function HeroArt() {
       <circle cx="838" cy="152" r="60" fill="none" stroke="#FFF6E4" strokeOpacity=".28" strokeWidth="1" />
 
       {/* ceață la orizont */}
-      <rect x="0" y="252" width="1200" height="70" fill="#3C566E" opacity=".28" filter="url(#somn-softer)" />
+      <rect x="0" y="252" width="1200" height="70" fill="#3C566E" opacity=".28" filter="url(#art-softer)" />
 
       {/* marea + dâra lunii */}
       <rect x="0" y="300" width="1200" height="180" fill="url(#somn-seaG)" />
@@ -125,102 +87,7 @@ function HeroArt() {
         <rect x="0" y="400" width="1200" height="2" /><rect x="0" y="448" width="1200" height="2" />
       </g>
 
-      <rect width="1200" height="480" filter="url(#somn-grain)" opacity=".16" style={{ mixBlendMode: "overlay" }} />
-    </svg>
-  );
-}
-
-/* ── Simbolurile stărilor de seară (din macheta v4) ──────────────────────── */
-function ArtMinte() {
-  return (
-    <svg className="w-[60px] h-[60px] mb-4 drop-shadow-md" viewBox="0 0 60 60" fill="none" aria-hidden="true">
-      <ellipse cx="30" cy="50" rx="19" ry="4" fill="#3D3FAA" opacity=".13" />
-      <path d="M14 30c2-11 12-16 21-13 8 2 13 10 11 18-2 7-9 11-16 10" stroke="url(#somn-gInd)" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M22 32c1-6 6-9 11-7 5 2 6 8 3 12-3 3-8 3-11 0-3-4-1-10 4-12 6-2 12 2 13 8" stroke="url(#somn-gInd)" strokeWidth="1.9" strokeLinecap="round" opacity=".78" />
-      <path d="M28 38c2-3 6-3 8 0" stroke="url(#somn-gInd)" strokeWidth="1.5" strokeLinecap="round" opacity=".5" />
-      <circle cx="43" cy="18" r="2.6" fill="#6668CC" opacity=".55" />
-      <circle cx="49" cy="12" r="1.6" fill="#6668CC" opacity=".35" />
-    </svg>
-  );
-}
-function ArtCorp() {
-  return (
-    <svg className="w-[60px] h-[60px] mb-4 drop-shadow-md" viewBox="0 0 60 60" fill="none" aria-hidden="true">
-      <ellipse cx="30" cy="52" rx="16" ry="3.5" fill="#C97F2E" opacity=".14" />
-      <circle cx="31" cy="28" r="21" fill="#F5C46B" opacity=".16" filter="url(#somn-soft)" />
-      <path d="M34 9L20 32h9l-3 19 16-24h-10z" fill="url(#somn-gAmber)" />
-      <path d="M34 9L20 32h9z" fill="#FFF" opacity=".22" />
-      <path d="M12 20c-1.5 2-1.5 5 0 7" stroke="#E0A755" strokeWidth="1.6" strokeLinecap="round" opacity=".6" />
-      <path d="M49 32c1.5-2 1.5-5 0-7" stroke="#E0A755" strokeWidth="1.6" strokeLinecap="round" opacity=".6" />
-    </svg>
-  );
-}
-function ArtCeata() {
-  return (
-    <svg className="w-[60px] h-[60px] mb-4 drop-shadow-md" viewBox="0 0 60 60" fill="none" aria-hidden="true">
-      <ellipse cx="30" cy="52" rx="17" ry="3.5" fill="#51708F" opacity=".13" />
-      <circle cx="34" cy="24" r="12" fill="#C9D8E6" />
-      <circle cx="34" cy="24" r="12" fill="url(#somn-gBlue)" opacity=".35" />
-      <path d="M9 30h26M15 37h30M11 44h24" stroke="url(#somn-gBlue)" strokeWidth="3" strokeLinecap="round" opacity=".85" />
-      <path d="M20 30h18M22 37h20" stroke="#F2F7FB" strokeWidth="1.1" strokeLinecap="round" opacity=".6" />
-    </svg>
-  );
-}
-function ArtLiniste() {
-  return (
-    <svg className="w-[60px] h-[60px] mb-4 drop-shadow-md" viewBox="0 0 60 60" fill="none" aria-hidden="true">
-      <ellipse cx="30" cy="52" rx="16" ry="3.5" fill="#2B8C5C" opacity=".12" />
-      <circle cx="32" cy="26" r="21" fill="#A8DFC0" opacity=".22" filter="url(#somn-soft)" />
-      <path d="M40 12a15 15 0 10-9 27 18 18 0 009-27z" fill="url(#somn-gGreen)" />
-      <path d="M40 12a15 15 0 00-13 8 15 15 0 0114 12 18 18 0 00-1-20z" fill="#FFF" opacity=".18" />
-      <circle cx="46" cy="41" r="2.2" fill="#4AAA78" opacity=".6" />
-      <circle cx="16" cy="16" r="1.6" fill="#4AAA78" opacity=".45" />
-    </svg>
-  );
-}
-
-/* ── Simbolurile categoriilor „doar play" (din macheta v4) ───────────────── */
-function ArtNatura() {
-  return (
-    <svg className="w-[52px] h-[52px] mb-3 drop-shadow" viewBox="0 0 52 52" fill="none" aria-hidden="true">
-      <ellipse cx="26" cy="45" rx="15" ry="3" fill="#2B8C5C" opacity=".14" />
-      <path d="M34 40l-7-13h4l-6-11h3l-7-12-7 12h3l-6 11h4l-7 13z" fill="url(#somn-gGreen)" opacity=".45" />
-      <path d="M42 42l-6-11h3l-5-10h2.5L31 11l-5.5 10H28l-5 10h3l-6 11z" fill="url(#somn-gGreen)" />
-      <rect x="30" y="40" width="2.5" height="6" rx="1" fill="#1E5C3D" />
-    </svg>
-  );
-}
-function ArtMuzica() {
-  return (
-    <svg className="w-[52px] h-[52px] mb-3 drop-shadow" viewBox="0 0 52 52" fill="none" aria-hidden="true">
-      <ellipse cx="26" cy="45" rx="15" ry="3" fill="#3D3FAA" opacity=".14" />
-      <path d="M22 36V13l18-4v21" stroke="url(#somn-gInd)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
-      <ellipse cx="17" cy="36" rx="6" ry="5" fill="url(#somn-gInd)" />
-      <ellipse cx="35" cy="32" rx="5.4" ry="4.5" fill="url(#somn-gInd)" opacity=".82" />
-      <path d="M22 19l18-4" stroke="#A9ABE0" strokeWidth="1.4" opacity=".7" />
-    </svg>
-  );
-}
-function ArtNoise() {
-  return (
-    <svg className="w-[52px] h-[52px] mb-3 drop-shadow" viewBox="0 0 52 52" fill="none" aria-hidden="true">
-      <ellipse cx="26" cy="45" rx="15" ry="3" fill="#51708F" opacity=".13" />
-      <g stroke="url(#somn-gBlue)" strokeLinecap="round" fill="none">
-        <path d="M6 18c5-6 9 6 14 0s9 6 14 0 7 5 12 0" strokeWidth="2.8" opacity=".45" />
-        <path d="M6 27c5-6 9 6 14 0s9 6 14 0 7 5 12 0" strokeWidth="3.2" />
-        <path d="M6 36c5-6 9 6 14 0s9 6 14 0 7 5 12 0" strokeWidth="2.8" opacity=".45" />
-      </g>
-    </svg>
-  );
-}
-function ArtTonuri() {
-  return (
-    <svg className="w-[52px] h-[52px] mb-3 drop-shadow" viewBox="0 0 52 52" fill="none" aria-hidden="true">
-      <ellipse cx="26" cy="45" rx="15" ry="3" fill="#C97F2E" opacity=".13" />
-      <circle cx="26" cy="25" r="4.5" fill="url(#somn-gAmber)" />
-      <circle cx="26" cy="25" r="10" stroke="url(#somn-gAmber)" strokeWidth="2.2" opacity=".7" fill="none" />
-      <circle cx="26" cy="25" r="16" stroke="url(#somn-gAmber)" strokeWidth="1.8" opacity=".42" fill="none" />
-      <circle cx="26" cy="25" r="21.5" stroke="url(#somn-gAmber)" strokeWidth="1.4" opacity=".2" fill="none" />
+      <rect width="1200" height="480" filter="url(#art-grain)" opacity=".16" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -232,7 +99,7 @@ function SceneRain() {
       <defs><linearGradient id="somn-rainG" x1="0" y1="0" x2="0.3" y2="1">
         <stop offset="0" stopColor="#3A5A70" /><stop offset="100%" stopColor="#132433" /></linearGradient></defs>
       <rect width="300" height="240" fill="url(#somn-rainG)" />
-      <g fill="#DCEAF2" opacity=".22" filter="url(#somn-soft)">
+      <g fill="#DCEAF2" opacity=".22" filter="url(#art-soft)">
         <circle cx="60" cy="70" r="26" /><circle cx="190" cy="40" r="34" /><circle cx="250" cy="150" r="30" />
       </g>
       <g stroke="#EAF3F8" strokeLinecap="round">
@@ -246,7 +113,7 @@ function SceneRain() {
         <circle cx="52" cy="118" r="4" /><circle cx="140" cy="72" r="5.5" /><circle cx="214" cy="196" r="4.5" />
         <circle cx="86" cy="200" r="3.5" /><circle cx="262" cy="66" r="3" />
       </g>
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -258,9 +125,9 @@ function SceneDune() {
       <rect width="300" height="240" fill="url(#somn-duneG)" />
       <path d="M0 168c50-34 92-10 140-34s110-14 160 12v94H0z" fill="#57415C" opacity=".72" />
       <path d="M0 200c62-28 108 4 156-16s96-4 144 22v34H0z" fill="#3A2B40" opacity=".85" />
-      <ellipse cx="212" cy="60" rx="46" ry="46" fill="#F3DCE4" opacity=".18" filter="url(#somn-softer)" />
+      <ellipse cx="212" cy="60" rx="46" ry="46" fill="#F3DCE4" opacity=".18" filter="url(#art-softer)" />
       <path d="M20 120c40-22 70 6 108-12" stroke="#E7D2DC" strokeWidth="1.4" fill="none" opacity=".3" />
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".22" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".22" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -271,12 +138,12 @@ function SceneMunti() {
         <stop offset="0" stopColor="#8E93BE" /><stop offset="60%" stopColor="#5A5F8C" /><stop offset="100%" stopColor="#2E3255" /></linearGradient></defs>
       <rect width="300" height="240" fill="url(#somn-mntG)" />
       <circle cx="228" cy="54" r="20" fill="#F0E9DA" opacity=".5" />
-      <circle cx="228" cy="54" r="42" fill="#F0E9DA" opacity=".1" filter="url(#somn-softer)" />
+      <circle cx="228" cy="54" r="42" fill="#F0E9DA" opacity=".1" filter="url(#art-softer)" />
       <path d="M0 176l58-52 44 40 40-32 58 50 44-34 56 44v48H0z" fill="#4A4E7A" opacity=".85" />
       <path d="M0 206l70-38 52 30 56-24 60 34 62-20v52H0z" fill="#2C3055" />
       <path d="M58 124l20 18-38 12z" fill="#CDCBDF" opacity=".35" />
       <path d="M200 132l18 16-34 10z" fill="#CDCBDF" opacity=".28" />
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -290,10 +157,10 @@ function SceneOrizont() {
       <circle cx="150" cy="128" r="48" stroke="#D8E4EA" strokeWidth="1.2" opacity=".26" fill="none" />
       <circle cx="150" cy="128" r="27" stroke="#D8E4EA" strokeWidth="1.3" opacity=".4" fill="none" />
       <circle cx="150" cy="128" r="9" fill="#E6EEF2" opacity=".7" />
-      <circle cx="150" cy="128" r="18" fill="#E6EEF2" opacity=".12" filter="url(#somn-soft)" />
+      <circle cx="150" cy="128" r="18" fill="#E6EEF2" opacity=".12" filter="url(#art-soft)" />
       <path d="M0 196h300" stroke="#8CA2B4" strokeWidth="1.2" opacity=".3" />
       <path d="M0 210h300" stroke="#8CA2B4" strokeWidth="1" opacity=".16" />
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -311,8 +178,8 @@ function SceneScan() {
         <path d="M30 202c40-18 80 18 120 0s80-18 120 0" strokeWidth="1.6" opacity=".16" />
       </g>
       <circle cx="150" cy="132" r="7" fill="#DFF2E6" opacity=".65" />
-      <circle cx="150" cy="132" r="16" fill="#DFF2E6" opacity=".14" filter="url(#somn-soft)" />
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
+      <circle cx="150" cy="132" r="16" fill="#DFF2E6" opacity=".14" filter="url(#art-soft)" />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -328,9 +195,9 @@ function SceneLuna() {
         <circle cx="230" cy="150" r="1.2" opacity=".45" /><circle cx="150" cy="80" r="1" opacity=".35" />
         <circle cx="40" cy="190" r="1.1" opacity=".4" /><circle cx="270" cy="204" r="1" opacity=".3" />
       </g>
-      <circle cx="186" cy="96" r="66" fill="url(#somn-gHalo)" />
-      <path d="M206 58a44 44 0 10 0 76 52 52 0 01 0-76z" fill="url(#somn-gMoonFace)" />
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
+      <circle cx="186" cy="96" r="66" fill="url(#art-gHalo)" />
+      <path d="M206 58a44 44 0 10 0 76 52 52 0 01 0-76z" fill="url(#art-gMoonFace)" />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -352,8 +219,8 @@ function ScenePovesti() {
         <path d="M160 110c18-7 36-6 54 2M160 128c18-7 36-6 54 2M160 146c18-7 36-6 54 2" fill="none" />
       </g>
       <circle cx="150" cy="60" r="14" fill="#F0E9DA" opacity=".5" />
-      <circle cx="150" cy="60" r="28" fill="#F0E9DA" opacity=".1" filter="url(#somn-soft)" />
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
+      <circle cx="150" cy="60" r="28" fill="#F0E9DA" opacity=".1" filter="url(#art-soft)" />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -369,7 +236,7 @@ function SceneNoise() {
         <path d="M20 144c20-16 30 16 50 0s30 16 50 0 30 16 50 0 30 16 50 0 30 16 50 0" strokeWidth="2.8" opacity=".4" />
         <path d="M20 188c20-16 30 16 50 0s30 16 50 0 30 16 50 0 30 16 50 0 30 16 50 0" strokeWidth="2.4" opacity=".22" />
       </g>
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".24" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".24" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -384,8 +251,8 @@ function SceneFrecvente() {
       <circle cx="150" cy="120" r="48" stroke="#E4D9F2" strokeWidth="1.6" opacity=".38" fill="none" />
       <circle cx="150" cy="120" r="74" stroke="#E4D9F2" strokeWidth="1.4" opacity=".24" fill="none" />
       <circle cx="150" cy="120" r="102" stroke="#E4D9F2" strokeWidth="1.2" opacity=".13" fill="none" />
-      <circle cx="150" cy="120" r="18" fill="#EFE3C2" opacity=".12" filter="url(#somn-soft)" />
-      <rect width="300" height="240" filter="url(#somn-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
+      <circle cx="150" cy="120" r="18" fill="#EFE3C2" opacity=".12" filter="url(#art-soft)" />
+      <rect width="300" height="240" filter="url(#art-grain)" opacity=".2" style={{ mixBlendMode: "overlay" }} />
     </svg>
   );
 }
@@ -393,9 +260,9 @@ function SceneFrecvente() {
 /* ── Stările de seară ────────────────────────────────────────────────────── */
 const MOODS = [
   { key: "minte",  Art: ArtMinte,   bg: "from-[#F3F0FA] to-[#E6E0F3]", title: "Mintea mea nu se oprește",     desc: "Am prea multe gânduri.",                    tag: "ALERTĂ · minte" },
-  { key: "corp",   Art: ArtCorp,    bg: "from-[#FDF3E4] to-[#F8E5CC]", title: "Corpul meu e încă în alertă",  desc: "Sunt obosită, dar încă simt tensiune.",     tag: "ALERTĂ · corp" },
+  { key: "corp",   Art: ArtFulger,   bg: "from-[#FDF3E4] to-[#F8E5CC]", title: "Corpul meu e încă în alertă",  desc: "Sunt obosită, dar încă simt tensiune.",     tag: "ALERTĂ · corp" },
   { key: "adorm",  Art: ArtCeata,   bg: "from-[#EDF2F7] to-[#DEE8F0]", title: "Sunt epuizată, dar nu adorm",  desc: "Nu mai am energie și totuși somnul nu vine.", tag: "OBOSEALĂ" },
-  { key: "noapte", Art: ArtLiniste, bg: "from-[#EDF4EE] to-[#DDEBE0]", title: "Vreau doar liniște",           desc: "Nimic de făcut. Doar ceva care ține companie.", tag: "LINIȘTIRE" },
+  { key: "noapte", Art: ArtFrunza,  bg: "from-[#EDF4EE] to-[#DDEBE0]", title: "Vreau doar liniște",           desc: "Nimic de făcut. Doar ceva care ține companie.", tag: "LINIȘTIRE" },
 ] as const;
 
 type MoodKey = typeof MOODS[number]["key"] | null;
@@ -427,10 +294,10 @@ const PAGE_SIZE = 4;
 
 /* ── Categoriile „doar play" ─────────────────────────────────────────────── */
 const CHIPS = [
-  { Art: ArtNatura, title: "Natură", desc: "ploaie, ocean, pădure" },
+  { Art: ArtCopaci, title: "Natură", desc: "ploaie, ocean, pădure" },
   { Art: ArtMuzica, title: "Muzică", desc: "compoziții lente" },
-  { Art: ArtNoise,  title: "Noise",  desc: "alb, roz, brown" },
-  { Art: ArtTonuri, title: "Tonuri", desc: "sunete constante" },
+  { Art: ArtUnde,   title: "Noise",  desc: "alb, roz, brown" },
+  { Art: ArtInele,  title: "Tonuri", desc: "sunete constante" },
 ] as const;
 
 /* Fețele pentru „Cum ai dormit?" */
@@ -477,7 +344,6 @@ export default function SomnClient({ siteContent }: Props) {
 
   return (
     <div className="min-h-screen bg-bg-main">
-      <SomnDefs />
 
       {/* ── HERO — luna peste mare ─────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#0C1626]">
@@ -546,7 +412,7 @@ export default function SomnClient({ siteContent }: Props) {
                     mood === m.key ? "border-forest-green" : "border-transparent"
                   }`}
                 >
-                  <m.Art />
+                  <m.Art className="w-[60px] h-[60px] mb-4" />
                   <p className="font-heading text-h4 font-normal text-deep-green leading-snug mb-1">{tr(m.title)}</p>
                   <p className="font-body text-body-sm text-secondary-text leading-snug">{tr(m.desc)}</p>
                   <span className="mt-auto pt-4 font-body text-[11px] tracking-wide text-secondary-text/70">
@@ -663,7 +529,7 @@ export default function SomnClient({ siteContent }: Props) {
               <AnimateIn key={c.title} from="bottom" delay={i * 0.05}>
                 <div className="h-full rounded-card bg-white border border-sage-border/60 p-5 relative transition-all hover:-translate-y-1 hover:shadow-card-hover">
                   <span className="absolute top-3 right-3.5 font-body text-[9px] uppercase tracking-wide text-secondary-text/60">{tr("În curând")}</span>
-                  <c.Art />
+                  <c.Art className="w-[52px] h-[52px] mb-3" />
                   <p className="font-body font-semibold text-body-md text-deep-green">{tr(c.title)}</p>
                   <p className="font-body text-label-xs text-secondary-text mt-0.5">{tr(c.desc)}</p>
                 </div>
@@ -773,10 +639,10 @@ export default function SomnClient({ siteContent }: Props) {
             <div className="rounded-card bg-white shadow-card p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
               <div className="space-y-5">
                 {[
-                  { key: "ploaie" as const, label: "Ploaie", art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M18 11a6 6 0 10-11 3" stroke="url(#somn-gBlue)" strokeWidth="1.8" strokeLinecap="round" /><path d="M9 17v4M14 16v5M19 18v3" stroke="url(#somn-gBlue)" strokeWidth="1.8" strokeLinecap="round" opacity=".7" /></svg> },
-                  { key: "ocean"  as const, label: "Ocean",  art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M3 11c3-3.5 6 3.5 9 0s6-3.5 9 0M3 17c3-3.5 6 3.5 9 0s6-3.5 9 0" stroke="url(#somn-gBlue)" strokeWidth="1.8" strokeLinecap="round" /></svg> },
-                  { key: "foc"    as const, label: "Foc",    art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M13 3c4 6 7 7 7 12a7 7 0 11-14 0c0-3 2-4 3-7 1 3 4 2 4-5z" fill="url(#somn-gAmber)" /></svg> },
-                  { key: "pian"   as const, label: "Pian",   art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><rect x="4" y="7" width="18" height="12" rx="2" stroke="url(#somn-gInd)" strokeWidth="1.7" /><path d="M9 7v12M13 7v12M17 7v12" stroke="url(#somn-gInd)" strokeWidth="1.3" opacity=".6" /></svg> },
+                  { key: "ploaie" as const, label: "Ploaie", art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M18 11a6 6 0 10-11 3" stroke="url(#art-gBlue)" strokeWidth="1.8" strokeLinecap="round" /><path d="M9 17v4M14 16v5M19 18v3" stroke="url(#art-gBlue)" strokeWidth="1.8" strokeLinecap="round" opacity=".7" /></svg> },
+                  { key: "ocean"  as const, label: "Ocean",  art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M3 11c3-3.5 6 3.5 9 0s6-3.5 9 0M3 17c3-3.5 6 3.5 9 0s6-3.5 9 0" stroke="url(#art-gBlue)" strokeWidth="1.8" strokeLinecap="round" /></svg> },
+                  { key: "foc"    as const, label: "Foc",    art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M13 3c4 6 7 7 7 12a7 7 0 11-14 0c0-3 2-4 3-7 1 3 4 2 4-5z" fill="url(#art-gAmber)" /></svg> },
+                  { key: "pian"   as const, label: "Pian",   art: <svg className="w-[26px] h-[26px] flex-shrink-0" viewBox="0 0 26 26" fill="none" aria-hidden="true"><rect x="4" y="7" width="18" height="12" rx="2" stroke="url(#art-gInd)" strokeWidth="1.7" /><path d="M9 7v12M13 7v12M17 7v12" stroke="url(#art-gInd)" strokeWidth="1.3" opacity=".6" /></svg> },
                 ].map((s) => (
                   <div key={s.key} className="flex items-center gap-4">
                     {s.art}
@@ -819,10 +685,10 @@ export default function SomnClient({ siteContent }: Props) {
                     <stop offset="0" stopColor="#101E31" /><stop offset="100%" stopColor="#25405A" /></linearGradient></defs>
                   <rect width="900" height="140" fill="url(#somn-nbG)" />
                   <circle cx="740" cy="46" r="26" fill="#EFE2C6" opacity=".55" />
-                  <circle cx="740" cy="46" r="60" fill="#EFE2C6" opacity=".1" filter="url(#somn-softer)" />
+                  <circle cx="740" cy="46" r="60" fill="#EFE2C6" opacity=".1" filter="url(#art-softer)" />
                   <g fill="#EFE8D8"><circle cx="620" cy="30" r="1.4" opacity=".6" /><circle cx="828" cy="96" r="1.2" opacity=".45" />
                     <circle cx="560" cy="98" r="1.1" opacity=".4" /><circle cx="866" cy="34" r="1.3" opacity=".5" /></g>
-                  <rect width="900" height="140" filter="url(#somn-grain)" opacity=".18" style={{ mixBlendMode: "overlay" }} />
+                  <rect width="900" height="140" filter="url(#art-grain)" opacity=".18" style={{ mixBlendMode: "overlay" }} />
                 </svg>
               </div>
               <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(8,14,24,.9), rgba(8,14,24,.55))" }} aria-hidden />
