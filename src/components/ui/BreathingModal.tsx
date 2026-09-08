@@ -35,6 +35,16 @@ const TECHNIQUES: Technique[] = [
 const DURATIONS = [2, 3, 5, 10];
 const PROG_C = 942.48;
 
+/**
+ * Melodiile sesiunii (în `public/`). Alegem după durată, iar piesa rulează în
+ * buclă — la 10 min se reia cea de 5. Lipsa fișierului nu strică sesiunea.
+ */
+const BREATH_TRACKS = { short: "/breathing-3min.mp3", long: "/breathing-5min.mp3" };
+const trackFor = (min: number) => (min <= 3 ? BREATH_TRACKS.short : BREATH_TRACKS.long);
+const BREATH_VOLUME = 0.35;
+/** Numărătoarea inversă dinainte de pornire. */
+const COUNTDOWN_FROM = 3;
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -52,6 +62,9 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
   /** Sesiunea nu pornește singură — utilizatorul apasă „Începe" (sau enso-ul). */
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
+  /** 3 · 2 · 1 înainte de prima inspirație; null = nu numărăm acum. */
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const trackRef = useRef<HTMLAudioElement>(null);
 
   // Etichetele fazelor pentru codul imperativ (mereu cu traducerea curentă)
   const labelsRef = useRef({ in: "Inspiră", hold: "Ține", out: "Expiră" });
@@ -73,6 +86,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     clock: null as ReturnType<typeof setInterval> | null,
     hintT: null as ReturnType<typeof setTimeout> | null,
     hintLoop: null as ReturnType<typeof setInterval> | null,
+    cdTimer: null as ReturnType<typeof setInterval> | null,
   }).current;
 
   const $ = (id: string) => rootRef.current?.querySelector<HTMLElement>(`#bre-${id}`) ?? null;
@@ -83,7 +97,26 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     if (st.clock) clearInterval(st.clock);
     if (st.hintT) clearTimeout(st.hintT);
     if (st.hintLoop) clearInterval(st.hintLoop);
-    st.phaseTimer = st.tick = st.clock = st.hintT = st.hintLoop = null;
+    if (st.cdTimer) clearInterval(st.cdTimer);
+    st.phaseTimer = st.tick = st.clock = st.hintT = st.hintLoop = st.cdTimer = null;
+  }
+
+  /* ── Sunet ────────────────────────────────────────────────────────────────
+     Melodia sesiunii pornește odată cu numărătoarea inversă. Ambianța site-ului
+     e oprită și repornită prin evenimentele pe care le folosește și playerul de
+     practici — ea revine DOAR dacă rula înainte (vezi ui/BackgroundMusic.tsx). */
+  function trackPlay() {
+    const a = trackRef.current;
+    if (!a) return;
+    a.volume = BREATH_VOLUME;
+    a.play().catch(() => { /* fișierul poate lipsi încă — sesiunea merge oricum */ });
+  }
+  function trackPause() { trackRef.current?.pause(); }
+  function trackStop() {
+    const a = trackRef.current;
+    if (!a) return;
+    a.pause();
+    try { a.currentTime = 0; } catch { /* ignore */ }
   }
 
   const fmt = (s: number) => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
@@ -122,7 +155,8 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     const trz = `transform ${ms}ms cubic-bezier(.37,0,.63,1)`;
     ["orb", "ring", "mark"].forEach((id) => { const e = $(id); if (e) e.style.transition = trz; });
     const lite = liteRef.current;
-    const c = $("clouds"), fl = $("fill"), sm = lite ? null : $("smokes"), gd = $("gold");
+    // Fumul e acum o textură rasterizată — scalarea lui e ieftină și pe telefon
+    const c = $("clouds"), fl = $("fill"), sm = $("smokes"), gd = $("gold");
     // Pe telefon nu animăm `filter` (blur-ul recalculat la fiecare cadru = sacadare)
     if (c) c.style.transition = lite
       ? `transform ${ms}ms cubic-bezier(.37,0,.63,1), opacity ${ms}ms ease`
@@ -229,6 +263,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     st.running = true;
     setStarted(true);
     setFinished(false);
+    trackPlay();
     $("mark")?.classList.remove("bre-paused");
     showHint(hintsRef.current.pause, true);
     startHintLoop();
@@ -239,6 +274,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
 
   function pause() {
     st.running = false;
+    trackPause();
     $("mark")?.classList.add("bre-paused");
     if (st.hintLoop) { clearInterval(st.hintLoop); st.hintLoop = null; }
     showHint(hintsRef.current.resume, false);
@@ -250,10 +286,13 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
   }
 
   function handleMarkTap() {
+    if (st.cdTimer) return; // în timpul numărătorii inverse nu facem nimic
     const r = $("tapring");
     if (r) { r.classList.remove("bre-go"); void r.offsetWidth; r.classList.add("bre-go"); }
     if (st.remaining <= 0) return;
-    if (st.running) pause(); else play();
+    if (st.running) { pause(); return; }
+    // Prima pornire trece tot prin numărătoare; reluarea după pauză e imediată
+    if (st.pausedMid) play(); else beginCountdown();
   }
 
   /** Pregătește sesiunea. `autoPlay` doar la reluarea de la capăt („Începe din nou"). */
@@ -266,7 +305,6 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     setStarted(false);
     setFinished(false);
     setView("session");
-    onSessionStarted?.();
     // Poziția de start a vizualului — fără tranziții; pornirea o dă utilizatorul
     requestAnimationFrame(() => {
       const tn = $("tname"), tm = $("timer");
@@ -297,26 +335,51 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     });
   }
 
-  /** Butonul de sub cerc: pornește sesiunea sau o reia de la capăt. */
-  function handleStartClick() {
-    if (st.remaining <= 0 && st.cur) { startSession(st.cur, true); return; }
-    play();
+  /**
+   * Butonul de sub cerc (sau enso-ul, la prima pornire): 3 · 2 · 1, apoi sesiunea.
+   * Tot atunci se oprește ambianța site-ului și pornește melodia de respirație.
+   */
+  function beginCountdown() {
+    if (st.cdTimer) return;
+    if (st.remaining <= 0 && st.cur) startSession(st.cur); // reia de la capăt, tot cu numărătoare
+    onSessionStarted?.();
+    window.dispatchEvent(new Event("practiceplay")); // pune pe pauză muzica de fundal
+    trackPlay();
+    let n = COUNTDOWN_FROM;
+    setCountdown(n);
+    st.cdTimer = setInterval(() => {
+      n -= 1;
+      if (n > 0) { setCountdown(n); return; }
+      if (st.cdTimer) { clearInterval(st.cdTimer); st.cdTimer = null; }
+      setCountdown(null);
+      play();
+    }, 1000);
+  }
+
+  /** Iese din exercițiu: oprește melodia sesiunii și lasă ambianța să revină. */
+  function leaveSession() {
+    trackStop();
+    window.dispatchEvent(new Event("practicestop"));
   }
 
   function backToMenu() {
     if (st.running || st.pausedMid) pause();
     clearTimers();
+    leaveSession();
     st.cur = null;
     setStarted(false);
     setFinished(false);
+    setCountdown(null);
     setView("menu");
   }
 
   function handleClose() {
     clearTimers();
+    leaveSession();
     st.cur = null; st.running = false; st.pausedMid = false;
     setStarted(false);
     setFinished(false);
+    setCountdown(null);
     setView("menu");
     onClose();
   }
@@ -357,21 +420,8 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
           transition={{ type: "spring", damping: 28, stiffness: 350 }}
           className="bre-app"
         >
-          {/* Fum SVG (filtre) */}
-          <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true"><defs>
-            {/* Turbulență statică (fără <animate>) — recalcularea ei la fiecare
-                cadru era principala cauză a sacadării; mișcarea vine din rotație. */}
-            <filter id="bre-smokeA" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
-              <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves={3} seed={7} result="n" />
-              <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.94  0 0 0 0 0.78  0 0 0 0 0.72  2.3 0 0 0 -0.78" result="c" />
-              <feGaussianBlur in="c" stdDeviation="1.4" />
-            </filter>
-            <filter id="bre-smokeB" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
-              <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={2} seed={2} result="n" />
-              <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.97  0 0 0 0 0.93  0 0 0 0 0.88  2.1 0 0 0 -0.72" result="c" />
-              <feGaussianBlur in="c" stdDeviation="1" />
-            </filter>
-          </defs></svg>
+          {/* Melodia sesiunii — pornește odată cu numărătoarea inversă */}
+          <audio ref={trackRef} src={trackFor(durationMin)} loop preload="none" />
 
           {/* Închidere */}
           <button className="bre-close" onClick={handleClose} aria-label={tr("Închide")}>
@@ -439,15 +489,16 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
                 </div>
               </div>
               {/* Faza curentă — pastilă, în stilul meniului din header */}
-              <div className="bre-phase">
+              <div className={`bre-phase${countdown !== null ? " bre-counting" : ""}`}>
+                <div className="bre-count3" key={countdown ?? "-"}>{countdown}</div>
                 <div className="bre-plabel" id="bre-plabel"></div>
                 <div className="bre-pcount" id="bre-pcount"></div>
               </div>
             </div>
             <div className="bre-bottom">
               <div className="bre-hint" id="bre-hint"></div>
-              {!started && (
-                <button className="bre-btn" onClick={handleStartClick}>
+              {!started && countdown === null && (
+                <button className="bre-btn" onClick={beginCountdown}>
                   {finished ? tr("Începe din nou") : tr("Începe")}
                 </button>
               )}
@@ -527,7 +578,7 @@ const BREATHING_CSS = `
 .bre-mark{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:7px;
   cursor:pointer;padding:22px;border-radius:50%;-webkit-tap-highlight-color:transparent}
 .bre-mark .bre-fx{display:block}
-.bre-mark .bre-logo-c{width:96px;height:auto;display:block;transition:opacity .4s}
+.bre-mark .bre-logo-c{width:126px;height:auto;display:block;transition:opacity .4s}
 .bre-mark.bre-paused .bre-logo-c{opacity:.55}
 .bre-tapring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(243,238,230,.75);opacity:0;transform:scale(.6);pointer-events:none}
 .bre-tapring.bre-go{animation:bre-tap .65s ease-out}
@@ -540,6 +591,16 @@ const BREATHING_CSS = `
   font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:#F3EEE6}
 .bre-plabel:empty{display:none}
 .bre-pcount{margin-top:8px;font-size:13px;color:rgba(243,238,230,.6);font-variant-numeric:tabular-nums}
+/* Numărătoarea inversă 3 · 2 · 1 — apare în locul pastilei, sub cerc */
+.bre-count3{display:none;font-family:var(--font-heading),Georgia,serif;font-size:48px;line-height:1;
+  color:rgba(243,238,230,.92);font-variant-numeric:tabular-nums}
+.bre-phase.bre-counting .bre-count3{display:block;animation:bre-cd .95s ease-out both}
+.bre-phase.bre-counting .bre-plabel,.bre-phase.bre-counting .bre-pcount{display:none}
+@keyframes bre-cd{
+  0%{opacity:0;transform:scale(1.3)}
+  28%{opacity:1;transform:scale(1)}
+  100%{opacity:.45;transform:scale(.94)}
+}
 .bre-bottom{display:flex;align-items:center;justify-content:center;min-height:44px}
 .bre-btn{border:1px solid rgba(243,238,230,.35);background:rgba(243,238,230,.08);color:#F3EEE6;font:inherit;
   padding:12px 34px;border-radius:999px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
@@ -556,10 +617,16 @@ const BREATHING_CSS = `
 .bre-cloudspin .bre-c4{width:62%;height:62%;left:38%;top:0%;background:radial-gradient(circle,rgba(243,238,230,.95),rgba(243,238,230,0) 78%)}
 .bre-cloudspin .bre-c5{width:64%;height:64%;left:18%;top:18%;background:radial-gradient(circle,rgba(236,200,188,1),rgba(236,200,188,0) 78%)}
 @keyframes bre-drift{to{transform:rotate(360deg)}}
+/* Textura de fum e „coaptă" o singură dată ca imagine SVG (data URI), nu aplicată
+   ca filtru viu: browserul o rasterizează o dată, apoi doar o rotește — la fel de
+   texturată vizual, dar fără recalcularea turbulenței la fiecare cadru. */
 .bre-smokes{position:absolute;inset:0;transform:scale(.9);opacity:1;will-change:transform,opacity}
-.bre-smoke{position:absolute;inset:-25%;border-radius:50%;background:rgba(0,0,0,.01);pointer-events:none;will-change:transform}
-.bre-s1{filter:url(#bre-smokeA);animation:bre-swirl 48s linear infinite;mix-blend-mode:screen;opacity:.95}
-.bre-s2{filter:url(#bre-smokeB);animation:bre-swirl 66s linear infinite reverse;mix-blend-mode:soft-light;opacity:.9}
+.bre-smoke{position:absolute;inset:-25%;border-radius:50%;pointer-events:none;will-change:transform;
+  background-repeat:no-repeat;background-size:cover;background-position:center}
+.bre-s1{animation:bre-swirl 48s linear infinite;mix-blend-mode:screen;opacity:.95;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='a' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011' numOctaves='3' seed='7'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.94 0 0 0 0 0.78 0 0 0 0 0.72 2.3 0 0 0 -0.78'/%3E%3CfeGaussianBlur stdDeviation='1.4'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23a)'/%3E%3C/svg%3E")}
+.bre-s2{animation:bre-swirl 66s linear infinite reverse;mix-blend-mode:soft-light;opacity:.9;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='b' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.018' numOctaves='2' seed='2'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.97 0 0 0 0 0.93 0 0 0 0 0.88 2.1 0 0 0 -0.72'/%3E%3CfeGaussianBlur stdDeviation='1'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23b)'/%3E%3C/svg%3E")}
 @keyframes bre-swirl{to{transform:rotate(360deg)}}
 .bre-gold{position:absolute;inset:0;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle at 50% 46%,rgba(250,214,150,.92),rgba(238,190,118,.78) 55%,rgba(226,172,96,.62) 100%);
@@ -573,10 +640,10 @@ const BREATHING_CSS = `
   .bre-orb,.bre-ring,.bre-mark{transition-duration:.2s!important}
   .bre-logo-c,.bre-fx,.bre-logo-h,.bre-cloudspin,.bre-smoke{animation:none!important}
 }
-/* Pe touch/ecrane mici renunțăm la fumul SVG (feTurbulence + mix-blend-mode) —
-   e cea mai scumpă parte a animației și făcea sesiunea să sacadeze pe telefon. */
+/* Pe touch/ecrane mici păstrăm textura (stratul „screen"), dar renunțăm la al
+   doilea strat cu soft-light — două amestecuri suprapuse costă prea mult acolo. */
 @media (hover:none),(max-width:640px){
-  .bre-smokes{display:none}
+  .bre-s2{display:none}
   .bre-clouds{filter:blur(9px) saturate(1.45) brightness(1.03)}
 }
 /* Ecrane înguste sau scunde — cercul se micșorează ca să nu fie tăiat */
@@ -584,6 +651,6 @@ const BREATHING_CSS = `
   .bre-breath{width:280px;height:280px}
   .bre-guide,.bre-orb,.bre-ring{width:260px;height:260px}
   .bre-prog{width:276px;height:276px}
-  .bre-mark .bre-logo-c{width:84px}
+  .bre-mark .bre-logo-c{width:110px}
 }
 `;
