@@ -45,8 +45,13 @@ interface Props {
 export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Props) {
   const { tr } = useLanguage();
   const rootRef = useRef<HTMLDivElement>(null);
+  /** Telefon/touch: renunțăm la efectele scumpe (blur animat, fum) — altfel sacadează. */
+  const liteRef = useRef(false);
   const [view, setView] = useState<"menu" | "session">("menu");
   const [durationMin, setDurationMin] = useState(3);
+  /** Sesiunea nu pornește singură — utilizatorul apasă „Începe" (sau enso-ul). */
+  const [started, setStarted] = useState(false);
+  const [finished, setFinished] = useState(false);
 
   // Etichetele fazelor pentru codul imperativ (mereu cu traducerea curentă)
   const labelsRef = useRef({ in: "Inspiră", hold: "Ține", out: "Expiră" });
@@ -116,8 +121,12 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     const up = key === "in" || key === "hold";
     const trz = `transform ${ms}ms cubic-bezier(.37,0,.63,1)`;
     ["orb", "ring", "mark"].forEach((id) => { const e = $(id); if (e) e.style.transition = trz; });
-    const c = $("clouds"), fl = $("fill"), sm = $("smokes"), gd = $("gold");
-    if (c) c.style.transition = `transform ${ms}ms cubic-bezier(.37,0,.63,1), opacity ${ms}ms ease, filter ${ms}ms ease`;
+    const lite = liteRef.current;
+    const c = $("clouds"), fl = $("fill"), sm = lite ? null : $("smokes"), gd = $("gold");
+    // Pe telefon nu animăm `filter` (blur-ul recalculat la fiecare cadru = sacadare)
+    if (c) c.style.transition = lite
+      ? `transform ${ms}ms cubic-bezier(.37,0,.63,1), opacity ${ms}ms ease`
+      : `transform ${ms}ms cubic-bezier(.37,0,.63,1), opacity ${ms}ms ease, filter ${ms}ms ease`;
     if (fl) fl.style.transition = `opacity ${ms}ms ease`;
     if (sm) sm.style.transition = `transform ${ms}ms cubic-bezier(.37,0,.63,1), opacity ${ms}ms ease`;
     if (gd) gd.style.transition = `opacity ${ms}ms ease`;
@@ -126,7 +135,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     if (c) {
       c.style.transform = `scale(${up ? 1.12 : 0.85})`;
       c.style.opacity = up ? ".85" : "1";
-      c.style.filter = up ? "blur(14px) saturate(1.1)" : "blur(6px) saturate(1.7) brightness(1.04)";
+      if (!lite) c.style.filter = up ? "blur(14px) saturate(1.1)" : "blur(6px) saturate(1.7) brightness(1.04)";
     }
     if (fl) fl.style.opacity = up ? ".5" : ".98";
     if (sm) { sm.style.transform = `scale(${up ? 1.15 : 0.9})`; sm.style.opacity = up ? ".85" : "1"; }
@@ -189,6 +198,8 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
         if (pc) pc.textContent = "";
         $("mark")?.classList.remove("bre-paused");
         showHint(hintsRef.current.done, false);
+        setStarted(false);
+        setFinished(true);
       }
     }, 1000);
   }
@@ -216,6 +227,8 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
 
   function play() {
     st.running = true;
+    setStarted(true);
+    setFinished(false);
     $("mark")?.classList.remove("bre-paused");
     showHint(hintsRef.current.pause, true);
     startHintLoop();
@@ -243,24 +256,36 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     if (st.running) pause(); else play();
   }
 
-  function startSession(t: Technique) {
+  /** Pregătește sesiunea. `autoPlay` doar la reluarea de la capăt („Începe din nou"). */
+  function startSession(t: Technique, autoPlay = false) {
     st.cur = t; st.i = 0;
     st.remaining = durationMin * 60;
     st.sessionTotal = st.remaining;
     st.pausedMid = false;
+    st.running = false;
+    setStarted(false);
+    setFinished(false);
     setView("session");
     onSessionStarted?.();
-    // Poziția de start a vizualului — fără tranziții, apoi play
+    // Poziția de start a vizualului — fără tranziții; pornirea o dă utilizatorul
     requestAnimationFrame(() => {
       const tn = $("tname"), tm = $("timer");
       if (tn) tn.textContent = tr(t.name);
       if (tm) tm.textContent = fmt(st.remaining);
+      const pl = $("plabel"), pc = $("pcount");
+      if (pl) pl.textContent = "";
+      if (pc) pc.textContent = "";
+      const hh = $("hint");
+      if (hh) { hh.textContent = ""; hh.style.opacity = "0"; }
       ["orb", "ring", "mark", "clouds", "fill", "smokes", "gold"].forEach((id) => {
         const e = $(id); if (e) e.style.transition = "none";
       });
       scale($("orb"), 0.4); scale($("ring"), 0.4); scale($("mark"), 1);
       const c0 = $("clouds");
-      if (c0) { c0.style.transform = "scale(.85)"; c0.style.opacity = "1"; c0.style.filter = "blur(6px) saturate(1.7) brightness(1.04)"; }
+      if (c0) {
+        c0.style.transform = "scale(.85)"; c0.style.opacity = "1";
+        if (!liteRef.current) c0.style.filter = "blur(6px) saturate(1.7) brightness(1.04)";
+      }
       const f0 = $("fill"); if (f0) f0.style.opacity = ".98";
       const s0 = $("smokes"); if (s0) { s0.style.transform = "scale(.9)"; s0.style.opacity = "1"; }
       const g0 = $("gold"); if (g0) g0.style.opacity = "0";
@@ -268,20 +293,30 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
       if (gd) { gd.style.transition = "none"; gd.style.borderColor = "rgba(243,238,230,.26)"; gd.style.boxShadow = "none"; }
       setProgress(st.remaining);
       void $("orb")?.offsetWidth;
-      requestAnimationFrame(() => requestAnimationFrame(play));
+      if (autoPlay) requestAnimationFrame(() => requestAnimationFrame(play));
     });
+  }
+
+  /** Butonul de sub cerc: pornește sesiunea sau o reia de la capăt. */
+  function handleStartClick() {
+    if (st.remaining <= 0 && st.cur) { startSession(st.cur, true); return; }
+    play();
   }
 
   function backToMenu() {
     if (st.running || st.pausedMid) pause();
     clearTimers();
     st.cur = null;
+    setStarted(false);
+    setFinished(false);
     setView("menu");
   }
 
   function handleClose() {
     clearTimers();
     st.cur = null; st.running = false; st.pausedMid = false;
+    setStarted(false);
+    setFinished(false);
     setView("menu");
     onClose();
   }
@@ -289,6 +324,10 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
   // Escape închide; curățenie la demontare
   useEffect(() => {
     if (!isOpen) return;
+    liteRef.current =
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(max-width: 640px)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const esc = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
     document.addEventListener("keydown", esc);
     document.body.style.overflow = "hidden";
@@ -320,17 +359,15 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
         >
           {/* Fum SVG (filtre) */}
           <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true"><defs>
+            {/* Turbulență statică (fără <animate>) — recalcularea ei la fiecare
+                cadru era principala cauză a sacadării; mișcarea vine din rotație. */}
             <filter id="bre-smokeA" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
-              <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves={4} seed={7} result="n">
-                <animate attributeName="baseFrequency" values="0.010;0.014;0.010" dur="22s" repeatCount="indefinite" />
-              </feTurbulence>
+              <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves={3} seed={7} result="n" />
               <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.94  0 0 0 0 0.78  0 0 0 0 0.72  2.3 0 0 0 -0.78" result="c" />
               <feGaussianBlur in="c" stdDeviation="1.4" />
             </filter>
             <filter id="bre-smokeB" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
-              <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={3} seed={2} result="n">
-                <animate attributeName="baseFrequency" values="0.016;0.022;0.016" dur="30s" repeatCount="indefinite" />
-              </feTurbulence>
+              <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={2} seed={2} result="n" />
               <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.97  0 0 0 0 0.93  0 0 0 0 0.88  2.1 0 0 0 -0.72" result="c" />
               <feGaussianBlur in="c" stdDeviation="1" />
             </filter>
@@ -400,13 +437,21 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
                     <img className="bre-logo-c" src="/cerc-cream.png" alt="WithIN" />
                   </span>
                 </div>
-                <div className="bre-phase">
-                  <div className="bre-plabel" id="bre-plabel">—</div>
-                  <div className="bre-pcount" id="bre-pcount"></div>
-                </div>
+              </div>
+              {/* Faza curentă — pastilă, în stilul meniului din header */}
+              <div className="bre-phase">
+                <div className="bre-plabel" id="bre-plabel"></div>
+                <div className="bre-pcount" id="bre-pcount"></div>
               </div>
             </div>
-            <div className="bre-bottom"><div className="bre-hint" id="bre-hint"></div></div>
+            <div className="bre-bottom">
+              <div className="bre-hint" id="bre-hint"></div>
+              {!started && (
+                <button className="bre-btn" onClick={handleStartClick}>
+                  {finished ? tr("Începe din nou") : tr("Începe")}
+                </button>
+              )}
+            </div>
           </section>
         </motion.div>
       </div>
@@ -418,14 +463,18 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
    tokens adaptate la brand: fonturi Sentient/Inter, verdele WithIN. */
 const BREATHING_CSS = `
 .bre-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
-.bre-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-/* Telefon: pe tot ecranul. Desktop (≥640px): pop-up vertical, lat cât check-in-ul. */
+/* 100dvh — pe iOS ține cont de barele browserului care apar/dispar */
+.bre-wrap{position:fixed;left:0;right:0;top:0;height:100vh;height:100dvh;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  padding:14px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+/* Pop-up cu margini rotunjite pe orice ecran; pe desktop se oprește la 460×680 */
 .bre-app{position:relative;width:100%;height:100%;overflow:hidden;pointer-events:auto;color:#F3EEE6;
+  border-radius:26px;box-shadow:0 8px 48px rgba(15,46,26,.28);
   font-family:var(--font-body),system-ui,sans-serif;-webkit-font-smoothing:antialiased;
   background:radial-gradient(circle at 50% 38%, #2B8C5C 0%, #1E5C3D 55%, #0F2E1A 100%)}
 @media (min-width:640px){
   .bre-wrap{padding:16px}
-  .bre-app{max-width:460px;height:min(92vh,680px);border-radius:24px;box-shadow:0 8px 48px rgba(15,46,26,.28)}
+  .bre-app{max-width:460px;height:min(92vh,680px)}
 }
 .bre-close{position:absolute;top:34px;right:26px;z-index:5;width:38px;height:38px;border-radius:50%;
   border:1px solid rgba(243,238,230,.35);background:transparent;color:#F3EEE6;cursor:pointer;
@@ -442,7 +491,14 @@ const BREATHING_CSS = `
 .bre-chip{border:1px solid rgba(243,238,230,.3);background:transparent;color:#F3EEE6;font:inherit;
   padding:8px 16px;border-radius:999px;font-size:12px;letter-spacing:.06em;cursor:pointer;transition:.2s}
 .bre-chip.bre-on{background:rgba(243,238,230,.14);border-color:#F3EEE6}
-.bre-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+.bre-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;
+  padding-right:8px;margin-right:-4px;
+  scrollbar-width:thin;scrollbar-color:rgba(243,238,230,.22) transparent}
+.bre-list::-webkit-scrollbar{width:4px}
+.bre-list::-webkit-scrollbar-track{background:transparent}
+.bre-list::-webkit-scrollbar-thumb{background:rgba(243,238,230,.22);border-radius:999px}
+.bre-list::-webkit-scrollbar-thumb:hover{background:rgba(243,238,230,.4)}
+.bre-list::-webkit-scrollbar-button{display:none;width:0;height:0}
 .bre-card{text-align:left;border:1px solid rgba(243,238,230,.2);background:rgba(243,238,230,.05);color:#F3EEE6;font:inherit;
   border-radius:18px;padding:16px 18px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:14px}
 .bre-card:hover{background:rgba(243,238,230,.1);border-color:rgba(243,238,230,.4)}
@@ -456,10 +512,14 @@ const BREATHING_CSS = `
 .bre-tname{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,238,230,.6)}
 /* right:50px — lasă loc butonului de închidere, ca să nu cadă peste cronometru */
 .bre-timer{position:absolute;right:50px;font-size:15px;font-variant-numeric:tabular-nums;color:rgba(243,238,230,.6)}
-.bre-stage{flex:1;display:flex;align-items:center;justify-content:center}
+.bre-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px}
 .bre-breath{position:relative;width:320px;height:320px;display:grid;place-items:center}
 .bre-guide{position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(243,238,230,.26);will-change:border-color,box-shadow}
+/* Masca radială e obligatorie: pe Safari/iOS copiii cu filtre scapă din
+   border-radius + overflow:hidden și orbul apare ca pătrat. */
 .bre-orb{position:absolute;width:300px;height:300px;border-radius:50%;overflow:hidden;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 99%,transparent 100%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 99%,transparent 100%);
   background:radial-gradient(circle at 50% 50%, rgba(232,196,184,.20), rgba(232,196,184,.05) 62%, rgba(232,196,184,0) 100%);
   box-shadow:0 0 50px 8px rgba(232,196,184,.14);transform:scale(.4);will-change:transform}
 .bre-ring{position:absolute;width:300px;height:300px;border-radius:50%;border:1.5px solid rgba(243,238,230,.8);
@@ -472,10 +532,19 @@ const BREATHING_CSS = `
 .bre-tapring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(243,238,230,.75);opacity:0;transform:scale(.6);pointer-events:none}
 .bre-tapring.bre-go{animation:bre-tap .65s ease-out}
 @keyframes bre-tap{0%{opacity:.85;transform:scale(.6)}100%{opacity:0;transform:scale(1.7)}}
-.bre-phase{position:absolute;bottom:-58px;left:0;right:0;text-align:center}
-.bre-plabel{font-size:21px;letter-spacing:.16em;text-transform:uppercase;font-weight:300}
-.bre-pcount{margin-top:6px;font-size:13px;color:rgba(243,238,230,.6);font-variant-numeric:tabular-nums}
-.bre-bottom{display:flex;justify-content:center}
+/* Faza curentă — pastilă ca în meniul din header, sub cerc (nu suprapusă) */
+.bre-phase{text-align:center;min-height:62px}
+.bre-plabel{display:inline-flex;align-items:center;justify-content:center;min-width:158px;
+  padding:10px 24px;border-radius:999px;border:1px solid rgba(243,238,230,.26);
+  background:rgba(243,238,230,.12);backdrop-filter:blur(6px);
+  font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:#F3EEE6}
+.bre-plabel:empty{display:none}
+.bre-pcount{margin-top:8px;font-size:13px;color:rgba(243,238,230,.6);font-variant-numeric:tabular-nums}
+.bre-bottom{display:flex;align-items:center;justify-content:center;min-height:44px}
+.bre-btn{border:1px solid rgba(243,238,230,.35);background:rgba(243,238,230,.08);color:#F3EEE6;font:inherit;
+  padding:12px 34px;border-radius:999px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  cursor:pointer;transition:.2s}
+.bre-btn:hover{background:rgba(243,238,230,.18);border-color:rgba(243,238,230,.6)}
 .bre-hint{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,238,230,.6);opacity:0;transition:opacity 1.2s ease;text-align:center;min-height:16px}
 .bre-fill{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(236,190,176,.96),rgba(228,182,168,.86) 55%,rgba(224,176,162,.72) 100%);opacity:.98;will-change:opacity}
 .bre-clouds{position:absolute;inset:0;transform:scale(.85);opacity:1;filter:blur(6px) saturate(1.7) brightness(1.04);will-change:transform,opacity,filter}
@@ -503,6 +572,12 @@ const BREATHING_CSS = `
 @media (prefers-reduced-motion: reduce){
   .bre-orb,.bre-ring,.bre-mark{transition-duration:.2s!important}
   .bre-logo-c,.bre-fx,.bre-logo-h,.bre-cloudspin,.bre-smoke{animation:none!important}
+}
+/* Pe touch/ecrane mici renunțăm la fumul SVG (feTurbulence + mix-blend-mode) —
+   e cea mai scumpă parte a animației și făcea sesiunea să sacadeze pe telefon. */
+@media (hover:none),(max-width:640px){
+  .bre-smokes{display:none}
+  .bre-clouds{filter:blur(9px) saturate(1.45) brightness(1.03)}
 }
 /* Ecrane înguste sau scunde — cercul se micșorează ca să nu fie tăiat */
 @media (max-width:380px),(max-height:660px){

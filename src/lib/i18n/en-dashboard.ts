@@ -290,4 +290,6 @@ export const EN_DASHBOARD: Record<string, string> = {
   "Două minute de respirație ghidată îți pot schimba ritmul întregii zile.": "Two minutes of guided breathing can change the rhythm of your whole day.",
   "Respiră acum": "Breathe now",
   "Nu acum": "Not now",
+  "Începe": "Start",
+  "Începe din nou": "Start again",
 };
