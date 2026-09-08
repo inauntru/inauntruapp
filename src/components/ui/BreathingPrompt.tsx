@@ -7,7 +7,7 @@ import { X } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArtRespiratie } from "@/components/ui/ArtIcons";
-import { PROMPT_KEYS } from "@/lib/prompt-state";
+import { PROMPT_KEYS, BREATHING_MAX_APPEARANCES } from "@/lib/prompt-state";
 import BreathingModal from "@/components/ui/BreathingModal";
 
 /**
@@ -22,10 +22,9 @@ import BreathingModal from "@/components/ui/BreathingModal";
  *   evenimentul window "breathing:open" (fără întrebare, fără limite)
  */
 
-const MAX_APPEARANCES = 2;
-const FIRST_DELAY_MS = 30 * 1000;
+const MAX_APPEARANCES = BREATHING_MAX_APPEARANCES;
+const FIRST_DELAY_MS = 20 * 1000;
 const SNOOZE_MS = 15 * 60 * 1000;
-const CHECKIN_BUSY_RETRY_MS = 2 * 60 * 1000;
 
 const isDoneToday = () => {
   try { return localStorage.getItem(PROMPT_KEYS.breathingDone()) === "1"; } catch { return false; }
@@ -89,21 +88,12 @@ export default function BreathingPrompt() {
     if (isDoneToday() || getDismissals() >= MAX_APPEARANCES) return;
 
     let cancelled = false;
-    const attempt = (delay: number) => {
-      if (cancelled) return;
-      timerRef.current = setTimeout(() => {
-        if (cancelled || isDoneToday()) return;
-        // Nu peste check-in — amână dacă modalul lui e deschis acum
-        if (document.querySelector('[data-modal="checkin"]')) {
-          attempt(CHECKIN_BUSY_RETRY_MS);
-          return;
-        }
-        setAskOpen(true);
-      }, delay);
-    };
-
+    // „Respiră" are întâietate: nu așteaptă după check-in, apare când îi vine rândul
     const snoozeRemaining = getSnoozeUntil() - Date.now();
-    attempt(Math.max(FIRST_DELAY_MS, snoozeRemaining));
+    timerRef.current = setTimeout(() => {
+      if (cancelled || isDoneToday()) return;
+      setAskOpen(true);
+    }, Math.max(FIRST_DELAY_MS, snoozeRemaining));
 
     return () => {
       cancelled = true;
@@ -117,7 +107,7 @@ export default function BreathingPrompt() {
     setSnooze(SNOOZE_MS);
     if (getDismissals() < MAX_APPEARANCES) {
       timerRef.current = setTimeout(() => {
-        if (!isDoneToday() && !document.querySelector('[data-modal="checkin"]')) setAskOpen(true);
+        if (!isDoneToday()) setAskOpen(true);
       }, SNOOZE_MS);
     }
   }
@@ -160,6 +150,7 @@ function PromptCard({ open, onDismiss, onAccept, fact }: { open: boolean; onDism
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 32, scale: 0.96 }}
               transition={{ type: "spring", damping: 28, stiffness: 350 }}
+              data-prompt="breathing"
               className="pointer-events-auto bg-white rounded-2xl shadow-modal w-full max-w-[400px] p-6 text-center relative"
             >
               <button

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { PROMPT_KEYS } from "@/lib/prompt-state";
+import { PROMPT_KEYS, breathingPromptPending } from "@/lib/prompt-state";
 import CheckInModal from "@/components/ui/CheckInModal";
 
 /**
@@ -25,6 +25,10 @@ import CheckInModal from "@/components/ui/CheckInModal";
 const MAX_APPEARANCES = 3;
 const SNOOZE_MS = 10 * 60 * 1000;  // pauză după fiecare închidere (reamintire)
 const FIRST_DELAY_MS = 6 * 1000;   // „la câteva secunde după ce intri"
+/** Dacă „Respiră" mai are o apariție azi, îi lăsăm lui întâietatea și așteptăm. */
+const AFTER_BREATHING_MS = 30 * 1000;
+/** Cât reîncercăm dacă „Respiră" e chiar acum pe ecran. */
+const BREATHING_BUSY_RETRY_MS = 20 * 1000;
 
 const getDismissals = () => {
   try { return Number(localStorage.getItem(PROMPT_KEYS.checkinDismissals()) || 0); } catch { return 0; }
@@ -74,17 +78,27 @@ export default function DailyCheckInPrompt() {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
+    /** E „Respiră" pe ecran chiar acum (promptul lui sau exercițiul)? */
+    const breathingOnScreen = () =>
+      !!document.querySelector('[data-prompt="breathing"],[data-modal="breathing"]');
+
     const schedule = (done: boolean) => {
       if (cancelled) return;
       if (done) completedRef.current = true;
       if (done || getDismissals() >= MAX_APPEARANCES) return;
       // Respectă pauza de după închidere, chiar și după schimbarea paginii:
-      // dacă snooze-ul e activ, programează apariția abia la expirarea lui
+      // dacă snooze-ul e activ, programează apariția abia la expirarea lui.
+      // Iar dacă „Respiră" mai are o apariție azi, îi lăsăm lui întâietatea.
       const snoozeRemaining = getSnoozeUntil() - Date.now();
-      const delay = Math.max(FIRST_DELAY_MS, snoozeRemaining);
-      timer = setTimeout(() => {
-        if (!completedRef.current) setOpen(true);
-      }, delay);
+      const base = breathingPromptPending() ? AFTER_BREATHING_MS : FIRST_DELAY_MS;
+      const attempt = (delay: number) => {
+        timer = setTimeout(() => {
+          if (cancelled || completedRef.current) return;
+          if (breathingOnScreen()) { attempt(BREATHING_BUSY_RETRY_MS); return; }
+          setOpen(true);
+        }, delay);
+      };
+      attempt(Math.max(base, snoozeRemaining));
     };
 
     if (user) {
