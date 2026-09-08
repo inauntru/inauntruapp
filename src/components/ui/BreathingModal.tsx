@@ -41,7 +41,7 @@ const PROG_C = 942.48;
  */
 const BREATH_TRACKS = { short: "/breathing-3min.mp3", long: "/breathing-5min.mp3" };
 const trackFor = (min: number) => (min <= 3 ? BREATH_TRACKS.short : BREATH_TRACKS.long);
-const BREATH_VOLUME = 0.35;
+const BREATH_VOLUME = 0.18;
 /** Numărătoarea inversă dinainte de pornire. */
 const COUNTDOWN_FROM = 3;
 
@@ -87,6 +87,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     hintT: null as ReturnType<typeof setTimeout> | null,
     hintLoop: null as ReturnType<typeof setInterval> | null,
     cdTimer: null as ReturnType<typeof setInterval> | null,
+    fadeTimer: null as ReturnType<typeof setInterval> | null,
   }).current;
 
   const $ = (id: string) => rootRef.current?.querySelector<HTMLElement>(`#bre-${id}`) ?? null;
@@ -98,20 +99,39 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     if (st.hintT) clearTimeout(st.hintT);
     if (st.hintLoop) clearInterval(st.hintLoop);
     if (st.cdTimer) clearInterval(st.cdTimer);
-    st.phaseTimer = st.tick = st.clock = st.hintT = st.hintLoop = st.cdTimer = null;
+    if (st.fadeTimer) clearInterval(st.fadeTimer);
+    st.phaseTimer = st.tick = st.clock = st.hintT = st.hintLoop = st.cdTimer = st.fadeTimer = null;
   }
 
   /* ── Sunet ────────────────────────────────────────────────────────────────
      Melodia sesiunii pornește odată cu numărătoarea inversă. Ambianța site-ului
      e oprită și repornită prin evenimentele pe care le folosește și playerul de
      practici — ea revine DOAR dacă rula înainte (vezi ui/BackgroundMusic.tsx). */
-  function trackPlay() {
+  /** Pornește melodia crescând volumul de la zero pe durata dată. */
+  function trackPlay(fadeMs = 800) {
     const a = trackRef.current;
     if (!a) return;
-    a.volume = BREATH_VOLUME;
-    a.play().catch(() => { /* fișierul poate lipsi încă — sesiunea merge oricum */ });
+    if (st.fadeTimer) { clearInterval(st.fadeTimer); st.fadeTimer = null; }
+    a.volume = 0;
+    a.play().catch(() => { /* fișierul poate lipsi — sesiunea merge oricum */ });
+    const steps = Math.max(12, Math.round(fadeMs / 60));
+    let i = 0;
+    st.fadeTimer = setInterval(() => {
+      i += 1;
+      a.volume = Math.min(BREATH_VOLUME, (BREATH_VOLUME * i) / steps);
+      if (i >= steps && st.fadeTimer) { clearInterval(st.fadeTimer); st.fadeTimer = null; }
+    }, fadeMs / steps);
   }
-  function trackPause() { trackRef.current?.pause(); }
+  /** Reia după pauză — dar nu retează fade-ul pornit de numărătoare. */
+  function trackResume() {
+    const a = trackRef.current;
+    if (!a || !a.paused) return;
+    trackPlay(800);
+  }
+  function trackPause() {
+    if (st.fadeTimer) { clearInterval(st.fadeTimer); st.fadeTimer = null; }
+    trackRef.current?.pause();
+  }
   function trackStop() {
     const a = trackRef.current;
     if (!a) return;
@@ -263,7 +283,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     st.running = true;
     setStarted(true);
     setFinished(false);
-    trackPlay();
+    trackResume();
     $("mark")?.classList.remove("bre-paused");
     showHint(hintsRef.current.pause, true);
     startHintLoop();
@@ -344,7 +364,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     if (st.remaining <= 0 && st.cur) startSession(st.cur); // reia de la capăt, tot cu numărătoare
     onSessionStarted?.();
     window.dispatchEvent(new Event("practiceplay")); // pune pe pauză muzica de fundal
-    trackPlay();
+    trackPlay(COUNTDOWN_FROM * 1000);                // fade-in exact pe durata numărătorii
     let n = COUNTDOWN_FROM;
     setCountdown(n);
     st.cdTimer = setInterval(() => {

@@ -47,6 +47,25 @@ const setSnooze = (ms: number) => {
 
 const EXCLUDED_PREFIXES = ["/admin", "/login", "/register", "/forgot-password", "/reset-password"];
 
+/**
+ * „Știai că…" — un fapt scurt despre respirație la fiecare apariție, altul de
+ * fiecare dată. Rotim după ziua din an + numărul apariției.
+ */
+const FACTS = [
+  "Un expir mai lung decât inspirul îi spune corpului că e în siguranță. Acolo începe calmul.",
+  "Respirația e singura funcție automată a corpului pe care o poți conduce conștient.",
+  "Respirat pe nas, aerul e filtrat, încălzit și umezit înainte să ajungă în plămâni.",
+  "În jur de șase respirații pe minut aduc inima și respirația în același ritm.",
+  "Două inspiruri scurte urmate de un expir lung sunt felul corpului de a se descărca. De aceea oftăm.",
+  "Dacă umerii ți se ridică la fiecare inspir, respiri de sus. Diafragma stă neîntrebuințată.",
+];
+
+function factOfNow(offset: number) {
+  const now = new Date();
+  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
+  return FACTS[(dayOfYear + offset) % FACTS.length];
+}
+
 export default function BreathingPrompt() {
   const { user, loading } = useAuth();
   const pathname = usePathname();
@@ -64,6 +83,11 @@ export default function BreathingPrompt() {
   // Apariția periodică — doar pentru utilizatori logați
   useEffect(() => {
     if (loading || !user) return;
+    // Ajutor de testare: ?respira=test îl arată imediat, ignorând limitele zilei
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("respira") === "test") {
+      const t = setTimeout(() => setAskOpen(true), 2500);
+      return () => clearTimeout(t);
+    }
     if (isDoneToday() || getDismissals() >= MAX_APPEARANCES) return;
 
     let cancelled = false;
@@ -109,7 +133,7 @@ export default function BreathingPrompt() {
 
   return (
     <>
-      <PromptCard open={askOpen} onDismiss={dismiss} onAccept={acceptBreathing} />
+      <PromptCard open={askOpen} onDismiss={dismiss} onAccept={acceptBreathing} fact={factOfNow(getDismissals())} />
       <BreathingModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -120,7 +144,7 @@ export default function BreathingPrompt() {
 }
 
 /* ── Cardul-întrebare, în stilul site-ului ────────────────────────────────── */
-function PromptCard({ open, onDismiss, onAccept }: { open: boolean; onDismiss: () => void; onAccept: () => void }) {
+function PromptCard({ open, onDismiss, onAccept, fact }: { open: boolean; onDismiss: () => void; onAccept: () => void; fact: string }) {
   const { tr } = useLanguage();
   return (
     <AnimatePresence>
@@ -148,11 +172,14 @@ function PromptCard({ open, onDismiss, onAccept }: { open: boolean; onDismiss: (
                 <X size={16} weight="bold" className="text-secondary-text" />
               </button>
               <ArtRespiratie className="w-16 h-16 mx-auto mb-4 mt-2" />
-              <h3 className="font-heading text-h3 text-deep-green mb-2">
-                {tr("Ai făcut câteva respirații conștiente azi?")}
+              <p className="font-body text-label-xs font-semibold uppercase tracking-[0.18em] text-forest-green mb-2">
+                {tr("Știai că…")}
+              </p>
+              <h3 className="font-heading text-h3 text-deep-green mb-3 leading-snug">
+                {tr(fact)}
               </h3>
               <p className="font-body text-body-sm text-secondary-text mb-6">
-                {tr("Două minute de respirație ghidată îți pot schimba ritmul întregii zile.")}
+                {tr("Ai respirat conștient azi? Două minute ghidate schimbă ritmul întregii zile.")}
               </p>
               <button onClick={onAccept} className="btn btn-primary w-full justify-center mb-3">
                 {tr("Respiră acum")}

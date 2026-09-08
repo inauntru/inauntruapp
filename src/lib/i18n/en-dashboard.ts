@@ -286,8 +286,21 @@ export const EN_DASHBOARD: Record<string, string> = {
   "atinge enso-ul pentru a continua": "tap the enso to continue",
   "sesiune încheiată": "session complete",
   "Pauză / continuă": "Pause / continue",
-  "Ai făcut câteva respirații conștiente azi?": "Have you taken a few conscious breaths today?",
-  "Două minute de respirație ghidată îți pot schimba ritmul întregii zile.": "Two minutes of guided breathing can change the rhythm of your whole day.",
+  "Știai că…": "Did you know…",
+  "Ai respirat conștient azi? Două minute ghidate schimbă ritmul întregii zile.":
+    "Have you breathed consciously today? Two guided minutes change the rhythm of your whole day.",
+  "Un expir mai lung decât inspirul îi spune corpului că e în siguranță. Acolo începe calmul.":
+    "An exhale longer than the inhale tells your body it is safe. That's where calm begins.",
+  "Respirația e singura funcție automată a corpului pe care o poți conduce conștient.":
+    "Breathing is the only automatic function of the body you can consciously steer.",
+  "Respirat pe nas, aerul e filtrat, încălzit și umezit înainte să ajungă în plămâni.":
+    "Breathed through the nose, air is filtered, warmed and moistened before it reaches your lungs.",
+  "În jur de șase respirații pe minut aduc inima și respirația în același ritm.":
+    "Around six breaths a minute bring your heart and your breath into the same rhythm.",
+  "Două inspiruri scurte urmate de un expir lung sunt felul corpului de a se descărca. De aceea oftăm.":
+    "Two short inhales followed by a long exhale are the body's way of unloading. That's why we sigh.",
+  "Dacă umerii ți se ridică la fiecare inspir, respiri de sus. Diafragma stă neîntrebuințată.":
+    "If your shoulders rise with every inhale, you're breathing from the top. The diaphragm stays unused.",
   "Respiră acum": "Breathe now",
   "Nu acum": "Not now",
   "Începe": "Start",
