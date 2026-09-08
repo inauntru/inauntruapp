@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { X } from "@phosphor-icons/react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -66,6 +67,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     tick: null as ReturnType<typeof setInterval> | null,
     clock: null as ReturnType<typeof setInterval> | null,
     hintT: null as ReturnType<typeof setTimeout> | null,
+    hintLoop: null as ReturnType<typeof setInterval> | null,
   }).current;
 
   const $ = (id: string) => rootRef.current?.querySelector<HTMLElement>(`#bre-${id}`) ?? null;
@@ -75,7 +77,8 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     if (st.tick) clearInterval(st.tick);
     if (st.clock) clearInterval(st.clock);
     if (st.hintT) clearTimeout(st.hintT);
-    st.phaseTimer = st.tick = st.clock = st.hintT = null;
+    if (st.hintLoop) clearInterval(st.hintLoop);
+    st.phaseTimer = st.tick = st.clock = st.hintT = st.hintLoop = null;
   }
 
   const fmt = (s: number) => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
@@ -190,19 +193,32 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
     }, 1000);
   }
 
+  /**
+   * `auto` = reamintire discretă: apare estompat, ține câteva secunde, se stinge.
+   * Fără `auto` rămâne pe ecran (pauză / final de sesiune).
+   */
   function showHint(t: string, auto: boolean) {
     const h = $("hint");
     if (!h) return;
     if (st.hintT) clearTimeout(st.hintT);
     h.textContent = t;
-    h.style.opacity = "1";
-    if (auto) st.hintT = setTimeout(() => { h.style.opacity = "0"; }, 2600);
+    h.style.opacity = auto ? ".7" : "1";
+    if (auto) st.hintT = setTimeout(() => { h.style.opacity = "0"; }, 4000);
+  }
+
+  /** În timpul sesiunii, indiciul revine discret din când în când. */
+  function startHintLoop() {
+    if (st.hintLoop) clearInterval(st.hintLoop);
+    st.hintLoop = setInterval(() => {
+      if (st.running) showHint(hintsRef.current.pause, true);
+    }, 18000);
   }
 
   function play() {
     st.running = true;
     $("mark")?.classList.remove("bre-paused");
     showHint(hintsRef.current.pause, true);
+    startHintLoop();
     startClock();
     if (st.pausedMid) { st.pausedMid = false; startPhase(true); }
     else startPhase(false);
@@ -211,6 +227,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
   function pause() {
     st.running = false;
     $("mark")?.classList.add("bre-paused");
+    if (st.hintLoop) { clearInterval(st.hintLoop); st.hintLoop = null; }
     showHint(hintsRef.current.resume, false);
     if (st.phaseTimer) clearTimeout(st.phaseTimer);
     if (st.tick) clearInterval(st.tick);
@@ -288,8 +305,19 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
   return (
     <div className="fixed inset-0 z-[70]" data-modal="breathing">
       <style>{BREATHING_CSS}</style>
-      <div className="bre-overlay" ref={rootRef}>
-        <div className="bre-app">
+      {/* Fundal — click închide doar din meniu, ca să nu pierzi o sesiune pornită */}
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+        className="bre-backdrop"
+        onClick={view === "menu" ? handleClose : undefined}
+      />
+      <div className="bre-wrap" ref={rootRef}>
+        <motion.div
+          initial={{ opacity: 0, y: 32, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", damping: 28, stiffness: 350 }}
+          className="bre-app"
+        >
           {/* Fum SVG (filtre) */}
           <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true"><defs>
             <filter id="bre-smokeA" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
@@ -316,10 +344,9 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
           {/* ── Meniu ── */}
           <section className="bre-view" hidden={view !== "menu"}>
             <div className="bre-brand">
-              {/* enso-ul WithIN */}
+              {/* logoul orizontal alb din brand kit — static, fără animație */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/cerc-cream.png" alt="" className="bre-logo-h" />
-              <span className="bre-w">with<b>in</b></span>
+              <img src="/logo-orizontal-alb.png" alt="WithIN" className="bre-logo-h" />
             </div>
             <h1 className="bre-h1">{tr("Respiră")}</h1>
             <p className="bre-sub">{tr("Alege o tehnică și lasă-te ghidată.")}</p>
@@ -381,7 +408,7 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
             </div>
             <div className="bre-bottom"><div className="bre-hint" id="bre-hint"></div></div>
           </section>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -390,22 +417,25 @@ export default function BreathingModal({ isOpen, onClose, onSessionStarted }: Pr
 /* CSS-ul machetei, cu clase prefixate „bre-" (tag-ul <style> e global) și
    tokens adaptate la brand: fonturi Sentient/Inter, verdele WithIN. */
 const BREATHING_CSS = `
-.bre-overlay{position:absolute;inset:0;display:flex;justify-content:center;color:#F3EEE6;
+.bre-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+.bre-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+/* Telefon: pe tot ecranul. Desktop (≥640px): pop-up vertical, lat cât check-in-ul. */
+.bre-app{position:relative;width:100%;height:100%;overflow:hidden;pointer-events:auto;color:#F3EEE6;
   font-family:var(--font-body),system-ui,sans-serif;-webkit-font-smoothing:antialiased;
   background:radial-gradient(circle at 50% 38%, #2B8C5C 0%, #1E5C3D 55%, #0F2E1A 100%)}
-.bre-app{position:relative;width:100%;max-width:440px;height:100%;overflow:hidden}
-.bre-close{position:absolute;top:26px;right:22px;z-index:5;width:38px;height:38px;border-radius:50%;
+@media (min-width:640px){
+  .bre-wrap{padding:16px}
+  .bre-app{max-width:460px;height:min(92vh,680px);border-radius:24px;box-shadow:0 8px 48px rgba(15,46,26,.28)}
+}
+.bre-close{position:absolute;top:34px;right:26px;z-index:5;width:38px;height:38px;border-radius:50%;
   border:1px solid rgba(243,238,230,.35);background:transparent;color:#F3EEE6;cursor:pointer;
   display:grid;place-items:center;transition:.2s}
 .bre-close:hover{background:rgba(243,238,230,.12)}
 .bre-view{position:absolute;inset:0;display:flex;flex-direction:column;
   padding:34px 26px 30px;transition:opacity .4s;opacity:1}
 .bre-view[hidden]{opacity:0;pointer-events:none}
-.bre-brand{display:flex;align-items:center;gap:10px}
-.bre-brand .bre-logo-h{height:30px;width:auto;display:block;animation:bre-float 9s ease-in-out infinite;will-change:transform}
-@keyframes bre-float{0%{transform:translate(0,0) rotate(0deg)}30%{transform:translate(3px,-6px) rotate(1.2deg)}60%{transform:translate(-3px,-4px) rotate(-1.2deg)}100%{transform:translate(0,0) rotate(0deg)}}
-.bre-brand .bre-w{font-family:var(--font-heading),Georgia,serif;font-size:19px}
-.bre-brand .bre-w b{font-weight:600;color:#E8C4B8}
+.bre-brand{display:flex;align-items:center;min-height:38px}
+.bre-brand .bre-logo-h{height:26px;width:auto;display:block}
 .bre-h1{font-family:var(--font-heading),Georgia,serif;font-weight:600;font-size:36px;letter-spacing:.01em;margin:22px 0 4px}
 .bre-sub{color:rgba(243,238,230,.6);font-size:14px;margin-bottom:18px}
 .bre-dur{display:flex;gap:8px;margin-bottom:20px}
@@ -424,7 +454,8 @@ const BREATHING_CSS = `
 .bre-back{position:absolute;left:0;width:38px;height:38px;border-radius:50%;border:1px solid rgba(243,238,230,.35);
   background:transparent;color:#F3EEE6;font-size:18px;cursor:pointer;display:grid;place-items:center}
 .bre-tname{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,238,230,.6)}
-.bre-timer{position:absolute;right:0;font-size:15px;font-variant-numeric:tabular-nums;color:rgba(243,238,230,.6)}
+/* right:50px — lasă loc butonului de închidere, ca să nu cadă peste cronometru */
+.bre-timer{position:absolute;right:50px;font-size:15px;font-variant-numeric:tabular-nums;color:rgba(243,238,230,.6)}
 .bre-stage{flex:1;display:flex;align-items:center;justify-content:center}
 .bre-breath{position:relative;width:320px;height:320px;display:grid;place-items:center}
 .bre-guide{position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(243,238,230,.26);will-change:border-color,box-shadow}
@@ -445,7 +476,7 @@ const BREATHING_CSS = `
 .bre-plabel{font-size:21px;letter-spacing:.16em;text-transform:uppercase;font-weight:300}
 .bre-pcount{margin-top:6px;font-size:13px;color:rgba(243,238,230,.6);font-variant-numeric:tabular-nums}
 .bre-bottom{display:flex;justify-content:center}
-.bre-hint{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,238,230,.6);opacity:0;transition:opacity .6s;text-align:center;min-height:16px}
+.bre-hint{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,238,230,.6);opacity:0;transition:opacity 1.2s ease;text-align:center;min-height:16px}
 .bre-fill{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(236,190,176,.96),rgba(228,182,168,.86) 55%,rgba(224,176,162,.72) 100%);opacity:.98;will-change:opacity}
 .bre-clouds{position:absolute;inset:0;transform:scale(.85);opacity:1;filter:blur(6px) saturate(1.7) brightness(1.04);will-change:transform,opacity,filter}
 .bre-cloudspin{position:absolute;inset:-10%;animation:bre-drift 40s linear infinite}
@@ -473,5 +504,11 @@ const BREATHING_CSS = `
   .bre-orb,.bre-ring,.bre-mark{transition-duration:.2s!important}
   .bre-logo-c,.bre-fx,.bre-logo-h,.bre-cloudspin,.bre-smoke{animation:none!important}
 }
-@media (max-width:380px){.bre-breath{width:280px;height:280px}.bre-guide,.bre-orb,.bre-ring{width:260px;height:260px}.bre-prog{width:276px;height:276px}}
+/* Ecrane înguste sau scunde — cercul se micșorează ca să nu fie tăiat */
+@media (max-width:380px),(max-height:660px){
+  .bre-breath{width:280px;height:280px}
+  .bre-guide,.bre-orb,.bre-ring{width:260px;height:260px}
+  .bre-prog{width:276px;height:276px}
+  .bre-mark .bre-logo-c{width:84px}
+}
 `;
