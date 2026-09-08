@@ -11,8 +11,8 @@
 const V = "v3";
 const today = () => new Date().toDateString();
 
-/** Câte apariții pe zi are promptul „Respiră" (folosit și de check-in, ca să știe dacă mai urmează). */
-export const BREATHING_MAX_APPEARANCES = 2;
+/** Aparițiile pe zi ale promptului „Respiră": prima + 3 reamintiri, tot mai rare. */
+export const BREATHING_MAX_APPEARANCES = 4;
 
 export const PROMPT_KEYS = {
   checkinDismissals:  () => `checkin-${V}-dismissals-${today()}`,

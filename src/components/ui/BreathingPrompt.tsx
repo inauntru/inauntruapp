@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "@phosphor-icons/react";
@@ -22,9 +22,12 @@ import BreathingModal from "@/components/ui/BreathingModal";
  *   evenimentul window "breathing:open" (fără întrebare, fără limite)
  */
 
-const MAX_APPEARANCES = BREATHING_MAX_APPEARANCES;
+const MAX_APPEARANCES = BREATHING_MAX_APPEARANCES; // prima apariție + 3 reamintiri
 const FIRST_DELAY_MS = 20 * 1000;
-const SNOOZE_MS = 15 * 60 * 1000;
+/** Reamintirile se răresc: 15, apoi 25, apoi 40 de minute. */
+const SNOOZE_STEPS_MS = [15, 25, 40].map((m) => m * 60 * 1000);
+const snoozeAfter = (dismissals: number) =>
+  SNOOZE_STEPS_MS[Math.min(dismissals - 1, SNOOZE_STEPS_MS.length - 1)];
 
 const isDoneToday = () => {
   try { return localStorage.getItem(PROMPT_KEYS.breathingDone()) === "1"; } catch { return false; }
@@ -44,10 +47,7 @@ const setSnooze = (ms: number) => {
 
 const EXCLUDED_PREFIXES = ["/admin", "/login", "/register", "/forgot-password", "/reset-password"];
 
-/**
- * „Știai că…" — un fapt scurt despre respirație la fiecare apariție, altul de
- * fiecare dată. Rotim după ziua din an + numărul apariției.
- */
+/** „Știai că…" — fondul de mesaje despre respirație. */
 const FACTS = [
   "Un expir mai lung decât inspirul îi spune corpului că e în siguranță. Acolo începe calmul.",
   "Respirația e singura funcție automată a corpului pe care o poți conduce conștient.",
@@ -55,12 +55,42 @@ const FACTS = [
   "În jur de șase respirații pe minut aduc inima și respirația în același ritm.",
   "Două inspiruri scurte urmate de un expir lung sunt felul corpului de a se descărca. De aceea oftăm.",
   "Dacă umerii ți se ridică la fiecare inspir, respiri de sus. Diafragma stă neîntrebuințată.",
+  "Respiri de peste douăzeci de mii de ori pe zi. Aproape toate trec neobservate.",
+  "Diafragma e un mușchi. Ca oricare altul, se antrenează.",
+  "Respirația se scurtează la stres înainte să apuci să-ți dai seama că ești stresat.",
+  "Nările nu lucrează la fel tot timpul. Se schimbă între ele la câteva ore, singure.",
+  "Senzația de lipsă de aer vine din dioxidul de carbon adunat, nu din oxigenul care lipsește.",
+  "Inima accelerează ușor la inspir și încetinește la expir. Corpul tău are deja un ritm.",
+  "Copiii mici respiră firesc cu burta. Noi am învățat, cu timpul, să respirăm de sus.",
+  "Expirul prelungit atinge nervul vag — cel care duce corpul din alertă în odihnă.",
+  "Respirația e singurul lucru care se întâmplă mereu acum. De asta atenția are unde să se întoarcă.",
+  "Nu trebuie să respiri adânc ca să te liniștești. Trebuie să respiri lent.",
 ];
 
-function factOfNow(offset: number) {
-  const now = new Date();
-  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
-  return FACTS[(dayOfYear + offset) % FACTS.length];
+/* Ordinea mesajelor: aleatoare, dar stabilă pentru un utilizator într-o zi —
+   fiecare om primește altă succesiune, iar mâine primește alta. */
+function hashSeed(s: string) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function mulberry32(seed: number) {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function dailyFactOrder(userId: string) {
+  const rnd = mulberry32(hashSeed(userId + new Date().toDateString()));
+  const list = [...FACTS];
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list;
 }
 
 export default function BreathingPrompt() {
@@ -68,7 +98,17 @@ export default function BreathingPrompt() {
   const pathname = usePathname();
   const [askOpen, setAskOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [fact, setFact] = useState(FACTS[0]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const userRef = useRef<string>("anon");
+  if (user?.id) userRef.current = user.id;
+
+  /** Deschide cardul cu următorul mesaj din ordinea zilei — altul la fiecare apariție. */
+  const openAsk = useCallback(() => {
+    const order = dailyFactOrder(userRef.current);
+    setFact(order[getDismissals() % order.length]);
+    setAskOpen(true);
+  }, []);
 
   // Butonul „Respiră" (dashboard sau oriunde) → direct experiența
   useEffect(() => {
@@ -82,7 +122,7 @@ export default function BreathingPrompt() {
     if (loading || !user) return;
     // Ajutor de testare: ?respira=test îl arată imediat, ignorând limitele zilei
     if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("respira") === "test") {
-      const t = setTimeout(() => setAskOpen(true), 2500);
+      const t = setTimeout(openAsk, 2500);
       return () => clearTimeout(t);
     }
     if (isDoneToday() || getDismissals() >= MAX_APPEARANCES) return;
@@ -92,23 +132,26 @@ export default function BreathingPrompt() {
     const snoozeRemaining = getSnoozeUntil() - Date.now();
     timerRef.current = setTimeout(() => {
       if (cancelled || isDoneToday()) return;
-      setAskOpen(true);
+      openAsk();
     }, Math.max(FIRST_DELAY_MS, snoozeRemaining));
 
     return () => {
       cancelled = true;
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [user, loading]);
+  }, [user, loading, openAsk]);
 
   function dismiss() {
     setAskOpen(false);
-    try { localStorage.setItem(PROMPT_KEYS.breathingDismissals(), String(getDismissals() + 1)); } catch { /* ignore */ }
-    setSnooze(SNOOZE_MS);
-    if (getDismissals() < MAX_APPEARANCES) {
+    const n = getDismissals() + 1;
+    try { localStorage.setItem(PROMPT_KEYS.breathingDismissals(), String(n)); } catch { /* ignore */ }
+    const wait = snoozeAfter(n);
+    setSnooze(wait);
+    // Închis din prima → încă maximum 3 reamintiri, tot mai rare
+    if (n < MAX_APPEARANCES) {
       timerRef.current = setTimeout(() => {
-        if (!isDoneToday()) setAskOpen(true);
-      }, SNOOZE_MS);
+        if (!isDoneToday()) openAsk();
+      }, wait);
     }
   }
 
@@ -121,7 +164,7 @@ export default function BreathingPrompt() {
 
   return (
     <>
-      <PromptCard open={askOpen} onDismiss={dismiss} onAccept={acceptBreathing} fact={factOfNow(getDismissals())} />
+      <PromptCard open={askOpen} onDismiss={dismiss} onAccept={acceptBreathing} fact={fact} />
       <BreathingModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

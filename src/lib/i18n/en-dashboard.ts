@@ -301,6 +301,26 @@ export const EN_DASHBOARD: Record<string, string> = {
     "Two short inhales followed by a long exhale are the body's way of unloading. That's why we sigh.",
   "Dacă umerii ți se ridică la fiecare inspir, respiri de sus. Diafragma stă neîntrebuințată.":
     "If your shoulders rise with every inhale, you're breathing from the top. The diaphragm stays unused.",
+  "Respiri de peste douăzeci de mii de ori pe zi. Aproape toate trec neobservate.":
+    "You breathe over twenty thousand times a day. Almost all of them go unnoticed.",
+  "Diafragma e un mușchi. Ca oricare altul, se antrenează.":
+    "The diaphragm is a muscle. Like any other, it can be trained.",
+  "Respirația se scurtează la stres înainte să apuci să-ți dai seama că ești stresat.":
+    "Your breath shortens under stress before you even realise you're stressed.",
+  "Nările nu lucrează la fel tot timpul. Se schimbă între ele la câteva ore, singure.":
+    "Your nostrils don't work equally all the time. They take turns every few hours, on their own.",
+  "Senzația de lipsă de aer vine din dioxidul de carbon adunat, nu din oxigenul care lipsește.":
+    "The feeling of running out of air comes from built-up carbon dioxide, not from missing oxygen.",
+  "Inima accelerează ușor la inspir și încetinește la expir. Corpul tău are deja un ritm.":
+    "Your heart speeds up slightly as you inhale and slows as you exhale. Your body already has a rhythm.",
+  "Copiii mici respiră firesc cu burta. Noi am învățat, cu timpul, să respirăm de sus.":
+    "Small children naturally breathe with the belly. We learned, over time, to breathe from the top.",
+  "Expirul prelungit atinge nervul vag — cel care duce corpul din alertă în odihnă.":
+    "A long exhale reaches the vagus nerve — the one that carries the body from alert into rest.",
+  "Respirația e singurul lucru care se întâmplă mereu acum. De asta atenția are unde să se întoarcă.":
+    "Breathing is the only thing that always happens now. That's why attention has somewhere to return to.",
+  "Nu trebuie să respiri adânc ca să te liniștești. Trebuie să respiri lent.":
+    "You don't need to breathe deeply to settle. You need to breathe slowly.",
   "Respiră acum": "Breathe now",
   "Nu acum": "Not now",
   "Începe": "Start",
