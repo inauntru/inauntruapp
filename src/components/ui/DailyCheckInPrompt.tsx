@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { PROMPT_KEYS } from "@/lib/prompt-state";
 import CheckInModal from "@/components/ui/CheckInModal";
 
 /**
@@ -25,25 +26,22 @@ const MAX_APPEARANCES = 3;
 const SNOOZE_MS = 10 * 60 * 1000;  // pauză după fiecare închidere (reamintire)
 const FIRST_DELAY_MS = 6 * 1000;   // „la câteva secunde după ce intri"
 
-const dismissKey = () => `checkin-dismissals-${new Date().toDateString()}`;
 const getDismissals = () => {
-  try { return Number(localStorage.getItem(dismissKey()) || 0); } catch { return 0; }
+  try { return Number(localStorage.getItem(PROMPT_KEYS.checkinDismissals()) || 0); } catch { return 0; }
 };
-const SNOOZE_KEY = "checkin-snooze-until";
 const getSnoozeUntil = () => {
-  try { return Number(localStorage.getItem(SNOOZE_KEY) || 0); } catch { return 0; }
+  try { return Number(localStorage.getItem(PROMPT_KEYS.checkinSnooze) || 0); } catch { return 0; }
 };
 const setSnooze = (ms: number) => {
-  try { localStorage.setItem(SNOOZE_KEY, String(Date.now() + ms)); } catch { /* ignore */ }
+  try { localStorage.setItem(PROMPT_KEYS.checkinSnooze, String(Date.now() + ms)); } catch { /* ignore */ }
 };
 
 /* „Completat azi" pentru vizitatori (fără cont → fără DB) */
-const guestDoneKey = () => `checkin-guest-done-${new Date().toDateString()}`;
 const isGuestDone = () => {
-  try { return localStorage.getItem(guestDoneKey()) === "1"; } catch { return false; }
+  try { return localStorage.getItem(PROMPT_KEYS.checkinGuestDone()) === "1"; } catch { return false; }
 };
 export const markGuestCheckInDone = () => {
-  try { localStorage.setItem(guestDoneKey(), "1"); } catch { /* ignore */ }
+  try { localStorage.setItem(PROMPT_KEYS.checkinGuestDone(), "1"); } catch { /* ignore */ }
 };
 
 /* Pagini unde promptul nu are ce căuta: admin + fluxul de autentificare
@@ -109,7 +107,7 @@ export default function DailyCheckInPrompt() {
   function handleClose() {
     setOpen(false);
     if (completedRef.current) return;
-    try { localStorage.setItem(dismissKey(), String(getDismissals() + 1)); } catch { /* ignore */ }
+    try { localStorage.setItem(PROMPT_KEYS.checkinDismissals(), String(getDismissals() + 1)); } catch { /* ignore */ }
     setSnooze(SNOOZE_MS);
     if (getDismissals() < MAX_APPEARANCES) {
       reminderRef.current = setTimeout(() => {

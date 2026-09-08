@@ -7,6 +7,7 @@ import { X } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArtRespiratie } from "@/components/ui/ArtIcons";
+import { PROMPT_KEYS } from "@/lib/prompt-state";
 import BreathingModal from "@/components/ui/BreathingModal";
 
 /**
@@ -26,23 +27,20 @@ const FIRST_DELAY_MS = 40 * 1000;
 const SNOOZE_MS = 15 * 60 * 1000;
 const CHECKIN_BUSY_RETRY_MS = 2 * 60 * 1000;
 
-const doneKey = () => `breathing-done-${new Date().toDateString()}`;
 const isDoneToday = () => {
-  try { return localStorage.getItem(doneKey()) === "1"; } catch { return false; }
+  try { return localStorage.getItem(PROMPT_KEYS.breathingDone()) === "1"; } catch { return false; }
 };
 const markDone = () => {
-  try { localStorage.setItem(doneKey(), "1"); } catch { /* ignore */ }
+  try { localStorage.setItem(PROMPT_KEYS.breathingDone(), "1"); } catch { /* ignore */ }
 };
-const dismissKey = () => `breathing-dismissals-${new Date().toDateString()}`;
 const getDismissals = () => {
-  try { return Number(localStorage.getItem(dismissKey()) || 0); } catch { return 0; }
+  try { return Number(localStorage.getItem(PROMPT_KEYS.breathingDismissals()) || 0); } catch { return 0; }
 };
-const SNOOZE_KEY = "breathing-snooze-until";
 const getSnoozeUntil = () => {
-  try { return Number(localStorage.getItem(SNOOZE_KEY) || 0); } catch { return 0; }
+  try { return Number(localStorage.getItem(PROMPT_KEYS.breathingSnooze) || 0); } catch { return 0; }
 };
 const setSnooze = (ms: number) => {
-  try { localStorage.setItem(SNOOZE_KEY, String(Date.now() + ms)); } catch { /* ignore */ }
+  try { localStorage.setItem(PROMPT_KEYS.breathingSnooze, String(Date.now() + ms)); } catch { /* ignore */ }
 };
 
 const EXCLUDED_PREFIXES = ["/admin", "/login", "/register", "/forgot-password", "/reset-password"];
@@ -115,7 +113,7 @@ export default function BreathingPrompt() {
 
   function dismiss() {
     setAskOpen(false);
-    try { localStorage.setItem(dismissKey(), String(getDismissals() + 1)); } catch { /* ignore */ }
+    try { localStorage.setItem(PROMPT_KEYS.breathingDismissals(), String(getDismissals() + 1)); } catch { /* ignore */ }
     setSnooze(SNOOZE_MS);
     if (getDismissals() < MAX_APPEARANCES) {
       timerRef.current = setTimeout(() => {
