@@ -41,7 +41,8 @@ const PROG_C = 942.48;
  */
 const BREATH_TRACKS = { short: "/breathing-3min.mp3", long: "/breathing-5min.mp3" };
 const trackFor = (min: number) => (min <= 3 ? BREATH_TRACKS.short : BREATH_TRACKS.long);
-const BREATH_VOLUME = 0.18;
+/* Volum jos intenționat: cineva cu telefonul la maxim nu trebuie speriat de muzică. */
+const BREATH_VOLUME = 0.08;
 /** Numărătoarea inversă dinainte de pornire. */
 const COUNTDOWN_FROM = 3;
 

@@ -23,7 +23,7 @@ import BreathingModal from "@/components/ui/BreathingModal";
  */
 
 const MAX_APPEARANCES = 2;
-const FIRST_DELAY_MS = 40 * 1000;
+const FIRST_DELAY_MS = 30 * 1000;
 const SNOOZE_MS = 15 * 60 * 1000;
 const CHECKIN_BUSY_RETRY_MS = 2 * 60 * 1000;
 
