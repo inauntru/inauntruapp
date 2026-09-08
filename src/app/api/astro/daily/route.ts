@@ -45,11 +45,32 @@ const DAY_NAMES  = ["duminică", "luni", "marți", "miercuri", "joi", "vineri", 
 
 // ── Prompt pentru Claude ──────────────────────────────────────────────────────
 
+/**
+ * Regula de ton cerută de Sabina: textele apar într-o platformă de reglare
+ * somatică — trebuie să vorbească limba platformei și să împingă subtil spre
+ * lucrul interior, nu să dea sfaturi generice de viață.
+ */
+const PLATFORM_TONE = `
+Context obligatoriu de ton — textele apar într-o platformă de reglare somatică
+(practici de respirație, scanarea corpului, ancore somatice de 10 secunde–3 minute,
+somn, jurnal de senzații). Fiecare descriere:
+- e ancorată în experiența trăită în corp: senzații, respirație, tensiune, energie,
+  somn, granițe emoționale — NU evenimente exterioare
+- chiar și la "relatii", unghiul e somatic: co-reglare, granițe, cum îți răspunde
+  sistemul nervos în prezența celorlalți — nu "cineva te place" sau sfaturi de cuplu
+- sugerează implicit un pas mic de lucru interior (o pauză, un expir lung, o scanare
+  a corpului, câteva minute de liniște, notat în jurnal) — fără să numească platforma,
+  fără ton de reclamă
+- evită complet: carieră, bani, noroc, întâlniri providențiale, sfaturi generice de viață
+Exemplu de ton corect: "Oboseala pe care o simți nu este fizică. Granițele emoționale
+sunt subțiri azi — lucrează blând cu ele."`;
+
 function buildPrompt(date: Date, moon: ReturnType<typeof getMoonPhase>, sunSign: string, dayRuler: string, dayName: string, lang: "ro" | "en" = "ro"): string {
   const langLine = lang === "en"
     ? "Write in natural, modern ENGLISH (Co-Star style) — every description in English. Keep the JSON keys and the 12 Romanian sign names as keys exactly as given."
     : "Scrii în română, direct, atmosferic, fără clișee.";
   return `Ești un astrolog modern în stilul Co-Star. ${langLine}
+${PLATFORM_TONE}
 
 Contextul astronomic de azi (${date.toISOString().split("T")[0]}, ${dayName}):
 - Conducătorul zilei: ${dayRuler} (planetă asociată tradițional cu această zi a săptămânii)
@@ -109,6 +130,7 @@ function buildPersonalPrompt(
     ? "Write in natural, modern ENGLISH (Co-Star style) — every description in English."
     : "Scrii în română, direct, atmosferic, fără clișee.";
   return `Ești un astrolog modern în stilul Co-Star. ${langLine}
+${PLATFORM_TONE}
 
 Profilul natal al persoanei:
 - Soare în ${natal.sunSign} (identitatea, direcția)

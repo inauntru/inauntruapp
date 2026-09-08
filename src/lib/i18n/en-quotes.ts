@@ -241,108 +241,108 @@ export const EN_QUOTES: Record<string, string> = {
     "The nervous system learns from calm — not from haste and force.",
 
   // ── Zodiac fallback (zodiac-influences.ts) — foc ──
-  "Corpul tău cere mișcare azi. Energia se acumulează și vrea un canal.":
-    "Your body is asking for movement today. Energy is building up and wants a channel.",
-  "Tensiunea musculară îți semnalează ceva. Stai o clipă cu senzațiile.":
-    "Muscle tension is signaling something. Stay a moment with the sensations.",
-  "Sistemul nervos simte urgența mai mult decât situația o cere. Răcorește ritmul.":
-    "Your nervous system feels more urgency than the situation calls for. Cool the pace.",
-  "Claritatea vine rapid. Deciziile pe care le-ai tot amânat prind contur.":
-    "Clarity comes quickly. The decisions you've kept postponing are taking shape.",
-  "Gândurile aleargă, dar direcția nu e clară încă. Lasă lucrurile să se sedimenteze.":
-    "Thoughts are racing, but the direction isn't clear yet. Let things settle.",
-  "Mintea sare de la un gând la altul. Alege un singur lucru și rămâi cu el.":
-    "Your mind jumps from one thought to the next. Pick one thing and stay with it.",
-  "Prezența ta este magnetică azi. Interacțiunile pot fi cu adevărat semnificative.":
-    "Your presence is magnetic today. Interactions can be truly meaningful.",
-  "Energia ta domină spațiul. Fă loc și celuilalt să existe.":
-    "Your energy dominates the room. Make space for the other person to exist too.",
-  "Impulsivitatea poate răni fără intenție. Gândește înainte să vorbești.":
-    "Impulsiveness can hurt without meaning to. Think before you speak.",
-  "Rezervele sunt pline. Este momentul pentru ce ai tot amânat.":
-    "Your reserves are full. This is the moment for what you've been putting off.",
-  "Energia vine în valuri. Prinde momentele de flux, nu forța flacăra.":
-    "Energy comes in waves. Catch the moments of flow; don't force the flame.",
-  "Arzi prea repede prea mult. Conservarea este și ea un act de forță.":
-    "You're burning too much, too fast. Conserving is also an act of strength.",
+  "Corpul tău cere mișcare azi și o primește ușor. Canalizeaz-o conștient — câteva minute de practică îi dau direcție.":
+    "Your body asks for movement today and receives it easily. Channel it consciously — a few minutes of practice give it direction.",
+  "Tensiunea din umeri și maxilar îți semnalează ceva. Stai o clipă cu senzațiile înainte să treci mai departe.":
+    "The tension in your shoulders and jaw is signaling something. Stay a moment with the sensations before moving on.",
+  "Sistemul nervos simte urgența mai mult decât o cere situația. Un expir lung, repetat, îi răcorește ritmul.":
+    "Your nervous system feels more urgency than the situation calls for. A long exhale, repeated, cools its pace.",
+  "Claritatea vine rapid azi. Deciziile amânate prind contur — notează-le cât sunt vii, apoi lasă mintea să se așeze.":
+    "Clarity comes quickly today. Postponed decisions take shape — write them down while they're vivid, then let the mind settle.",
+  "Gândurile aleargă înaintea corpului. Două minute de prezență le lasă să se sedimenteze.":
+    "Your thoughts are running ahead of your body. Two minutes of presence lets them settle.",
+  "Mintea sare din gând în gând. Alege unul singur, iar restul pune-le pe hârtie — jurnalul le ține locul.":
+    "Your mind jumps from thought to thought. Choose just one, and put the rest on paper — the journal holds their place.",
+  "Prezența ta aprinde spațiul azi. Cu sistemul nervos așezat, intensitatea devine căldură, nu presiune.":
+    "Your presence lights up the room today. With a settled nervous system, intensity becomes warmth, not pressure.",
+  "Energia ta umple camera. Un inspir înainte să răspunzi face loc și celuilalt.":
+    "Your energy fills the room. One breath in before you answer makes space for the other person too.",
+  "Impulsivitatea poate răni fără intenție. Simte-ți tălpile pe podea înainte de conversațiile importante.":
+    "Impulsiveness can hurt without meaning to. Feel your feet on the floor before important conversations.",
+  "Rezervele sunt pline. Folosește-le pe ce contează și lasă seara să se încheie blând, nu în viteză.":
+    "Your reserves are full. Spend them on what matters, and let the evening close gently, not at full speed.",
+  "Energia vine în valuri. Prinde fluxul, iar între valuri respiră — pauzele întrețin flacăra.":
+    "Energy comes in waves. Catch the flow, and breathe between waves — pauses keep the flame alive.",
+  "Arzi prea repede prea mult. Zece secunde de oprire conștientă, repetate, valorează mai mult decât o prăbușire la final.":
+    "You're burning too much, too fast. Ten seconds of conscious pause, repeated, is worth more than collapsing at the end.",
 
   // ── Zodiac fallback — pământ ──
-  "Simțurile sunt ascuțite azi. Acordă-ți timp să guști, să atingi, să respiri adânc.":
-    "Your senses are sharp today. Give yourself time to taste, to touch, to breathe deeply.",
-  "Corpul tău știe ritmul potrivit. Ascultă-l mai mult decât agenda.":
-    "Your body knows the right rhythm. Listen to it more than to your schedule.",
-  "Încremenirea nu este odihnă. Mișcă-te ușor, chiar dacă nu simți nevoia.":
-    "Being frozen is not rest. Move gently, even if you don't feel the need.",
-  "Analiza ta este precisă azi. Momentul bun pentru planificare sau structurare.":
-    "Your analysis is precise today. A good moment for planning or structuring.",
-  "Ești metodic, dar poate prea rigid. Lasă loc pentru imprevizibil.":
-    "You're methodical, but perhaps too rigid. Leave room for the unexpected.",
-  "Perfectul este dușmanul bunului. Eliberează standardul imposibil.":
-    "Perfect is the enemy of good. Let go of the impossible standard.",
-  "Stabilitatea pe care o oferi este exact ce au nevoie cei din jurul tău.":
-    "The stability you offer is exactly what the people around you need.",
-  "Conexiunea vine prin lucruri concrete, nu prin vorbe. Fii prezent fizic.":
-    "Connection comes through concrete things, not words. Be physically present.",
-  "Rigiditatea ta poate fi citită ca distanță. Un gest mic contează mult.":
-    "Your rigidity can be read as distance. A small gesture goes a long way.",
-  "Energia ta este constantă și fiabilă azi. Profită fără să te epuizezi.":
-    "Your energy is steady and reliable today. Make the most of it without wearing yourself out.",
-  "Nu te grăbi. Ritmul tău natural este mai eficient decât viteza.":
-    "Don't rush. Your natural rhythm is more efficient than speed.",
-  "Inacțiunea consumă tot atâta energie cât acțiunea. Alege ceva mic și fă-l.":
-    "Inaction uses up just as much energy as action. Pick something small and do it.",
+  "Simțurile sunt ascuțite azi. Respiră adânc, atinge, gustă — corpul se hrănește din prezență.":
+    "Your senses are sharp today. Breathe deeply, touch, taste — the body feeds on presence.",
+  "Corpul tău știe ritmul potrivit. Ascultă-l măcar două minute înainte să asculți agenda.":
+    "Your body knows the right rhythm. Listen to it for at least two minutes before you listen to your schedule.",
+  "Încremenirea nu este odihnă. Mișcă-te blând și scanează-ți corpul din creștet în tălpi, să se dezmorțească.":
+    "Being frozen is not rest. Move gently and scan your body from crown to soles, to let it thaw.",
+  "Analiza ta este precisă azi. Structurează ce ai de făcut, apoi lasă mintea să coboare în corp.":
+    "Your analysis is precise today. Structure what needs doing, then let the mind descend into the body.",
+  "Ești metodic, dar poate prea rigid. Lasă un spațiu gol în plan — acolo respiră ziua.":
+    "You're methodical, but perhaps too rigid. Leave an empty space in the plan — that's where the day breathes.",
+  "Perfectul sufocă bunul. Eliberează standardul cu un expir lung și alege pasul mic.":
+    "Perfect suffocates good. Release the standard with a long exhale and choose the small step.",
+  "Stabilitatea pe care o oferi este exact ce au nevoie cei din jur. Reglat tu, se liniștesc și ei lângă tine.":
+    "The stability you offer is exactly what those around you need. When you're regulated, they settle beside you too.",
+  "Conexiunea vine prin prezență, nu prin vorbe. Fii acolo cu tot corpul, nu doar cu atenția.":
+    "Connection comes through presence, not words. Be there with your whole body, not just your attention.",
+  "Rigiditatea ta poate fi citită ca distanță. Relaxează-ți umerii și maxilarul înainte de întâlniri — se simte.":
+    "Your rigidity can be read as distance. Relax your shoulders and jaw before meetings — it shows.",
+  "Energia ta este constantă și fiabilă azi. Doseaz-o cu pauze scurte ca să o duci până seara.":
+    "Your energy is steady and reliable today. Dose it with short pauses so it carries you into the evening.",
+  "Nu te grăbi. Ritmul tău natural, susținut de respirație, este mai eficient decât viteza.":
+    "Don't rush. Your natural rhythm, supported by breath, is more efficient than speed.",
+  "Inacțiunea consumă tot atâta energie cât acțiunea. Alege ceva mic — un minut de practică e un început întreg.":
+    "Inaction uses up as much energy as action. Choose something small — one minute of practice is a whole beginning.",
 
   // ── Zodiac fallback — aer ──
-  "Respirația este ancora ta azi. Fiecare expir eliberează un gând inutil.":
-    "Your breath is your anchor today. Every exhale releases a useless thought.",
-  "Mintea și corpul vorbesc limbi diferite azi. Fă o pauză să le sincronizezi.":
-    "Mind and body are speaking different languages today. Take a break to sync them.",
-  "Capul este plin, corpul este neglijat. Coboară din gânduri.":
-    "Your head is full, your body is neglected. Come down out of your thoughts.",
-  "Conexiunile între idei vin rapid. Noteazh-le înainte să dispară.":
-    "Connections between ideas come fast. Write them down before they vanish.",
-  "Prea multe perspective simultan. Alege un unghi și explorează-l complet.":
-    "Too many perspectives at once. Choose one angle and explore it fully.",
-  "Suprastimularea cognitivă este reală azi. Tăcerea este productivă.":
-    "Cognitive overstimulation is real today. Silence is productive.",
-  "Conversațiile de azi pot schimba perspective. Rămâi curios față de celălalt.":
-    "Today's conversations can shift perspectives. Stay curious about the other person.",
-  "Comunici mult, dar asculți suficient? Testează inversul azi.":
-    "You communicate a lot, but do you listen enough? Try the reverse today.",
-  "Detașarea emoțională este evidentă pentru ceilalți. Încearcă să fii prezent.":
-    "Your emotional detachment is obvious to others. Try to be present.",
-  "Mintea activă îți alimentează energia azi. Stimulii te energizează.":
-    "An active mind fuels your energy today. Stimulation energizes you.",
-  "Energia se risipește în prea multe direcții. Concentrează-te pe una.":
-    "Your energy is scattering in too many directions. Focus on one.",
-  "Suprastimularea a consumat rezervele. Oprește-te înainte de epuizare.":
-    "Overstimulation has drained your reserves. Stop before you hit exhaustion.",
+  "Respirația este ancora ta azi. Fiecare expir lasă jos câte un gând inutil.":
+    "Your breath is your anchor today. Every exhale sets down one useless thought.",
+  "Mintea și corpul vorbesc limbi diferite azi. O pauză scurtă de respirație le sincronizează.":
+    "Mind and body speak different languages today. A short breathing pause syncs them.",
+  "Capul este plin, corpul este neglijat. Coboară din gânduri în tălpi — corpul te ține, dacă îl lași.":
+    "Your head is full, your body neglected. Come down from thoughts into your soles — the body holds you, if you let it.",
+  "Conexiunile între idei vin rapid. Notează-le în jurnal înainte să dispară, apoi revino la respirație.":
+    "Connections between ideas come fast. Note them in your journal before they vanish, then return to the breath.",
+  "Prea multe perspective simultan. Alege un unghi, iar restul lasă-le să plece pe expir.":
+    "Too many perspectives at once. Choose one angle, and let the rest leave on the exhale.",
+  "Suprastimularea cognitivă este reală azi. Câteva minute de tăcere sunt cea mai productivă oră a zilei.":
+    "Cognitive overstimulation is real today. A few minutes of silence are the most productive hour of the day.",
+  "Conversațiile de azi pot muta perspective. Ascultă cu tot corpul, nu doar cu mintea.":
+    "Today's conversations can shift perspectives. Listen with your whole body, not just your mind.",
+  "Comunici mult, dar asculți suficient? Un inspir înainte de fiecare replică schimbă tot.":
+    "You communicate a lot, but do you listen enough? One breath in before each reply changes everything.",
+  "Detașarea ta se simte de către ceilalți. Întoarce-te în corp — prezența nu se mimează.":
+    "Others can feel your detachment. Come back into your body — presence can't be faked.",
+  "Stimulii te energizează azi. Dozează-i totuși — sistemul nervos are nevoie și de gol.":
+    "Stimulation energizes you today. Still, dose it — the nervous system needs emptiness too.",
+  "Energia se risipește în prea multe direcții. Adun-o într-un singur lucru, cu respirația ca fir.":
+    "Your energy scatters in too many directions. Gather it into one thing, with the breath as your thread.",
+  "Suprastimularea a consumat rezervele. Închide ecranele devreme — somnul bun începe cu seara, nu cu noaptea.":
+    "Overstimulation has drained your reserves. Turn off the screens early — good sleep begins with the evening, not the night.",
 
   // ── Zodiac fallback — apă ──
-  "Emoțiile și senzațiile fizice sunt aliniate azi. Simți clar.":
-    "Emotions and physical sensations are aligned today. You feel clearly.",
-  "Corpul absoarbe tot ce simți. Acordă-i timp să proceseze.":
-    "Your body absorbs everything you feel. Give it time to process.",
-  "Oboseala pe care o simți nu este fizică. Granițele emoționale sunt subțiri azi.":
-    "The tiredness you feel isn't physical. Emotional boundaries are thin today.",
-  "Intuiția ta completează ce nu poate explica logica. Fii atent la primele impresii.":
-    "Your intuition fills in what logic can't explain. Pay attention to first impressions.",
-  "Sentimentele colorează gândurile azi. Separă cele două cu blândețe.":
-    "Feelings are coloring your thoughts today. Gently separate the two.",
-  "Emoțiile par fapte. Pune câteva întrebări înainte să tragi concluzii.":
-    "Emotions feel like facts. Ask a few questions before drawing conclusions.",
-  "Empatia ta este un cadou azi. Cineva are nevoie să fie cu adevărat auzit.":
-    "Your empathy is a gift today. Someone needs to be truly heard.",
-  "Absorbi stările celor din jur. Verifică care emoții sunt ale tale.":
-    "You absorb the moods of those around you. Check which emotions are actually yours.",
-  "Granițele sunt neclare. Ai grijă să nu preiei ceea ce nu îți aparține.":
-    "Boundaries are blurry. Be careful not to take on what isn't yours.",
-  "Energia emoțională este în fluxul tău. Simți din plin și asta îți dă putere.":
-    "Emotional energy is flowing through you. You feel fully, and that gives you strength.",
-  "Energia fluctuează cu starea emoțională. Normal, azi.":
-    "Your energy fluctuates with your emotional state. That's normal, today.",
-  "Drena emoțională este reală. Întoarce-te la sine înainte de orice altceva.":
-    "Emotional drain is real. Come back to yourself before anything else.",
+  "Emoțiile și senzațiile fizice sunt aliniate azi. Simți clar — corpul îți vorbește și merită ascultat.":
+    "Emotions and physical sensations are aligned today. You feel clearly — your body is speaking, and it deserves to be heard.",
+  "Corpul absoarbe tot ce simți. Dă-i timp să proceseze — o scanare blândă îl ajută.":
+    "Your body absorbs everything you feel. Give it time to process — a gentle body scan helps.",
+  "Oboseala pe care o simți nu este fizică. Granițele emoționale sunt subțiri azi — lucrează blând cu ele.":
+    "The tiredness you feel isn't physical. Emotional boundaries are thin today — work with them gently.",
+  "Intuiția completează ce nu poate explica logica. Notează prima impresie — jurnalul o păstrează curată.":
+    "Intuition fills in what logic can't explain. Write down the first impression — the journal keeps it clean.",
+  "Sentimentele colorează gândurile azi. Separă-le cu blândețe: ce simt, ce gândesc.":
+    "Feelings color your thoughts today. Separate them gently: what I feel, what I think.",
+  "Emoțiile par fapte azi. Respiră înainte de concluzii — corpul liniștit vede mai limpede.":
+    "Emotions feel like facts today. Breathe before conclusions — a settled body sees more clearly.",
+  "Empatia ta este un dar azi. Rămâi ancorat în corpul tău cât timp îl asculți pe celălalt.":
+    "Your empathy is a gift today. Stay anchored in your own body while you listen to the other person.",
+  "Absorbi stările celor din jur. Verifică în corp: ce e al tău și ce ai preluat?":
+    "You absorb the moods of those around you. Check in your body: what is yours, and what have you taken on?",
+  "Granițele sunt neclare azi. După fiecare interacțiune grea, un minut de revenire la tine.":
+    "Boundaries are blurry today. After every heavy interaction, one minute of coming back to yourself.",
+  "Energia emoțională curge din plin azi. Folosește-o pentru lucrul interior — azi intri adânc și ușor.":
+    "Emotional energy flows fully today. Use it for inner work — today you go deep with ease.",
+  "Energia fluctuează cu starea emoțională. E normal azi — reglează-te în valuri mici, nu dintr-o dată.":
+    "Your energy fluctuates with your emotional state. That's normal today — regulate in small waves, not all at once.",
+  "Drenajul emoțional este real. Întoarce-te la tine înainte de orice altceva — restul poate aștepta.":
+    "Emotional drain is real. Come back to yourself before anything else — the rest can wait.",
 
   // ── UI leftovers ──
   "Prefix țară": "Country code",

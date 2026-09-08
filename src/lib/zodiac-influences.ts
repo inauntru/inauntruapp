@@ -32,93 +32,98 @@ const SIGN_ORDER: Record<ZodiacSign, number> = {
 
 // ── Conținut influențe: element × domeniu × nivel ────────────────────────────
 // Structură: CONTENT[element][domeniu][nivel 0=favorabil, 1=echilibrat, 2=provocator]
+// Regula de ton (cerută de Sabina): fiecare text e ancorat în universul
+// platformei — corp, respirație, tensiune, ancorare, somn, jurnal, granițe —
+// și sugerează implicit un pas mic de lucru interior, fără sfaturi generice
+// de viață. Chiar și „Relații" e privit prin lentila somatică (co-reglare,
+// granițe, cum răspunde sistemul nervos în prezența altora).
 const CONTENT: Record<Element, Record<string, [string, string, string]>> = {
   foc: {
     corp: [
-      "Corpul tău cere mișcare azi. Energia se acumulează și vrea un canal.",
-      "Tensiunea musculară îți semnalează ceva. Stai o clipă cu senzațiile.",
-      "Sistemul nervos simte urgența mai mult decât situația o cere. Răcorește ritmul.",
+      "Corpul tău cere mișcare azi și o primește ușor. Canalizeaz-o conștient — câteva minute de practică îi dau direcție.",
+      "Tensiunea din umeri și maxilar îți semnalează ceva. Stai o clipă cu senzațiile înainte să treci mai departe.",
+      "Sistemul nervos simte urgența mai mult decât o cere situația. Un expir lung, repetat, îi răcorește ritmul.",
     ],
     minte: [
-      "Claritatea vine rapid. Deciziile pe care le-ai tot amânat prind contur.",
-      "Gândurile aleargă, dar direcția nu e clară încă. Lasă lucrurile să se sedimenteze.",
-      "Mintea sare de la un gând la altul. Alege un singur lucru și rămâi cu el.",
+      "Claritatea vine rapid azi. Deciziile amânate prind contur — notează-le cât sunt vii, apoi lasă mintea să se așeze.",
+      "Gândurile aleargă înaintea corpului. Două minute de prezență le lasă să se sedimenteze.",
+      "Mintea sare din gând în gând. Alege unul singur, iar restul pune-le pe hârtie — jurnalul le ține locul.",
     ],
     relatii: [
-      "Prezența ta este magnetică azi. Interacțiunile pot fi cu adevărat semnificative.",
-      "Energia ta domină spațiul. Fă loc și celuilalt să existe.",
-      "Impulsivitatea poate răni fără intenție. Gândește înainte să vorbești.",
+      "Prezența ta aprinde spațiul azi. Cu sistemul nervos așezat, intensitatea devine căldură, nu presiune.",
+      "Energia ta umple camera. Un inspir înainte să răspunzi face loc și celuilalt.",
+      "Impulsivitatea poate răni fără intenție. Simte-ți tălpile pe podea înainte de conversațiile importante.",
     ],
     energie: [
-      "Rezervele sunt pline. Este momentul pentru ce ai tot amânat.",
-      "Energia vine în valuri. Prinde momentele de flux, nu forța flacăra.",
-      "Arzi prea repede prea mult. Conservarea este și ea un act de forță.",
+      "Rezervele sunt pline. Folosește-le pe ce contează și lasă seara să se încheie blând, nu în viteză.",
+      "Energia vine în valuri. Prinde fluxul, iar între valuri respiră — pauzele întrețin flacăra.",
+      "Arzi prea repede prea mult. Zece secunde de oprire conștientă, repetate, valorează mai mult decât o prăbușire la final.",
     ],
   },
   pamant: {
     corp: [
-      "Simțurile sunt ascuțite azi. Acordă-ți timp să guști, să atingi, să respiri adânc.",
-      "Corpul tău știe ritmul potrivit. Ascultă-l mai mult decât agenda.",
-      "Încremenirea nu este odihnă. Mișcă-te ușor, chiar dacă nu simți nevoia.",
+      "Simțurile sunt ascuțite azi. Respiră adânc, atinge, gustă — corpul se hrănește din prezență.",
+      "Corpul tău știe ritmul potrivit. Ascultă-l măcar două minute înainte să asculți agenda.",
+      "Încremenirea nu este odihnă. Mișcă-te blând și scanează-ți corpul din creștet în tălpi, să se dezmorțească.",
     ],
     minte: [
-      "Analiza ta este precisă azi. Momentul bun pentru planificare sau structurare.",
-      "Ești metodic, dar poate prea rigid. Lasă loc pentru imprevizibil.",
-      "Perfectul este dușmanul bunului. Eliberează standardul imposibil.",
+      "Analiza ta este precisă azi. Structurează ce ai de făcut, apoi lasă mintea să coboare în corp.",
+      "Ești metodic, dar poate prea rigid. Lasă un spațiu gol în plan — acolo respiră ziua.",
+      "Perfectul sufocă bunul. Eliberează standardul cu un expir lung și alege pasul mic.",
     ],
     relatii: [
-      "Stabilitatea pe care o oferi este exact ce au nevoie cei din jurul tău.",
-      "Conexiunea vine prin lucruri concrete, nu prin vorbe. Fii prezent fizic.",
-      "Rigiditatea ta poate fi citită ca distanță. Un gest mic contează mult.",
+      "Stabilitatea pe care o oferi este exact ce au nevoie cei din jur. Reglat tu, se liniștesc și ei lângă tine.",
+      "Conexiunea vine prin prezență, nu prin vorbe. Fii acolo cu tot corpul, nu doar cu atenția.",
+      "Rigiditatea ta poate fi citită ca distanță. Relaxează-ți umerii și maxilarul înainte de întâlniri — se simte.",
     ],
     energie: [
-      "Energia ta este constantă și fiabilă azi. Profită fără să te epuizezi.",
-      "Nu te grăbi. Ritmul tău natural este mai eficient decât viteza.",
-      "Inacțiunea consumă tot atâta energie cât acțiunea. Alege ceva mic și fă-l.",
+      "Energia ta este constantă și fiabilă azi. Doseaz-o cu pauze scurte ca să o duci până seara.",
+      "Nu te grăbi. Ritmul tău natural, susținut de respirație, este mai eficient decât viteza.",
+      "Inacțiunea consumă tot atâta energie cât acțiunea. Alege ceva mic — un minut de practică e un început întreg.",
     ],
   },
   aer: {
     corp: [
-      "Respirația este ancora ta azi. Fiecare expir eliberează un gând inutil.",
-      "Mintea și corpul vorbesc limbi diferite azi. Fă o pauză să le sincronizezi.",
-      "Capul este plin, corpul este neglijat. Coboară din gânduri.",
+      "Respirația este ancora ta azi. Fiecare expir lasă jos câte un gând inutil.",
+      "Mintea și corpul vorbesc limbi diferite azi. O pauză scurtă de respirație le sincronizează.",
+      "Capul este plin, corpul este neglijat. Coboară din gânduri în tălpi — corpul te ține, dacă îl lași.",
     ],
     minte: [
-      "Conexiunile între idei vin rapid. Noteazh-le înainte să dispară.",
-      "Prea multe perspective simultan. Alege un unghi și explorează-l complet.",
-      "Suprastimularea cognitivă este reală azi. Tăcerea este productivă.",
+      "Conexiunile între idei vin rapid. Notează-le în jurnal înainte să dispară, apoi revino la respirație.",
+      "Prea multe perspective simultan. Alege un unghi, iar restul lasă-le să plece pe expir.",
+      "Suprastimularea cognitivă este reală azi. Câteva minute de tăcere sunt cea mai productivă oră a zilei.",
     ],
     relatii: [
-      "Conversațiile de azi pot schimba perspective. Rămâi curios față de celălalt.",
-      "Comunici mult, dar asculți suficient? Testează inversul azi.",
-      "Detașarea emoțională este evidentă pentru ceilalți. Încearcă să fii prezent.",
+      "Conversațiile de azi pot muta perspective. Ascultă cu tot corpul, nu doar cu mintea.",
+      "Comunici mult, dar asculți suficient? Un inspir înainte de fiecare replică schimbă tot.",
+      "Detașarea ta se simte de către ceilalți. Întoarce-te în corp — prezența nu se mimează.",
     ],
     energie: [
-      "Mintea activă îți alimentează energia azi. Stimulii te energizează.",
-      "Energia se risipește în prea multe direcții. Concentrează-te pe una.",
-      "Suprastimularea a consumat rezervele. Oprește-te înainte de epuizare.",
+      "Stimulii te energizează azi. Dozează-i totuși — sistemul nervos are nevoie și de gol.",
+      "Energia se risipește în prea multe direcții. Adun-o într-un singur lucru, cu respirația ca fir.",
+      "Suprastimularea a consumat rezervele. Închide ecranele devreme — somnul bun începe cu seara, nu cu noaptea.",
     ],
   },
   apa: {
     corp: [
-      "Emoțiile și senzațiile fizice sunt aliniate azi. Simți clar.",
-      "Corpul absoarbe tot ce simți. Acordă-i timp să proceseze.",
-      "Oboseala pe care o simți nu este fizică. Granițele emoționale sunt subțiri azi.",
+      "Emoțiile și senzațiile fizice sunt aliniate azi. Simți clar — corpul îți vorbește și merită ascultat.",
+      "Corpul absoarbe tot ce simți. Dă-i timp să proceseze — o scanare blândă îl ajută.",
+      "Oboseala pe care o simți nu este fizică. Granițele emoționale sunt subțiri azi — lucrează blând cu ele.",
     ],
     minte: [
-      "Intuiția ta completează ce nu poate explica logica. Fii atent la primele impresii.",
-      "Sentimentele colorează gândurile azi. Separă cele două cu blândețe.",
-      "Emoțiile par fapte. Pune câteva întrebări înainte să tragi concluzii.",
+      "Intuiția completează ce nu poate explica logica. Notează prima impresie — jurnalul o păstrează curată.",
+      "Sentimentele colorează gândurile azi. Separă-le cu blândețe: ce simt, ce gândesc.",
+      "Emoțiile par fapte azi. Respiră înainte de concluzii — corpul liniștit vede mai limpede.",
     ],
     relatii: [
-      "Empatia ta este un cadou azi. Cineva are nevoie să fie cu adevărat auzit.",
-      "Absorbi stările celor din jur. Verifică care emoții sunt ale tale.",
-      "Granițele sunt neclare. Ai grijă să nu preiei ceea ce nu îți aparține.",
+      "Empatia ta este un dar azi. Rămâi ancorat în corpul tău cât timp îl asculți pe celălalt.",
+      "Absorbi stările celor din jur. Verifică în corp: ce e al tău și ce ai preluat?",
+      "Granițele sunt neclare azi. După fiecare interacțiune grea, un minut de revenire la tine.",
     ],
     energie: [
-      "Energia emoțională este în fluxul tău. Simți din plin și asta îți dă putere.",
-      "Energia fluctuează cu starea emoțională. Normal, azi.",
-      "Drena emoțională este reală. Întoarce-te la sine înainte de orice altceva.",
+      "Energia emoțională curge din plin azi. Folosește-o pentru lucrul interior — azi intri adânc și ușor.",
+      "Energia fluctuează cu starea emoțională. E normal azi — reglează-te în valuri mici, nu dintr-o dată.",
+      "Drenajul emoțional este real. Întoarce-te la tine înainte de orice altceva — restul poate aștepta.",
     ],
   },
 };

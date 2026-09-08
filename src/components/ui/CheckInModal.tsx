@@ -15,6 +15,7 @@ import {
   Smiley,
   Star,
   Clock,
+  Lock,
 } from "@phosphor-icons/react";
 import { PRACTICES } from "@/lib/mockData";
 import { useAuth } from "@/contexts/AuthContext";
@@ -100,6 +101,18 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
   const handleComplete = async () => {
     setCompleted(true);
     if (onCompleted) onCompleted();
+    if (!user) {
+      // Vizitator: nu avem unde salva în DB — păstrăm răspunsurile local,
+      // ca experiența să poată fi reluată după crearea contului
+      try {
+        localStorage.setItem("checkin-guest-last", JSON.stringify({
+          mood: selectedMood, body_zones: selectedZones,
+          intensity: selectedIntensity, note: note || null,
+          at: new Date().toISOString(),
+        }));
+      } catch { /* ignore */ }
+      return;
+    }
     try {
       await fetch("/api/checkin", {
         method: "POST",
@@ -118,7 +131,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
 
   // Practici reale din API (fallback pe mock dacă API-ul nu răspunde),
   // filtrate pe planul utilizatorului — nu recomandăm conținut blocat
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [allPractices, setAllPractices] = useState<typeof PRACTICES>(PRACTICES);
   useEffect(() => {
     if (!isOpen) return;
@@ -128,7 +141,11 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
       .catch(() => {});
   }, [isOpen]);
 
-  const accessible = allPractices.filter(p => canAccess(profile?.plan, contentTier(p)));
+  // Vizitatorii văd recomandări din tot catalogul (gratis/standard/premium) —
+  // oricum sunt blurate și duc spre crearea contului
+  const accessible = user
+    ? allPractices.filter(p => canAccess(profile?.plan, contentTier(p)))
+    : allPractices;
   const targetCategory = MOOD_CATEGORY[selectedMood ?? "ok"];
   const categoryMatches = accessible.filter(p => p.category === targetCategory);
   const recommendations = [
@@ -164,6 +181,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            data-modal="checkin"
             onClick={canSkip ? onClose : undefined}
           />
 
@@ -442,37 +460,95 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
                     </p>
                   </div>
 
-                  {/* Recommendations */}
-                  <div className="flex flex-col gap-3">
-                    {recommendations.map((p, i) => (
+                  {user ? (
+                    /* Utilizator logat — recomandările duc direct la practici */
+                    <div className="flex flex-col gap-3">
+                      {recommendations.map((p) => (
+                        <Link
+                          key={p.id}
+                          href={`/practici/${p.id}`}
+                          onClick={onClose}
+                          className="flex items-center gap-4 bg-light-green border border-sage-border rounded-xl p-4 hover:border-forest-green hover:shadow-card transition-all group"
+                        >
+                          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 relative">
+                            <Image
+                              src={`${p.image}?w=120&q=75`}
+                              alt={tr(p.title)}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-body text-label-xs text-secondary-text mb-0.5">{tr(p.category)}</p>
+                            <p className="font-body text-body-sm font-semibold text-deep-green leading-tight line-clamp-1">
+                              {tr(p.title)}
+                            </p>
+                            <p className="font-body text-label-xs text-secondary-text flex items-center gap-1 mt-0.5">
+                              <Clock size={11} />
+                              {p.duration} min · {p.facilitator}
+                            </p>
+                          </div>
+                          <ArrowRight size={16} weight="bold" className="text-forest-green flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    /* Vizitator — recomandările există, dar se văd după crearea contului */
+                    <div>
+                      <div className="relative">
+                        <div className="flex flex-col gap-3" aria-hidden="true">
+                          {recommendations.map((p) => (
+                            <div
+                              key={p.id}
+                              className="flex items-center gap-4 bg-light-green border border-sage-border rounded-xl p-4 select-none pointer-events-none"
+                            >
+                              <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 relative blur-[2px]">
+                                <Image src={`${p.image}?w=120&q=75`} alt="" fill className="object-cover" />
+                              </div>
+                              <div className="flex-1 min-w-0 blur-[5px]">
+                                <p className="font-body text-label-xs text-secondary-text mb-0.5">{tr(p.category)}</p>
+                                <p className="font-body text-body-sm font-semibold text-deep-green leading-tight line-clamp-1">
+                                  {tr(p.title)}
+                                </p>
+                                <p className="font-body text-label-xs text-secondary-text flex items-center gap-1 mt-0.5">
+                                  <Clock size={11} />
+                                  {p.duration} min · {p.facilitator}
+                                </p>
+                              </div>
+                              <Lock size={16} weight="fill" className="text-forest-green/60 flex-shrink-0" />
+                            </div>
+                          ))}
+                        </div>
+                        {/* Voal + lacăt peste listă */}
+                        <Link
+                          href="/register"
+                          onClick={onClose}
+                          className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-white/45 hover:bg-white/30 transition-colors"
+                          aria-label={tr("Creează-ți cont ca să vezi practicile recomandate")}
+                        >
+                          <span className="w-11 h-11 rounded-full bg-forest-green flex items-center justify-center shadow-button">
+                            <Lock size={20} weight="fill" className="text-white" />
+                          </span>
+                          <span className="font-body text-label-sm font-semibold text-deep-green text-center px-6">
+                            {tr("Practicile tale te așteaptă")}
+                          </span>
+                        </Link>
+                      </div>
                       <Link
-                        key={p.id}
-                        href={`/practici/${p.id}`}
+                        href="/register"
                         onClick={onClose}
-                        className="flex items-center gap-4 bg-light-green border border-sage-border rounded-xl p-4 hover:border-forest-green hover:shadow-card transition-all group"
+                        className="btn btn-primary w-full mt-4 justify-center"
                       >
-                        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 relative">
-                          <Image
-                            src={`${p.image}?w=120&q=75`}
-                            alt={tr(p.title)}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-body text-label-xs text-secondary-text mb-0.5">{tr(p.category)}</p>
-                          <p className="font-body text-body-sm font-semibold text-deep-green leading-tight line-clamp-1">
-                            {tr(p.title)}
-                          </p>
-                          <p className="font-body text-label-xs text-secondary-text flex items-center gap-1 mt-0.5">
-                            <Clock size={11} />
-                            {p.duration} min · {p.facilitator}
-                          </p>
-                        </div>
-                        <ArrowRight size={16} weight="bold" className="text-forest-green flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {tr("Creează-ți cont gratuit și vezi practicile")} <ArrowRight size={16} weight="bold" />
                       </Link>
-                    ))}
-                  </div>
+                      <p className="font-body text-label-xs text-secondary-text text-center mt-3">
+                        {tr("Ai deja cont?")}{" "}
+                        <Link href="/login" onClick={onClose} className="text-forest-green font-semibold hover:underline">
+                          {tr("Intră în cont")}
+                        </Link>
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>

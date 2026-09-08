@@ -18,7 +18,7 @@ import DailyInfluence, { DailyInfluencePlaceholder } from "@/components/ui/Daily
 import { fetchAncoreCompletions } from "@/lib/ancore-sync";
 import { canAccess, contentTier, TIER_LABEL, type ContentTier } from "@/lib/plan";
 import { SESIUNI_LIVE_PAGE_ENABLED } from "@/lib/features";
-import { ArtCarte, ArtAncora, ArtJurnal, ArtOameni } from "@/components/ui/ArtIcons";
+import { ArtCarte, ArtAncora, ArtJurnal, ArtOameni, ArtRespiratie } from "@/components/ui/ArtIcons";
 
 function formatDate() {
   return new Date().toLocaleDateString(dateLocale(), {
@@ -34,8 +34,10 @@ function streakMessage(streak: number, tr: (ro: string) => string): string {
   return `${streak} ${tr("zile — un angajament real față de tine.")}`;
 }
 
-const QUICK_ACCESS = [
-  { icon: ArtCarte,  label: "Bibliotecă",  href: "/practici",         cardCls: "bg-light-green border-sage-border/40" },
+const QUICK_ACCESS: { icon: React.ElementType; label: string; href?: string; event?: string; cardCls: string }[] = [
+  // „Respiră" deschide experiența de respirație (modal), nu o pagină
+  { icon: ArtRespiratie, label: "Respiră", event: "breathing:open",   cardCls: "bg-light-green border-sage-border/40" },
+  { icon: ArtCarte,  label: "Bibliotecă",  href: "/practici",         cardCls: "bg-light-green/60 border-sage-border/30" },
   { icon: ArtAncora, label: "Ancore",      href: "/ancore",           cardCls: "bg-indigo-light border-indigo/10" },
   { icon: ArtJurnal, label: "Jurnal",      href: "/dashboard/jurnal", cardCls: "bg-indigo-bg border-indigo/10" },
   // Sesiuni Live e ascunsă momentan — vezi SESIUNI_LIVE_PAGE_ENABLED în lib/features.ts
@@ -442,11 +444,20 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {QUICK_ACCESS.map(item => {
                     const Icon = item.icon;
-                    return (
-                      <Link key={item.label} href={item.href}
-                        className={`rounded-2xl p-4 text-center flex flex-col items-center gap-2.5 border transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 ${item.cardCls}`}>
+                    const cls = `rounded-2xl p-4 text-center flex flex-col items-center gap-2.5 border transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 ${item.cardCls}`;
+                    const inner = (
+                      <>
                         <Icon className="w-11 h-11" />
                         <span className="font-body text-label-xs font-semibold text-on-surface">{tr(item.label)}</span>
+                      </>
+                    );
+                    return item.event ? (
+                      <button key={item.label} onClick={() => window.dispatchEvent(new Event(item.event!))} className={cls}>
+                        {inner}
+                      </button>
+                    ) : (
+                      <Link key={item.label} href={item.href!} className={cls}>
+                        {inner}
                       </Link>
                     );
                   })}
