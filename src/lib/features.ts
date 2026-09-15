@@ -13,3 +13,10 @@ export const SOMN_PAGE_ENABLED = true;
  * Pune true ca să reapară în meniu, footer, dashboard și pe site.
  */
 export const SESIUNI_LIVE_PAGE_ENABLED = false;
+
+/**
+ * Poarta de acces pre-lansare (o parolă pentru tot site-ul).
+ * Pune false la lansare ca site-ul să devină public — sau șterge variabila
+ * SITE_PASSWORD din Vercel, efectul e același.
+ */
+export const SITE_GATE_ENABLED = true;
