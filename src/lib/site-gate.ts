@@ -9,8 +9,9 @@
  *     complet, adică site-ul rămâne deschis — ca să nu poată fi blocat din greșeală
  *   - comutatorul `SITE_GATE_ENABLED` din lib/features.ts oprește poarta din cod
  *
- * Semnătura folosește ADMIN_SECRET, dar cu o cheie derivată separat: un token de
- * acces pe site NU poate trece niciodată drept token de admin.
+ * Semnătura folosește ADMIN_SECRET plus parola curentă, într-o cheie derivată
+ * separat: un token de acces NU poate trece drept token de admin, iar la
+ * schimbarea parolei toate accesele existente pică instant.
  */
 
 export const ACCESS_COOKIE = "within_access";
@@ -23,7 +24,10 @@ export function sitePassword(): string {
 function keyMaterial(): string {
   const secret = process.env.ADMIN_SECRET;
   if (!secret) throw new Error("ADMIN_SECRET is not configured");
-  return `${secret}:site-gate`;
+  // Parola face parte din cheia de semnare: în clipa în care o schimbi, toate
+  // cookie-urile emise cu parola veche devin invalide, deci absolut toată lumea
+  // trebuie să introducă parola nouă. Asta e pârghia de revocare imediată.
+  return `${secret}:site-gate:${sitePassword()}`;
 }
 
 function b64urlEncode(data: Uint8Array): string {
