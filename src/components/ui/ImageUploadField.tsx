@@ -7,7 +7,8 @@
  */
 
 import { useRef, useState } from "react";
-import { UploadSimple, CircleNotch, X } from "@phosphor-icons/react";
+import { UploadSimple, CircleNotch, X, Images } from "@phosphor-icons/react";
+import MediaLibraryModal from "@/components/ui/MediaLibraryModal";
 
 interface Props {
   value: string;
@@ -19,6 +20,7 @@ export default function ImageUploadField({ value, onChange, inputClassName = "in
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   async function handleFile(file: File) {
     setUploading(true);
@@ -40,6 +42,12 @@ export default function ImageUploadField({ value, onChange, inputClassName = "in
 
   return (
     <div>
+      <MediaLibraryModal
+        isOpen={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        onSelect={onChange}
+        currentUrl={value}
+      />
       <div className="flex gap-2">
         <input
           type="url"
@@ -56,6 +64,15 @@ export default function ImageUploadField({ value, onChange, inputClassName = "in
         >
           {uploading ? <CircleNotch size={14} className="animate-spin" /> : <UploadSimple size={14} weight="bold" />}
           {uploading ? "Se urcă..." : "Urcă"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setLibraryOpen(true)}
+          className="btn btn-secondary btn-sm gap-1.5 flex-shrink-0"
+          title="Alege dintre imaginile deja urcate"
+        >
+          <Images size={14} weight="bold" />
+          Library
         </button>
         <input
           ref={fileRef}
