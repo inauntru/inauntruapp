@@ -2,12 +2,19 @@
 
 /**
  * Library — toate imaginile urcate în proiect, într-o singură fereastră.
- * Dai click pe una ca să o folosești, sau o ștergi ca să nu ocupe spațiu degeaba.
+ * Dai click pe una ca să o folosești, o muți într-un dosar ca să nu le ai pe
+ * toate la grămadă, sau o ștergi ca să nu ocupe spațiu degeaba.
+ *
+ * Dosarele sunt etichete, nu căi reale: mutarea unei poze NU îi schimbă adresa,
+ * deci nu se strică nicăieri pe site.
  */
 
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MagnifyingGlass, Trash, CircleNotch, ImageSquare, Check } from "@phosphor-icons/react";
+import {
+  X, MagnifyingGlass, Trash, CircleNotch, ImageSquare, Check,
+  FolderSimple, FolderPlus,
+} from "@phosphor-icons/react";
 
 interface MediaFile {
   path: string;
@@ -15,6 +22,7 @@ interface MediaFile {
   size: number;
   createdAt: string | null;
   url: string;
+  folder: string | null;
 }
 
 interface Props {
@@ -26,6 +34,9 @@ interface Props {
   currentUrl?: string;
 }
 
+const ALL = "__toate__";
+const UNSORTED = "__nesortate__";
+
 function prettySize(bytes: number) {
   if (!bytes) return "";
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
@@ -34,11 +45,15 @@ function prettySize(bytes: number) {
 
 export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUrl }: Props) {
   const [files, setFiles] = useState<MediaFile[]>([]);
+  const [folders, setFolders] = useState<string[]>([]);
+  const [active, setActive] = useState<string>(ALL);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [moving, setMoving] = useState<string | null>(null);
+  const [newFolder, setNewFolder] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -48,6 +63,7 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Nu am putut încărca biblioteca");
       setFiles(data.files ?? []);
+      setFolders(data.folders ?? []);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Nu am putut încărca biblioteca");
     }
@@ -58,6 +74,9 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
     if (!isOpen) return;
     setQuery("");
     setConfirming(null);
+    setMoving(null);
+    setNewFolder(null);
+    setActive(ALL);
     load();
     const esc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", esc);
@@ -82,9 +101,76 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
     setConfirming(null);
   }
 
-  const visible = query.trim()
-    ? files.filter((f) => f.name.toLowerCase().includes(query.trim().toLowerCase()))
-    : files;
+  async function assign(path: string, folder: string | null) {
+    setMoving(null);
+    setFiles((prev) => prev.map((f) => (f.path === path ? { ...f, folder } : f)));
+    try {
+      const res = await fetch("/api/admin/media", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path, folder }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Mutarea a eșuat");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Mutarea a eșuat");
+      load();
+    }
+  }
+
+  async function createFolder(name: string) {
+    const clean = name.trim();
+    if (!clean) { setNewFolder(null); return; }
+    try {
+      const res = await fetch("/api/admin/media/folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: clean }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Nu am putut crea dosarul");
+      setFolders(data.folders ?? []);
+      setActive(clean);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Nu am putut crea dosarul");
+    }
+    setNewFolder(null);
+  }
+
+  async function deleteFolder(name: string) {
+    try {
+      const res = await fetch("/api/admin/media/folders", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Nu am putut șterge dosarul");
+      setFolders(data.folders ?? []);
+      setFiles((prev) => prev.map((f) => (f.folder === name ? { ...f, folder: null } : f)));
+      setActive(ALL);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Nu am putut șterge dosarul");
+    }
+  }
+
+  const countIn = (folder: string) =>
+    folder === ALL ? files.length
+    : folder === UNSORTED ? files.filter((f) => !f.folder).length
+    : files.filter((f) => f.folder === folder).length;
+
+  const visible = files
+    .filter((f) => (active === ALL ? true : active === UNSORTED ? !f.folder : f.folder === active))
+    .filter((f) => (query.trim() ? f.name.toLowerCase().includes(query.trim().toLowerCase()) : true));
+
+  const chipCls = (isActive: boolean) =>
+    `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-label-xs font-semibold border transition-colors whitespace-nowrap ${
+      isActive
+        ? "bg-forest-green text-white border-forest-green"
+        : "bg-white text-secondary-text border-sage-border hover:border-forest-green hover:text-forest-green"
+    }`;
 
   return (
     <AnimatePresence>
@@ -130,6 +216,52 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
                 </button>
               </div>
 
+              {/* Dosare */}
+              <div className="px-5 py-3 border-b border-sage-border/60 flex items-center gap-2 overflow-x-auto">
+                <button onClick={() => setActive(ALL)} className={chipCls(active === ALL)}>
+                  Toate <span className="opacity-60">{countIn(ALL)}</span>
+                </button>
+                <button onClick={() => setActive(UNSORTED)} className={chipCls(active === UNSORTED)}>
+                  Nesortate <span className="opacity-60">{countIn(UNSORTED)}</span>
+                </button>
+                {folders.map((f) => (
+                  <span key={f} className="relative group/folder inline-flex">
+                    <button onClick={() => setActive(f)} className={chipCls(active === f)}>
+                      <FolderSimple size={13} weight={active === f ? "fill" : "regular"} />
+                      {f} <span className="opacity-60">{countIn(f)}</span>
+                    </button>
+                    {active === f && (
+                      <button
+                        onClick={() => deleteFolder(f)}
+                        title="Șterge dosarul (pozele rămân, trec la Nesortate)"
+                        className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-white border border-sage-border text-secondary-text hover:text-terracotta flex items-center justify-center opacity-0 group-hover/folder:opacity-100 transition-opacity"
+                      >
+                        <X size={9} weight="bold" />
+                      </button>
+                    )}
+                  </span>
+                ))}
+
+                {newFolder === null ? (
+                  <button onClick={() => setNewFolder("")} className={`${chipCls(false)} border-dashed`}>
+                    <FolderPlus size={13} /> Dosar nou
+                  </button>
+                ) : (
+                  <input
+                    autoFocus
+                    value={newFolder}
+                    onChange={(e) => setNewFolder(e.target.value)}
+                    onBlur={() => createFolder(newFolder)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") createFolder(newFolder);
+                      if (e.key === "Escape") setNewFolder(null);
+                    }}
+                    placeholder="Nume dosar"
+                    className="px-3 py-1.5 rounded-full border border-forest-green font-body text-label-xs w-32 focus:outline-none"
+                  />
+                )}
+              </div>
+
               {/* Grilă */}
               <div className="flex-1 overflow-y-auto p-5">
                 {error && <p className="font-body text-body-sm text-red-600 mb-4">{error}</p>}
@@ -144,7 +276,7 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
                     <p className="font-body text-body-sm text-secondary-text">
                       {files.length === 0
                         ? "Nicio imagine urcată încă. Urcă una cu butonul de lângă și va apărea aici."
-                        : "Nicio imagine cu numele ăsta."}
+                        : "Nicio imagine aici."}
                     </p>
                   </div>
                 ) : (
@@ -152,12 +284,13 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
                     {visible.map((f) => {
                       const isCurrent = currentUrl === f.url;
                       const isConfirming = confirming === f.path;
+                      const isMoving = moving === f.path;
                       return (
                         <div key={f.path} className="group relative">
                           <button
                             type="button"
                             onClick={() => { onSelect(f.url); onClose(); }}
-                            className={`block w-full aspect-square rounded-xl overflow-hidden border-2 transition-all ${
+                            className={`block w-full aspect-square rounded-xl overflow-hidden border-2 transition-all bg-light-green ${
                               isCurrent ? "border-forest-green" : "border-sage-border hover:border-forest-green"
                             }`}
                           >
@@ -171,7 +304,7 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
                             </span>
                           )}
 
-                          {/* Ștergere, cu confirmare peste imagine */}
+                          {/* Confirmare ștergere */}
                           {isConfirming ? (
                             <div className="absolute inset-0 rounded-xl bg-deep-green/90 flex flex-col items-center justify-center gap-2 p-3 text-center">
                               <p className="font-body text-label-xs text-white leading-snug">
@@ -195,19 +328,66 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect, currentUr
                                 </button>
                               </div>
                             </div>
+                          ) : isMoving ? (
+                            /* Alegerea dosarului */
+                            <div className="absolute inset-0 rounded-xl bg-white border-2 border-forest-green p-2 overflow-y-auto">
+                              <p className="font-body text-[10px] uppercase tracking-wider text-secondary-text mb-1.5">Mută în</p>
+                              <button
+                                onClick={() => assign(f.path, null)}
+                                className="block w-full text-left px-2 py-1 rounded font-body text-label-xs text-deep-green hover:bg-light-green"
+                              >
+                                Nesortate
+                              </button>
+                              {folders.map((folder) => (
+                                <button
+                                  key={folder}
+                                  onClick={() => assign(f.path, folder)}
+                                  className={`block w-full text-left px-2 py-1 rounded font-body text-label-xs hover:bg-light-green ${
+                                    f.folder === folder ? "text-forest-green font-semibold" : "text-deep-green"
+                                  }`}
+                                >
+                                  {folder}
+                                </button>
+                              ))}
+                              {folders.length === 0 && (
+                                <p className="px-2 py-1 font-body text-[10px] text-secondary-text">
+                                  Creează întâi un dosar sus.
+                                </p>
+                              )}
+                              <button
+                                onClick={() => setMoving(null)}
+                                className="block w-full text-left px-2 py-1 mt-1 rounded font-body text-[10px] text-secondary-text hover:bg-light-green"
+                              >
+                                Renunță
+                              </button>
+                            </div>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => setConfirming(f.path)}
-                              aria-label={`Șterge ${f.name}`}
-                              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 text-deep-green flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-white hover:text-red-600 transition-all shadow"
-                            >
-                              <Trash size={13} weight="bold" />
-                            </button>
+                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                              <button
+                                type="button"
+                                onClick={() => setMoving(f.path)}
+                                aria-label={`Mută ${f.name} într-un dosar`}
+                                title="Mută într-un dosar"
+                                className="w-7 h-7 rounded-full bg-white/90 text-deep-green flex items-center justify-center hover:bg-white hover:text-forest-green transition-all shadow"
+                              >
+                                <FolderSimple size={13} weight="bold" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setConfirming(f.path)}
+                                aria-label={`Șterge ${f.name}`}
+                                title="Șterge definitiv"
+                                className="w-7 h-7 rounded-full bg-white/90 text-deep-green flex items-center justify-center hover:bg-white hover:text-red-600 transition-all shadow"
+                              >
+                                <Trash size={13} weight="bold" />
+                              </button>
+                            </div>
                           )}
 
                           <p className="font-body text-label-xs text-deep-green mt-1.5 truncate" title={f.name}>{f.name}</p>
-                          <p className="font-body text-[10px] text-secondary-text">{prettySize(f.size)}</p>
+                          <p className="font-body text-[10px] text-secondary-text flex items-center gap-1">
+                            {f.folder && <><FolderSimple size={9} /> {f.folder} ·</>} {prettySize(f.size)}
+                          </p>
                         </div>
                       );
                     })}
