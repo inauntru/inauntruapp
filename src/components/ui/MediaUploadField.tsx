@@ -21,6 +21,8 @@ interface MediaMeta {
 interface Props {
   value: string;
   onChange: (value: string, meta?: MediaMeta) => void;
+  /** Se cheama imediat ce fisierul e ales, inainte de incarcare. */
+  onMeta?: (meta: MediaMeta) => void;
 }
 
 /**
@@ -39,7 +41,7 @@ function readDuration(file: File): Promise<number | null> {
   });
 }
 
-export default function MediaUploadField({ value, onChange }: Props) {
+export default function MediaUploadField({ value, onChange, onMeta }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -61,6 +63,12 @@ export default function MediaUploadField({ value, onChange }: Props) {
 
     try {
       const seconds = await readDuration(file);
+      // Trimitem durata din prima, ca formularul sa fie corect chiar daca
+      // salvezi inainte sa se termine incarcarea.
+      onMeta?.({
+        durationMin: seconds ? Math.max(1, Math.round(seconds / 60)) : undefined,
+        kind: file.type.startsWith("video/") ? "video" : "audio",
+      });
 
       const prep = await fetch("/api/admin/upload-media", {
         method: "POST",

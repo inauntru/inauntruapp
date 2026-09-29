@@ -496,6 +496,13 @@ export default function AdminContentPage() {
                   </label>
                   <MediaUploadField
                     value={form.media_url}
+                    onMeta={(meta) =>
+                      setForm((f) => ({
+                        ...f,
+                        ...(meta.durationMin ? { duration: meta.durationMin } : {}),
+                        ...(meta.kind ? { media_type: meta.kind } : {}),
+                      }))
+                    }
                     onChange={(v, meta) =>
                       setForm((f) => ({
                         ...f,
