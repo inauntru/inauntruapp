@@ -468,7 +468,9 @@ export default function AdminContentPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Durată (minute)</label>
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">
+                    Durată (minute) <span className="text-secondary-text font-normal">— se completează din fișier</span>
+                  </label>
                   <input
                     type="number"
                     placeholder="10"
@@ -492,7 +494,18 @@ export default function AdminContentPage() {
                   <label className="font-body text-label-sm text-on-surface mb-1.5 block">
                     Fișier practică <span className="text-secondary-text font-normal">(audio sau video)</span>
                   </label>
-                  <MediaUploadField value={form.media_url} onChange={(v) => setForm({ ...form, media_url: v })} />
+                  <MediaUploadField
+                    value={form.media_url}
+                    onChange={(v, meta) =>
+                      setForm((f) => ({
+                        ...f,
+                        media_url: v,
+                        // durata si tipul vin din fisier, nu le mai scrii tu
+                        ...(meta?.durationMin ? { duration: meta.durationMin } : {}),
+                        ...(meta?.kind ? { media_type: meta.kind } : {}),
+                      }))
+                    }
+                  />
                 </div>
                 <div>
                   <label className="font-body text-label-sm text-on-surface mb-1.5 block">Imagine de copertă</label>

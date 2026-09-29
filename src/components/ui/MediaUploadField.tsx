@@ -12,9 +12,31 @@
 import { useRef, useState } from "react";
 import { UploadSimple, CircleNotch, X, LinkSimple, FileAudio, FileVideo, Lock } from "@phosphor-icons/react";
 
+interface MediaMeta {
+  /** Durata fisierului, rotunjita la minute. */
+  durationMin?: number;
+  kind?: "audio" | "video";
+}
+
 interface Props {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string, meta?: MediaMeta) => void;
+}
+
+/**
+ * Citeste durata fisierului inainte de incarcare, fara sa-l trimita nicaieri:
+ * browserul deschide doar antetul si ne spune cate secunde are.
+ */
+function readDuration(file: File): Promise<number | null> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const el = document.createElement(file.type.startsWith("video/") ? "video" : "audio");
+    el.preload = "metadata";
+    const done = (value: number | null) => { URL.revokeObjectURL(url); resolve(value); };
+    el.onloadedmetadata = () => done(Number.isFinite(el.duration) ? el.duration : null);
+    el.onerror = () => done(null);
+    el.src = url;
+  });
 }
 
 export default function MediaUploadField({ value, onChange }: Props) {
@@ -38,6 +60,8 @@ export default function MediaUploadField({ value, onChange }: Props) {
     setProgress(0);
 
     try {
+      const seconds = await readDuration(file);
+
       const prep = await fetch("/api/admin/upload-media", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -63,7 +87,10 @@ export default function MediaUploadField({ value, onChange }: Props) {
         xhr.send(file);
       });
 
-      onChange(info.value);
+      onChange(info.value, {
+        durationMin: seconds ? Math.max(1, Math.round(seconds / 60)) : undefined,
+        kind: info.kind,
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Incarcarea a esuat");
     }
