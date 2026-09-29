@@ -27,37 +27,48 @@ export default function MediaUploadField({ value, onChange }: Props) {
   const storedName = isStored ? value.slice("storage:".length).split("/").pop() : "";
   const isVideo = isStored ? value.includes("video/") : /\.(mp4|webm|mov)(\?|$)/i.test(value);
 
-  function handleFile(file: File) {
+  /**
+   * Incarcarea merge DIRECT la Supabase, nu prin serverul nostru: functiile de
+   * pe Vercel au o limita mica pe corpul cererii, iar un audio de zeci de MB
+   * pica inainte sa ajunga acolo. Serverul doar semneaza dreptul de incarcare.
+   */
+  async function handleFile(file: File) {
     setUploading(true);
     setError(null);
     setProgress(0);
 
-    // XMLHttpRequest, nu fetch — avem nevoie de progres la fișierele mari
-    const xhr = new XMLHttpRequest();
-    const fd = new FormData();
-    fd.append("file", file);
+    try {
+      const prep = await fetch("/api/admin/upload-media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName: file.name, fileType: file.type, fileSize: file.size }),
+      });
+      const info = await prep.json();
+      if (!prep.ok) throw new Error(info.error ?? "Incarcarea a esuat");
 
-    xhr.upload.addEventListener("progress", (e) => {
-      if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
-    });
-    xhr.addEventListener("load", () => {
-      setUploading(false);
-      if (fileRef.current) fileRef.current.value = "";
-      try {
-        const data = JSON.parse(xhr.responseText);
-        if (xhr.status >= 200 && xhr.status < 300 && data.value) onChange(data.value);
-        else setError(data.error ?? "Încărcarea a eșuat");
-      } catch {
-        setError("Încărcarea a eșuat");
-      }
-    });
-    xhr.addEventListener("error", () => {
-      setUploading(false);
-      setError("Încărcarea a eșuat — verifică legătura la internet");
-    });
+      const uploadUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/upload/sign/${info.bucket}/${info.path}?token=${info.token}`;
 
-    xhr.open("POST", "/api/admin/upload-media");
-    xhr.send(fd);
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
+        });
+        xhr.addEventListener("load", () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(xhr.status === 413 ? "Fisierul e prea mare pentru planul curent" : "Incarcarea a esuat"));
+        });
+        xhr.addEventListener("error", () => reject(new Error("Incarcarea a esuat — verifica legatura la internet")));
+        xhr.open("PUT", uploadUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
+
+      onChange(info.value);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Incarcarea a esuat");
+    }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
   }
 
   return (
