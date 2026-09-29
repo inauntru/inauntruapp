@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImageUploadField from "@/components/ui/ImageUploadField";
+import MediaUploadField from "@/components/ui/MediaUploadField";
 import {
   Plus, MagnifyingGlass, Eye, PencilSimple, Trash, X, FilmSlate,
   EyeSlash, FolderSimple, Lock, CircleNotch, Warning,
@@ -23,6 +24,7 @@ interface Practice {
   is_premium: boolean;
   tier?: "gratuit" | "standard" | "premium";
   media_type: string | null;
+  media_url: string | null;
   image_url: string | null;
   description: string | null;
   tags: string[];
@@ -39,6 +41,7 @@ const EMPTY_FORM = {
   facilitator_slug: "",
   tier: "gratuit" as "gratuit" | "standard" | "premium",
   media_type: "audio",
+  media_url: "",
   image_url: "",
   description: "",
   tags: "",
@@ -141,6 +144,7 @@ export default function AdminContentPage() {
       facilitator_slug: p.facilitator_slug ?? "",
       tier: p.tier ?? (p.is_premium ? "premium" : "gratuit"),
       media_type: p.media_type ?? "audio",
+      media_url: p.media_url ?? "",
       image_url: p.image_url ?? "",
       description: p.description ?? "",
       tags: p.tags?.join(", ") ?? "",
@@ -484,8 +488,14 @@ export default function AdminContentPage() {
                     className="input w-full"
                   />
                 </div>
+                <div className="col-span-2">
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">
+                    Fișier practică <span className="text-secondary-text font-normal">(audio sau video)</span>
+                  </label>
+                  <MediaUploadField value={form.media_url} onChange={(v) => setForm({ ...form, media_url: v })} />
+                </div>
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Imagine</label>
+                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">Imagine de copertă</label>
                   <ImageUploadField value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
                 </div>
                 <div className="col-span-2">
