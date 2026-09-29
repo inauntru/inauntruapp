@@ -229,6 +229,7 @@ const NAV_OPTIONS = [
   { id: "dashboard", label: "Dashboard" },
   { id: "continut", label: "Conținut (Practici)" },
   { id: "blog", label: "Blog" },
+  { id: "facilitatori", label: "Facilitatori" },
   { id: "utilizatori", label: "Utilizatori" },
   { id: "sesiuni", label: "Sesiuni LIVE" },
   { id: "abonamente", label: "Abonamente" },
@@ -238,7 +239,7 @@ const NAV_OPTIONS = [
 ];
 
 const DEFAULT_PERMISSIONS: Record<string, Record<string, boolean>> = {
-  editor: { dashboard: true, continut: true, blog: true, sesiuni: true, emailuri: true, statistici: true, setari: true },
+  editor: { dashboard: true, continut: true, blog: true, facilitatori: true, sesiuni: true, emailuri: true, statistici: true, setari: true },
   moderator: { dashboard: true, utilizatori: true, statistici: true },
 };
 

@@ -17,6 +17,7 @@ import {
   X,
   EnvelopeSimple,
   Article,
+  UsersThree,
   Anchor,
   ShieldCheck,
 } from "@phosphor-icons/react";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { icon: FilmSlate, label: "Conținut", href: "/admin/continut", id: "continut" },
   { icon: Article, label: "Blog", href: "/admin/blog", id: "blog" },
   { icon: Anchor, label: "Ancore", href: "/admin/ancore", id: "ancore" },
+  { icon: UsersThree, label: "Facilitatori", href: "/admin/facilitatori", id: "facilitatori" },
   { icon: Users, label: "Utilizatori", href: "/admin/utilizatori", id: "utilizatori" },
   { icon: CalendarBlank, label: "Sesiuni LIVE", href: "/admin/sesiuni", id: "sesiuni" },
   { icon: CreditCard, label: "Abonamente", href: "/admin/abonamente", id: "abonamente" },
