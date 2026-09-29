@@ -18,7 +18,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     ...(body.bio !== undefined && { bio: body.bio || null }),
     ...(body.image_url !== undefined && { image_url: body.image_url || null }),
     ...(body.tags !== undefined && { tags: body.tags }),
-    ...(body.rating !== undefined && { rating: body.rating }),
     ...(body.sessions_count !== undefined && { sessions_count: body.sessions_count }),
     ...(body.is_active !== undefined && { is_active: body.is_active }),
   };

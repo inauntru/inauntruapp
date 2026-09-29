@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
       bio: body.bio?.trim() || null,
       image_url: body.image_url?.trim() || null,
       tags: Array.isArray(body.tags) ? body.tags : [],
-      rating: body.rating ?? 5.0,
       sessions_count: body.sessions_count ?? 0,
       is_active: body.is_active ?? true,
     })

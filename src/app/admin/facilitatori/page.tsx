@@ -21,7 +21,6 @@ interface Facilitator {
   specialty: string | null;
   bio: string | null;
   image_url: string | null;
-  rating: number | null;
   sessions_count: number | null;
   tags: string[] | null;
   is_active: boolean;
@@ -30,7 +29,7 @@ interface Facilitator {
 
 const EMPTY_FORM = {
   name: "", specialty: "", bio: "", image_url: "", tags: "",
-  rating: "5.0", sessions_count: "0", is_active: true,
+  sessions_count: "0", is_active: true,
 };
 
 export default function AdminFacilitatoriPage() {
@@ -70,7 +69,6 @@ export default function AdminFacilitatoriPage() {
       bio: f.bio ?? "",
       image_url: f.image_url ?? "",
       tags: (f.tags ?? []).join(", "),
-      rating: String(f.rating ?? 5),
       sessions_count: String(f.sessions_count ?? 0),
       is_active: f.is_active,
     });
@@ -89,7 +87,6 @@ export default function AdminFacilitatoriPage() {
       bio: form.bio.trim(),
       image_url: form.image_url.trim(),
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
-      rating: Number(form.rating) || 5,
       sessions_count: Number(form.sessions_count) || 0,
       is_active: form.is_active,
     };
@@ -285,15 +282,9 @@ export default function AdminFacilitatoriPage() {
                   <input className="input w-full" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="Anxietate, Traumă, Respirație" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelCls}>Rating afișat</label>
-                    <input className="input w-full" type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Număr sesiuni afișat</label>
-                    <input className="input w-full" type="number" min="0" value={form.sessions_count} onChange={(e) => setForm({ ...form, sessions_count: e.target.value })} />
-                  </div>
+                <div>
+                  <label className={labelCls}>Număr sesiuni afișat</label>
+                  <input className="input w-full" type="number" min="0" value={form.sessions_count} onChange={(e) => setForm({ ...form, sessions_count: e.target.value })} />
                 </div>
 
                 <label className="flex items-center gap-2.5 cursor-pointer">

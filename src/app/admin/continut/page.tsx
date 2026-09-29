@@ -64,6 +64,19 @@ export default function AdminContentPage() {
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkMenu, setBulkMenu] = useState<null | "categorie" | "acces">(null);
   const [bulkDelete, setBulkDelete] = useState(false);
+  /** Facilitatorii înregistrați — apar ca sugestii la câmpul din formular. */
+  const [facilitators, setFacilitators] = useState<{ name: string; slug: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/facilitators")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.facilitators) {
+          setFacilitators(d.facilitators.map((f: { name: string; slug: string }) => ({ name: f.name, slug: f.slug })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   async function fetchPractices() {
     setLoading(true);
@@ -484,11 +497,20 @@ export default function AdminContentPage() {
                   <label className="font-body text-label-sm text-on-surface mb-1.5 block">Facilitator</label>
                   <input
                     type="text"
-                    placeholder="Numele facilitatorului"
+                    list="lista-facilitatori"
+                    placeholder="Scrie sau alege din listă"
                     value={form.facilitator_name}
-                    onChange={(e) => setForm({ ...form, facilitator_name: e.target.value })}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      // Dacă numele e al unui facilitator înregistrat, îi luăm și adresa de profil
+                      const known = facilitators.find((f) => f.name.toLowerCase() === name.trim().toLowerCase());
+                      setForm({ ...form, facilitator_name: name, facilitator_slug: known?.slug ?? "" });
+                    }}
                     className="input w-full"
                   />
+                  <datalist id="lista-facilitatori">
+                    {facilitators.map((f) => <option key={f.slug} value={f.name} />)}
+                  </datalist>
                 </div>
                 <div className="col-span-2">
                   <label className="font-body text-label-sm text-on-surface mb-1.5 block">

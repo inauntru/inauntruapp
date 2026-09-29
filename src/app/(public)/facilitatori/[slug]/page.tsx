@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
   ArrowLeft,
-  Star,
   BookOpen,
   Certificate,
   ArrowRight,
@@ -93,19 +92,6 @@ export default function FacilitatorPage({ params }: { params: { slug: string } }
               <h1 className="font-heading text-h3 text-deep-green mb-1">{facilitator.name}</h1>
               <p className="font-body text-body-sm text-secondary-text mb-3">{tr(facilitator.title)}</p>
 
-              <div className="flex items-center justify-center gap-1 mb-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={16}
-                    weight={i < Math.floor(facilitator.rating) ? "fill" : "regular"}
-                    className="text-terracotta"
-                  />
-                ))}
-                <span className="font-body text-label-xs text-secondary-text ml-1">
-                  {facilitator.rating} ({facilitator.reviews} {tr("recenzii")})
-                </span>
-              </div>
 
               <div className="flex flex-wrap justify-center gap-1.5 mb-6">
                 {facilitator.tags.map((tag) => (

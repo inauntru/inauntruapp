@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
+import { ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import AnimateIn from "@/components/ui/AnimateIn";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
@@ -89,11 +89,7 @@ export default function FacilitatoriClient({ siteContent }: Props) {
                     <p className="font-body text-body-sm text-secondary-text mb-4 line-clamp-2 flex-1">{tr(f.bio)}</p>
                     <div className="flex flex-wrap gap-1.5 mb-4">{f.tags.map((tag) => <span key={tag} className="tag tag-green">{tr(tag)}</span>)}</div>
                     <div className="flex items-center justify-between mt-auto">
-                      <div className="flex items-center gap-1">
-                        <Star size={13} weight="fill" className="text-terracotta" />
-                        <span className="font-body text-label-xs font-semibold text-deep-green">{f.rating}</span>
-                        <span className="font-body text-label-xs text-secondary-text">({f.sessions} {tr("sesiuni")})</span>
-                      </div>
+                      <span className="font-body text-label-xs text-secondary-text">{f.sessions} {tr("sesiuni")}</span>
                       <span className="font-body text-label-xs text-forest-green flex items-center gap-1">{tr("Vezi profil")} <ArrowRight size={12} weight="bold" /></span>
                     </div>
                   </div>
