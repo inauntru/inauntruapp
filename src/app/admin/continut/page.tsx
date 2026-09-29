@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ImageUploadField from "@/components/ui/ImageUploadField";
 import {
   Plus, MagnifyingGlass, Eye, PencilSimple, Trash, X, FilmSlate,
+  EyeSlash, FolderSimple, Lock, CircleNotch, Warning,
 } from "@phosphor-icons/react";
 
 const DB_CATEGORIES = ["Suflu", "Prezență", "Fluiditate", "Odihnă", "Vitalitate", "Expresie"];
@@ -57,6 +58,9 @@ export default function AdminContentPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkMenu, setBulkMenu] = useState<null | "categorie" | "acces">(null);
+  const [bulkDelete, setBulkDelete] = useState(false);
 
   async function fetchPractices() {
     setLoading(true);
@@ -66,6 +70,47 @@ export default function AdminContentPage() {
   }
 
   useEffect(() => { fetchPractices(); }, []);
+
+  /** Aceeasi modificare pe toate practicile bifate. */
+  async function bulkPatch(patch: Record<string, string>) {
+    setBulkBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/practices/bulk", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selected, ...patch }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Modificarea a esuat");
+      setBulkMenu(null);
+      setSelected([]);
+      await fetchPractices();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Modificarea a esuat");
+    }
+    setBulkBusy(false);
+  }
+
+  async function bulkRemove() {
+    setBulkBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/practices/bulk", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selected }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Stergerea a esuat");
+      setBulkDelete(false);
+      setSelected([]);
+      await fetchPractices();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Stergerea a esuat");
+    }
+    setBulkBusy(false);
+  }
 
   const filtered = practices.filter((c) => {
     if (categoryFilter !== "Toate" && c.category !== categoryFilter) return false;
@@ -179,6 +224,31 @@ export default function AdminContentPage() {
         </div>
       </div>
 
+      {/* Confirmare stergere in masa */}
+      <AnimatePresence>
+        {bulkDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center lg:pl-64 p-4">
+            <motion.div className="absolute inset-0 bg-black/50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setBulkDelete(false)} />
+            <motion.div
+              className="relative bg-white rounded-2xl shadow-modal w-full max-w-sm p-6 text-center"
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <Warning size={32} className="mx-auto text-terracotta mb-3" />
+              <h3 className="font-heading text-h4 text-deep-green mb-2">Ștergi {selected.length} practici?</h3>
+              <p className="font-body text-body-sm text-secondary-text mb-5">
+                Dispar definitiv de pe site. Dacă vrei doar să nu mai fie vizibile, folosește „Treci în draft".
+              </p>
+              <div className="flex gap-3">
+                <button onClick={() => setBulkDelete(false)} className="btn btn-secondary btn-sm flex-1">Anulează</button>
+                <button onClick={bulkRemove} disabled={bulkBusy} className="btn btn-sm flex-1 bg-terracotta text-white hover:opacity-90 disabled:opacity-50">
+                  {bulkBusy ? "Se șterge..." : "Șterge"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Bulk actions */}
       <AnimatePresence>
         {selected.length > 0 && (
@@ -186,10 +256,67 @@ export default function AdminContentPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="card bg-forest-green text-white p-3 mb-4 flex items-center gap-4"
+            className="card bg-forest-green text-white p-3 mb-4 flex items-center gap-2 flex-wrap relative"
           >
-            <span className="font-body text-body-sm font-semibold">{selected.length} selectate</span>
-            <button onClick={() => setSelected([])} className="ml-auto p-1.5 hover:bg-white/20 rounded-lg">
+            <span className="font-body text-body-sm font-semibold mr-2">{selected.length} selectate</span>
+
+            <button onClick={() => bulkPatch({ status: "active" })} disabled={bulkBusy}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-body text-label-xs font-semibold transition-colors disabled:opacity-50">
+              <Eye size={13} weight="bold" /> Publică
+            </button>
+            <button onClick={() => bulkPatch({ status: "draft" })} disabled={bulkBusy}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-body text-label-xs font-semibold transition-colors disabled:opacity-50">
+              <EyeSlash size={13} weight="bold" /> Treci în draft
+            </button>
+
+            {/* Categorie */}
+            <div className="relative">
+              <button onClick={() => setBulkMenu(bulkMenu === "categorie" ? null : "categorie")} disabled={bulkBusy}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-body text-label-xs font-semibold transition-colors disabled:opacity-50">
+                <FolderSimple size={13} weight="bold" /> Categorie
+              </button>
+              {bulkMenu === "categorie" && (
+                <div className="absolute left-0 top-full mt-1 z-20 bg-white rounded-xl shadow-modal border border-sage-border py-1 min-w-[180px]">
+                  {DB_CATEGORIES.map((c) => (
+                    <button key={c} onClick={() => bulkPatch({ category: c })}
+                      className="block w-full text-left px-3 py-1.5 font-body text-label-xs text-deep-green hover:bg-light-green">
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Nivel de acces */}
+            <div className="relative">
+              <button onClick={() => setBulkMenu(bulkMenu === "acces" ? null : "acces")} disabled={bulkBusy}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-body text-label-xs font-semibold transition-colors disabled:opacity-50">
+                <Lock size={13} weight="bold" /> Acces
+              </button>
+              {bulkMenu === "acces" && (
+                <div className="absolute left-0 top-full mt-1 z-20 bg-white rounded-xl shadow-modal border border-sage-border py-1 min-w-[200px]">
+                  {[
+                    { v: "gratuit", l: "Gratuit — pentru toți" },
+                    { v: "standard", l: "Standard — abonament" },
+                    { v: "premium", l: "Premium" },
+                  ].map((t) => (
+                    <button key={t.v} onClick={() => bulkPatch({ tier: t.v })}
+                      className="block w-full text-left px-3 py-1.5 font-body text-label-xs text-deep-green hover:bg-light-green">
+                      {t.l}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button onClick={() => setBulkDelete(true)} disabled={bulkBusy}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-terracotta font-body text-label-xs font-semibold transition-colors disabled:opacity-50">
+              <Trash size={13} weight="bold" /> Șterge
+            </button>
+
+            {bulkBusy && <CircleNotch size={15} className="animate-spin" />}
+
+            <button onClick={() => { setSelected([]); setBulkMenu(null); }} className="ml-auto p-1.5 hover:bg-white/20 rounded-lg">
               <X size={14} />
             </button>
           </motion.div>
