@@ -116,10 +116,10 @@ export default function ResetPasswordPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Parolă nouă")}</label>
+                <label htmlFor="parola-noua" className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Parolă nouă")}</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input
+                  <input id="parola-noua" autoComplete="new-password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -131,10 +131,10 @@ export default function ResetPasswordPage() {
               </div>
 
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Confirmă parola")}</label>
+                <label htmlFor="confirma-parola" className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Confirmă parola")}</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input
+                  <input id="confirma-parola" autoComplete="new-password"
                     type="password"
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}

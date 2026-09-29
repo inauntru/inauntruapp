@@ -187,7 +187,7 @@ export default function PracticiClient({ siteContent }: Props) {
             <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 30 }} className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-heading text-h3 text-deep-green">{tr("Filtre")}</h3>
-                <button onClick={() => setFiltersOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green"><X size={18} /></button>
+                <button onClick={() => setFiltersOpen(false)} aria-label={tr("Închide filtrele")} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green"><X size={18} /></button>
               </div>
               <div className="space-y-5">
                 <div><p className="font-body text-label-sm text-secondary-text uppercase tracking-widest mb-3">{tr("Durată")}</p><div className="flex flex-wrap gap-2">{DURATIONS.map((d) => <button key={d} onClick={() => setDuration(d)} className={`filter-pill ${duration === d ? "active" : ""}`}>{tr(d)}</button>)}</div></div>

@@ -215,7 +215,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
       <section className="bg-white border-b border-sage-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green transition-colors"><CaretLeft size={16} weight="bold" className="text-secondary-text" /></button>
+            <button aria-label={tr("Săptămâna anterioară")} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green transition-colors"><CaretLeft size={16} weight="bold" className="text-secondary-text" /></button>
             <div className="flex gap-2 overflow-x-auto no-scrollbar flex-1">
               {Array.from({ length: 7 }).map((_, i) => {
                 const d = new Date(); d.setDate(d.getDate() + i);
@@ -229,7 +229,7 @@ export default function SesiuniLiveClient({ siteContent }: Props) {
                 );
               })}
             </div>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green transition-colors"><CaretRight size={16} weight="bold" className="text-secondary-text" /></button>
+            <button aria-label={tr("Săptămâna următoare")} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-light-green transition-colors"><CaretRight size={16} weight="bold" className="text-secondary-text" /></button>
           </div>
         </div>
       </section>

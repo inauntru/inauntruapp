@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { OG_IMAGE, OG_IMAGE_URL } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { PRACTICES, FACILITATORS } from "@/lib/mockData";
 import { createServiceClient } from "@/lib/supabase";
@@ -105,6 +107,55 @@ async function getRelated(id: number, category: string): Promise<NormalizedPract
   const related = PRACTICES.filter((p) => p.id !== id && p.category === category).slice(0, 3);
   if (related.length > 0) return related as unknown as NormalizedPractice[];
   return PRACTICES.filter((p) => p.id !== id).slice(0, 3) as unknown as NormalizedPractice[];
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
+
+/** Taie descrierea la o lungime pe care Google chiar o afișează, fără să rupă un cuvânt. */
+function shorten(text: string, max = 155): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  return cut.slice(0, cut.lastIndexOf(" ")) + "…";
+}
+
+/**
+ * Fiecare practică apare în Google cu titlul, durata și facilitatorul ei.
+ * Înainte, toate practicile împrumutau titlul primei pagini.
+ */
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const id = Number(params.id);
+  if (isNaN(id)) return { title: "Practica nu a fost găsită" };
+
+  const practice = await getPractice(id);
+  if (!practice) return { title: "Practica nu a fost găsită" };
+
+  const url = `${BASE_URL}/practici/${practice.id}`;
+  const facilitatorPart = practice.facilitator ? ` cu ${practice.facilitator}` : "";
+  const description = practice.longDescription
+    ? shorten(practice.longDescription)
+    : `Practică ghidată de ${practice.duration} minute${facilitatorPart}. Categoria ${practice.category}, nivel ${practice.level}.`;
+
+  return {
+    title: `${practice.title} — ${practice.duration} min`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: practice.title,
+      description,
+      url,
+      siteName: "WithIn",
+      locale: "ro_RO",
+      images: practice.image ? [{ url: practice.image, alt: practice.title }] : [OG_IMAGE],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: practice.title,
+      description,
+      images: practice.image ? [practice.image] : [OG_IMAGE_URL],
+    },
+  };
 }
 
 export default async function PracticeDetailPage({ params }: { params: { id: string } }) {

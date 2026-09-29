@@ -149,32 +149,32 @@ export default function RegisterPage() {
               className="space-y-4"
             >
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Nume complet")}</label>
+                <label htmlFor="nume-complet" className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Nume complet")}</label>
                 <div className="relative">
                   <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={tr("Prenume Nume")} required className="input pl-10" />
+                  <input id="nume-complet" autoComplete="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={tr("Prenume Nume")} required className="input pl-10" />
                 </div>
               </div>
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Email")}</label>
+                <label htmlFor="email" className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Email")}</label>
                 <div className="relative">
                   <Envelope size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={tr("email@exemplu.ro")} required className="input pl-10" />
+                  <input id="email" autoComplete="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={tr("email@exemplu.ro")} required className="input pl-10" />
                 </div>
               </div>
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Parolă")}</label>
+                <label htmlFor="parola" className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Parolă")}</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={tr("Minim 8 caractere")} required minLength={8} className="input pl-10 pr-12" />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-forest-green transition-colors">
+                  <input id="parola" autoComplete="new-password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={tr("Minim 8 caractere")} required minLength={8} className="input pl-10 pr-12" />
+                  <button type="button" aria-label={showPassword ? tr("Ascunde parola") : tr("Arată parola")} onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-forest-green transition-colors">
                     {showPassword ? <EyeSlash size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Număr de telefon")}</label>
+                <label htmlFor="numar-de-telefon" className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Număr de telefon")}</label>
                 <PhoneInput value={phone} onChange={setPhone} inputClassName="input" />
                 <p className="font-body text-label-xs text-secondary-text mt-1.5">
                   {tr("Folosit pentru securitatea contului și pentru a te putea asista personalizat.")}
@@ -187,7 +187,7 @@ export default function RegisterPage() {
                 </label>
                 <div className="relative">
                   <Cake size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text pointer-events-none" />
-                  <input
+                  <input id="numar-de-telefon" autoComplete="tel"
                     type="date"
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}

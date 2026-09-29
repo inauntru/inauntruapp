@@ -79,10 +79,10 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Email")}</label>
+                  <label htmlFor="email" className="font-body text-label-sm text-on-surface mb-1.5 block">{tr("Email")}</label>
                   <div className="relative">
                     <Envelope size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                    <input
+                    <input id="email" autoComplete="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}

@@ -1,8 +1,9 @@
 ﻿import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { getSiteContent } from "@/lib/siteContent";
 import PracticiClient from "./PracticiClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   title: "Practici de Meditație Ghidată și Respirație",
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: `${BASE_URL}/practici` },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Practici de Meditație Ghidată și Respirație | WithIn",
     description: "Meditație ghidată, exerciții de respirație și practici somatice pentru stres și anxietate.",
     url: `${BASE_URL}/practici`,

@@ -1,8 +1,9 @@
 ﻿import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { getSiteContent } from "@/lib/siteContent";
 import DespreNoiClient from "./DespreNoiClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   title: "Despre Noi — Misiunea WithIn",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
     "WithIn este o platformă de meditație ghidată și mindfulness din România. Misiunea noastră: să facem tehnicile de echilibru interior accesibile tuturor, în mai puțin de 2 minute.",
   alternates: { canonical: `${BASE_URL}/despre-noi` },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Despre Noi — Misiunea WithIn",
     description: "Platforma de meditație ghidată și wellness din România. Practici accesibile pentru echilibrul tău interior.",
     url: `${BASE_URL}/despre-noi`,

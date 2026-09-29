@@ -1,10 +1,11 @@
 ﻿import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { getSiteContent } from "@/lib/siteContent";
 import { SESIUNI_LIVE_PAGE_ENABLED } from "@/lib/features";
 import SesiuniLiveClient from "./SesiuniLiveClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   title: "Sesiuni LIVE de Meditație și Mindfulness",
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
   keywords: ["sesiuni meditație online", "meditație ghidată live", "grup meditație online România", "yoga online"],
   alternates: { canonical: `${BASE_URL}/sesiuni-live` },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Sesiuni LIVE de Meditație și Mindfulness | WithIn",
     description: "Meditație ghidată în timp real cu facilitatori certificați. Rezervă-ți locul acum.",
     url: `${BASE_URL}/sesiuni-live`,

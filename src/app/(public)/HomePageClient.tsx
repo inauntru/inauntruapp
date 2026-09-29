@@ -212,7 +212,7 @@ export default function HomePageClient({ siteContent }: Props) {
 
       {/* ── HOW IT WORKS ── */}
       <section id="cum-functioneaza" className="py-16 lg:py-24 relative overflow-hidden">
-        <BackgroundVideo src="/journey-video.mp4" poster="/journey-poster.jpg" className="absolute inset-0 w-full h-full object-cover" />
+        <BackgroundVideo src="/journey-video.mp4" poster="/journey-poster.jpg" lazy className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: "rgba(230,245,237,0.45)" }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <AnimateIn once={false} from="bottom">

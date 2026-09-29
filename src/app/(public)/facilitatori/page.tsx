@@ -1,8 +1,9 @@
 ﻿import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { getSiteContent } from "@/lib/siteContent";
 import FacilitatoriClient from "./FacilitatoriClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   title: "Facilitatori — Experți în Meditație și Mindfulness",
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
   keywords: ["facilitator meditație", "instructor mindfulness România", "terapeut wellness online", "expert respirație"],
   alternates: { canonical: `${BASE_URL}/facilitatori` },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Facilitatori — Experți în Meditație și Mindfulness | WithIn",
     description: "Specialiști în meditație ghidată și wellness din România.",
     url: `${BASE_URL}/facilitatori`,

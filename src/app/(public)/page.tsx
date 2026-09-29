@@ -1,8 +1,9 @@
 ﻿import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { getSiteContent } from "@/lib/siteContent";
 import HomePageClient from "./HomePageClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   title: "WithIn — Meditație Ghidată și Mindfulness Online România",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
     "Practici de meditație ghidată, exerciții de respirație și tehnici de relaxare pentru stres și anxietate. Resetare mentală în mai puțin de 2 minute. Încearcă gratuit.",
   alternates: { canonical: BASE_URL },
   openGraph: {
+    images: [OG_IMAGE],
     title: "WithIn — Meditație Ghidată și Mindfulness Online România",
     description: "Meditație ghidată, exerciții de respirație și practici somatice. Întoarce-te la tine în 2 minute.",
     url: BASE_URL,

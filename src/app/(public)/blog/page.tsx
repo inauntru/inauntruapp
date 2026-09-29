@@ -1,8 +1,9 @@
 ﻿import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { getSiteContent } from "@/lib/siteContent";
 import BlogClient from "./BlogClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   title: "Blog — Articole despre Meditație, Mindfulness și Wellness",
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: `${BASE_URL}/blog` },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Blog — Articole despre Meditație și Wellness | WithIn",
     description: "Articole despre meditație, respirație și echilibru mental. Resurse gratuite.",
     url: `${BASE_URL}/blog`,

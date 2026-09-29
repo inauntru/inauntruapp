@@ -77,10 +77,10 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Adresă de email")}</label>
+                <label htmlFor="adresa-de-email" className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Adresă de email")}</label>
                 <div className="relative">
                   <Envelope size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input
+                  <input id="adresa-de-email" autoComplete="email"
                     type="email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
@@ -93,14 +93,14 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest">{tr("Parolă")}</label>
+                  <label htmlFor="parola" className="font-ui text-label-xs text-secondary-text uppercase tracking-widest">{tr("Parolă")}</label>
                   <Link href="/forgot-password" className="font-body text-label-xs text-secondary-text hover:text-forest-green transition-colors">
                     {tr("Ai uitat parola?")}
                   </Link>
                 </div>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input
+                  <input id="parola" autoComplete="current-password"
                     type={showLoginPassword ? "text" : "password"}
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
@@ -161,10 +161,10 @@ export default function LoginPage() {
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Prenume")}</label>
+                  <label htmlFor="prenume" className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Prenume")}</label>
                   <div className="relative">
                     <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                    <input
+                    <input id="prenume" autoComplete="given-name"
                       type="text"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
@@ -175,8 +175,8 @@ export default function LoginPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Nume")}</label>
-                  <input
+                  <label htmlFor="nume" className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Nume")}</label>
+                  <input id="nume" autoComplete="family-name"
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
@@ -188,10 +188,10 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Email")}</label>
+                <label htmlFor="email" className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Email")}</label>
                 <div className="relative">
                   <Envelope size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input
+                  <input id="email" autoComplete="email"
                     type="email"
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
@@ -203,10 +203,10 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Parolă nouă")}</label>
+                <label htmlFor="parola-noua" className="font-ui text-label-xs text-secondary-text uppercase tracking-widest block mb-2">{tr("Parolă nouă")}</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
-                  <input
+                  <input id="parola-noua" autoComplete="new-password"
                     type={showRegPassword ? "text" : "password"}
                     value={regPassword}
                     onChange={(e) => setRegPassword(e.target.value)}

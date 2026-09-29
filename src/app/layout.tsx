@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { OG_IMAGE, OG_IMAGE_URL } from "@/lib/seo";
 import { fontVariables } from "@/lib/fonts";
 import Providers from "@/components/Providers";
 import { ArtDefs } from "@/components/ui/ArtIcons";
 import "./globals.css";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
     languages: { "ro-RO": BASE_URL },
   },
   openGraph: {
+    images: [OG_IMAGE],
     title: "WithIn — Meditație și Mindfulness Online România",
     description:
       "Practici de meditație ghidată, exerciții de respirație și tehnici de relaxare. Întoarce-te la tine în mai puțin de 2 minute.",
@@ -41,13 +43,12 @@ export const metadata: Metadata = {
     siteName: "WithIn",
     locale: "ro_RO",
     type: "website",
-    images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "WithIn — Meditație Online România" }],
   },
   twitter: {
+    images: [OG_IMAGE_URL],
     card: "summary_large_image",
     title: "WithIn — Meditație și Mindfulness Online România",
     description: "Practici de meditație ghidată și exerciții de respirație. Întoarce-te la tine în 2 minute.",
-    images: ["/opengraph-image.png"],
   },
   // PRE-LAUNCH: noindex activ — la lansare schimba in index: true, follow: true
   robots: {

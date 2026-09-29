@@ -1,8 +1,9 @@
 ﻿import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { getSiteContent } from "@/lib/siteContent";
 import AncoreClient from "./AncoreClient";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
 
 export const metadata: Metadata = {
   title: "Ancore — Tehnici Rapide de Revenire la Prezent",
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: `${BASE_URL}/ancore` },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Ancore — Tehnici Rapide de Revenire la Prezent | WithIn",
     description: "Exerciții de respirație și tehnici senzoriale pentru stres și anxietate. Sub 3 minute.",
     url: `${BASE_URL}/ancore`,

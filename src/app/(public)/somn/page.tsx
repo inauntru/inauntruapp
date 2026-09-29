@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { getSiteContent } from "@/lib/siteContent";
 import { SOMN_PAGE_ENABLED } from "@/lib/features";
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: `${BASE_URL}/somn` },
   openGraph: {
+    images: [OG_IMAGE],
     title: "Somn — Lasă ziua să se încheie | WithIn",
     description: "Sunete, muzică și practici blânde pentru serile în care corpul s-a oprit, dar mintea încă nu.",
     url: `${BASE_URL}/somn`,

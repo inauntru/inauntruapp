@@ -241,7 +241,7 @@ export default function PracticePlayer({ title, duration, isPremium, mediaType =
           {/* Controale */}
           <div className="px-6 pb-6 flex items-center justify-between">
             <div className="flex items-center gap-2 w-32">
-              <button onClick={() => setVolume((v) => (v === 0 ? 80 : 0))} className="text-white/50 hover:text-white transition-colors">
+              <button onClick={() => setVolume((v) => (v === 0 ? 80 : 0))} aria-label={volume === 0 ? "Pornește sunetul" : "Oprește sunetul"} className="text-white/50 hover:text-white transition-colors">
                 <VolumeIcon size={18} />
               </button>
               <input

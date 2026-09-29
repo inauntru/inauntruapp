@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { OG_IMAGE, OG_IMAGE_URL } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { BLOG_POSTS } from "@/lib/mockData";
 import { createServiceClient } from "@/lib/supabase";
@@ -72,6 +74,46 @@ async function getRelated(slug: string, category: string): Promise<NormalizedPos
   return BLOG_POSTS.filter(
     (p) => p.slug !== slug && p.category === category
   ).slice(0, 3) as NormalizedPost[];
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://withinapp.ro";
+
+/**
+ * Fiecare articol își are propriul titlu și descriere în Google și în previzualizarea
+ * de pe WhatsApp/Facebook. Fără asta, toate articolele apăreau cu titlul primei pagini.
+ */
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await getPost(params.slug);
+  if (!post) return { title: "Articolul nu a fost găsit" };
+
+  const url = `${BASE_URL}/blog/${post.slug}`;
+  const description =
+    post.excerpt ||
+    `${post.title} — articol din blogul WithIn despre meditație, respirație și echilibru interior.`;
+
+  return {
+    title: post.title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description,
+      url,
+      siteName: "WithIn",
+      locale: "ro_RO",
+      publishedTime: post.date,
+      authors: post.author ? [post.author] : undefined,
+      tags: post.tags,
+      images: post.image ? [{ url: post.image, alt: post.title }] : [OG_IMAGE],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: post.image ? [post.image] : [OG_IMAGE_URL],
+    },
+  };
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
