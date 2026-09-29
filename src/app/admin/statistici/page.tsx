@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CircleNotch, Users, CalendarCheck, Timer, CreditCard } from "@phosphor-icons/react";
+import { CircleNotch, Users, CalendarCheck, Timer, CreditCard, Play, Clock } from "@phosphor-icons/react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell,
@@ -16,6 +16,11 @@ interface StatsData {
   usersByPlan: { plan: string; count: number }[];
   newUsersPerDay: { day: string; count: number }[];
   checkInsPerDay: { day: string; count: number }[];
+  totalPracticesDone: number;
+  practicesDoneLast30: number;
+  totalMinutesPracticed: number;
+  practiceStats: { id: number; title: string; category: string | null; starts: number; completions: number; rate: number | null }[];
+  practicesPerDay: { day: string; count: number }[];
 }
 
 const PLAN_COLORS: Record<string, string> = {
@@ -157,6 +162,86 @@ export default function AdminStatisticiPage() {
             </LineChart>
           </ResponsiveContainer>
         )}
+      </motion.div>
+
+      {/* ── Practici ─────────────────────────────────────────────────────── */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mt-8">
+        <h2 className="font-heading text-h3 text-deep-green mb-1">Practici</h2>
+        <p className="font-body text-label-xs text-secondary-text mb-4">
+          O „pornire" e o practică deschisă, o „finalizare" înseamnă parcursă cel puțin 90%.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+          <StatCard icon={Play} label="Practici finalizate" value={data.totalPracticesDone} sub="de la început" />
+          <StatCard icon={CalendarCheck} label="Ultimele 30 de zile" value={data.practicesDoneLast30} sub="finalizări" delay={0.05} />
+          <StatCard icon={Clock} label="Minute practicate" value={data.totalMinutesPracticed.toLocaleString("ro-RO")} sub="total, toți utilizatorii" delay={0.1} />
+        </div>
+
+        <div className="card bg-white p-5 mb-5">
+          <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Finalizări zilnice</h3>
+          <p className="font-body text-label-xs text-secondary-text mb-5">Ultimele 30 de zile</p>
+          {data.practicesPerDay.every((d) => d.count === 0) ? (
+            <p className="font-body text-secondary-text text-body-sm text-center py-8">
+              Nicio practică finalizată încă.
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={data.practicesPerDay}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e8ede9" vertical={false} />
+                <XAxis dataKey="day" tick={{ fontSize: 10, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} interval={4} />
+                <YAxis tick={{ fontSize: 11, fontFamily: "var(--font-body)", fill: "#6b7c6e" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown): [number, string] => [Number(v ?? 0), "Finalizări"]} />
+                <Line type="monotone" dataKey="count" stroke={CHART_COLOR} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: CHART_COLOR }} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        <div className="card bg-white p-5">
+          <h3 className="font-body font-semibold text-body-md text-deep-green mb-1">Cele mai ascultate</h3>
+          <p className="font-body text-label-xs text-secondary-text mb-4">
+            Rata scăzută arată practicile pe care oamenii le abandonează pe parcurs.
+          </p>
+          {data.practiceStats.length === 0 ? (
+            <p className="font-body text-secondary-text text-body-sm text-center py-8">
+              Încă nu a ascultat nimeni o practică.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-sage-border">
+                    <th className="text-left font-body text-label-xs text-secondary-text uppercase tracking-wider pb-2">Practică</th>
+                    <th className="text-right font-body text-label-xs text-secondary-text uppercase tracking-wider pb-2 px-3">Porniri</th>
+                    <th className="text-right font-body text-label-xs text-secondary-text uppercase tracking-wider pb-2 px-3">Finalizări</th>
+                    <th className="text-right font-body text-label-xs text-secondary-text uppercase tracking-wider pb-2">Rată</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.practiceStats.map((p) => (
+                    <tr key={p.id} className="border-b border-sage-border/40 last:border-0">
+                      <td className="py-2.5">
+                        <p className="font-body text-body-sm text-deep-green">{p.title}</p>
+                        {p.category && <p className="font-body text-[10px] text-secondary-text">{p.category}</p>}
+                      </td>
+                      <td className="text-right font-body text-body-sm text-secondary-text px-3">{p.starts}</td>
+                      <td className="text-right font-body text-body-sm text-deep-green font-semibold px-3">{p.completions}</td>
+                      <td className="text-right">
+                        {p.rate === null ? (
+                          <span className="font-body text-body-sm text-secondary-text">—</span>
+                        ) : (
+                          <span className={`font-body text-body-sm font-semibold ${
+                            p.rate >= 70 ? "text-forest-green" : p.rate >= 40 ? "text-amber-600" : "text-terracotta"
+                          }`}>{p.rate}%</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </motion.div>
     </div>
   );

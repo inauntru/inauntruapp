@@ -64,6 +64,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     }
   }
 
+  // Cererea fișierului ÎNSEAMNĂ pornirea practicii — de aici știm câte porniri
+  // a avut, ca să putem calcula rata de finalizare. Nu blocăm redarea dacă pică.
+  service.rpc("increment_practice_views", { pid: Number(id) }).then(
+    () => {},
+    () => {}
+  );
+
   // Link extern (Vimeo, YouTube sau orice adresă directă) — îl dăm ca atare
   if (!practice.media_url.startsWith("storage:")) {
     return NextResponse.json({ url: practice.media_url, external: true, mediaType: practice.media_type ?? "audio" });

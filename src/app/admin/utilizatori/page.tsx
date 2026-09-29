@@ -256,6 +256,67 @@ function RoleCard({ user, onSaved }: { user: RealUser; onSaved: (role: UserRole)
 
 // ── Detail view ────────────────────────────────────────────────────────────
 
+/** Ce a practicat utilizatorul — finalizările lui, cele mai noi primele. */
+function PracticeHistoryCard({ userId }: { userId: string }) {
+  const [items, setItems] = useState<{ practiceId: number; title: string; category: string | null; minutes: number; at: string | null }[]>([]);
+  const [totals, setTotals] = useState({ completed: 0, minutes: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    fetch(`/api/admin/users/activity?userId=${encodeURIComponent(userId)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!active) return;
+        setItems(d.items ?? []);
+        setTotals({ completed: d.totalCompleted ?? 0, minutes: d.totalMinutes ?? 0 });
+        setLoading(false);
+      })
+      .catch(() => active && setLoading(false));
+    return () => { active = false; };
+  }, [userId]);
+
+  return (
+    <div className="card bg-white p-5">
+      <div className="flex items-baseline justify-between mb-1">
+        <h3 className="font-body font-semibold text-body-md text-deep-green">Practici parcurse</h3>
+        {!loading && totals.completed > 0 && (
+          <span className="font-body text-label-xs text-secondary-text">
+            {totals.completed} finalizate · {totals.minutes} min
+          </span>
+        )}
+      </div>
+      <p className="font-body text-label-xs text-secondary-text mb-4">
+        Se înregistrează practicile parcurse cel puțin 90%.
+      </p>
+
+      {loading ? (
+        <div className="flex justify-center py-6"><CircleNotch size={18} className="animate-spin text-forest-green" /></div>
+      ) : items.length === 0 ? (
+        <p className="font-body text-body-sm text-secondary-text text-center py-6">
+          Nu a finalizat nicio practică încă.
+        </p>
+      ) : (
+        <div className="space-y-2 max-h-72 overflow-y-auto">
+          {items.map((it, i) => (
+            <div key={`${it.practiceId}-${i}`} className="flex items-center justify-between gap-3 py-2 border-b border-sage-border/40 last:border-0">
+              <div className="min-w-0">
+                <p className="font-body text-body-sm text-deep-green truncate">{it.title}</p>
+                {it.category && <p className="font-body text-[10px] text-secondary-text">{it.category}</p>}
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="font-body text-label-xs text-secondary-text">{it.at ? formatDate(it.at) : "—"}</p>
+                <p className="font-body text-[10px] text-secondary-text">{it.minutes} min</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UserDetail({ user, onBack, onDelete, onRoleUpdate, onPlanUpdate, onEmailConfirmed }: { user: RealUser; onBack: () => void; onDelete: () => void; onRoleUpdate: (role: UserRole) => void; onPlanUpdate: (plan: UserPlan) => void; onEmailConfirmed: () => void }) {
   return (
     <motion.div key="detail" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.25 }}>
@@ -333,6 +394,7 @@ function UserDetail({ user, onBack, onDelete, onRoleUpdate, onPlanUpdate, onEmai
 
         {/* Right */}
         <div className="space-y-5">
+          <PracticeHistoryCard userId={user.id} />
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <div className="card bg-white p-5 text-center">
