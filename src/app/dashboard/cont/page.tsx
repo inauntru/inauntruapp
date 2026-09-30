@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import HealthConsentSettings from "@/components/ui/HealthConsentSettings";
 import PhoneInput from "@/components/ui/PhoneInput";
 
 // ── Date picker ────────────────────────────────────────────────────────────
@@ -583,6 +584,8 @@ function ConfidentialitateTab({ authUser }: { authUser: ReturnType<typeof useAut
         <h2 className="font-heading text-h3 text-deep-green mb-1">{tr("Confidențialitate")}</h2>
         <p className="font-body text-body-sm text-secondary-text">{tr("Datele tale și drepturile GDPR.")}</p>
       </div>
+
+      <HealthConsentSettings />
 
       <div className="space-y-4 pb-8 border-b border-sage-border/40">
         <h3 className="font-body font-semibold text-body-md text-deep-green">{tr("Export date")}</h3>

@@ -21,6 +21,7 @@ import { PRACTICES } from "@/lib/mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { canAccess, contentTier } from "@/lib/plan";
+import HealthConsentModal from "@/components/ui/HealthConsentModal";
 
 interface MoodOption {
   id: string;
@@ -132,6 +133,20 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
   // Practici reale din API (fallback pe mock dacă API-ul nu răspunde),
   // filtrate pe planul utilizatorului — nu recomandăm conținut blocat
   const { profile, user } = useAuth();
+  // Acordul explicit pentru datele despre stare (art. 9). Se verifica doar cand
+  // fereastra chiar se deschide, ca sa nu facem cereri degeaba pe fiecare pagina.
+  // Vizitatorii nu au nevoie de acord: raspunsurile lor raman in browser.
+  const [cereAcord, setCereAcord] = useState(false);
+  useEffect(() => {
+    if (!isOpen || !user) { setCereAcord(false); return; }
+    let viu = true;
+    fetch("/api/user/health-consent")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (viu && d) setCereAcord(!d.consented); })
+      .catch(() => {});
+    return () => { viu = false; };
+  }, [isOpen, user]);
+
   const [allPractices, setAllPractices] = useState<typeof PRACTICES>(PRACTICES);
   useEffect(() => {
     if (!isOpen) return;
@@ -171,6 +186,12 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
   const canProceedStep3 = selectedIntensity !== null;
 
   return (
+    <>
+    <HealthConsentModal
+      open={isOpen && cereAcord}
+      onGranted={() => setCereAcord(false)}
+      onDismiss={() => { setCereAcord(false); onClose(); }}
+    />
     <AnimatePresence>
       {isOpen && (
         <>
@@ -556,5 +577,6 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
         </>
       )}
     </AnimatePresence>
+    </>
   );
 }

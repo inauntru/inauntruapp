@@ -46,6 +46,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Prea multe cereri. Încearcă mai târziu." }, { status: 429 });
   }
 
+  // Insemnarile din jurnal intra in aceeasi categorie ca check-in-ul — vezi lib/health-consent.
+  const { hasHealthConsent, CONSENT_REQUIRED_CODE } = await import("@/lib/health-consent");
+  if (!(await hasHealthConsent(user.id))) {
+    return NextResponse.json(
+      { error: "Avem nevoie de acordul tau ca sa pastram ce scrii in jurnal.", code: CONSENT_REQUIRED_CODE },
+      { status: 403 }
+    );
+  }
+
   const { title, content, mood } = await req.json();
   if (!content) return NextResponse.json({ error: "Conținutul este obligatoriu" }, { status: 400 });
 

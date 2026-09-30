@@ -27,6 +27,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Modificarea unei insemnari e tot o prelucrare de date privind starea — vezi lib/health-consent.
+  const { hasHealthConsent, CONSENT_REQUIRED_CODE } = await import("@/lib/health-consent");
+  if (!(await hasHealthConsent(user.id))) {
+    return NextResponse.json(
+      { error: "Avem nevoie de acordul tau ca sa pastram ce scrii in jurnal.", code: CONSENT_REQUIRED_CODE },
+      { status: 403 }
+    );
+  }
+
   const { title, content, mood } = await req.json();
   const serviceClient = createServiceClient();
   const { error } = await (serviceClient as any)

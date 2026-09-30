@@ -12,6 +12,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { fetchAncoreCompletions } from "@/lib/ancore-sync";
 import { useLanguage } from "@/contexts/LanguageContext";
+import HealthConsentModal, { useHealthConsent } from "@/components/ui/HealthConsentModal";
 
 const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), { ssr: false });
 
@@ -111,16 +112,34 @@ export default function JurnalPage() {
       .catch(() => {});
   }, []);
 
+  // Insemnarile din jurnal sunt date privind starea: cerem acordul explicit inainte
+  // de a deschide editorul, nu dupa ce omul a scris. Vezi lib/health-consent.ts.
+  const { loading: acordSeIncarca, consented: areAcord, refresh: reciteAcordul } = useHealthConsent();
+  const [cereAcord, setCereAcord] = useState(false);
+  const [dupaAcord, setDupaAcord] = useState<null | (() => void)>(null);
+
+  /** Ruleaza actiunea daca acordul exista; altfel il cere intai. */
+  function cuAcord(actiune: () => void) {
+    if (acordSeIncarca) return;
+    if (areAcord) { actiune(); return; }
+    setDupaAcord(() => actiune);
+    setCereAcord(true);
+  }
+
   function openNew() {
-    setEditing(null);
-    setForm({ title: "", content: "", mood: "" });
-    setShowEditor(true);
+    cuAcord(() => {
+      setEditing(null);
+      setForm({ title: "", content: "", mood: "" });
+      setShowEditor(true);
+    });
   }
 
   function openEdit(e: JournalEntry) {
-    setEditing(e);
-    setForm({ title: e.title ?? "", content: e.content, mood: e.mood ?? "" });
-    setShowEditor(true);
+    cuAcord(() => {
+      setEditing(e);
+      setForm({ title: e.title ?? "", content: e.content, mood: e.mood ?? "" });
+      setShowEditor(true);
+    });
   }
 
   async function handleSave() {
@@ -148,6 +167,17 @@ export default function JurnalPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <HealthConsentModal
+        open={cereAcord}
+        onGranted={() => {
+          setCereAcord(false);
+          reciteAcordul();
+          const a = dupaAcord;
+          setDupaAcord(null);
+          if (a) a();
+        }}
+        onDismiss={() => { setCereAcord(false); setDupaAcord(null); }}
+      />
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Link href="/dashboard" className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-light-green text-secondary-text hover:text-forest-green transition-colors">

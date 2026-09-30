@@ -56,6 +56,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Prea multe cereri. Încearcă mai târziu." }, { status: 429 });
   }
 
+  // Datele de la check-in sunt date privind sanatatea: fara acord explicit nu le scriem.
+  // Verificarea se face aici, nu doar in interfata, pentru ca cererea poate veni si direct.
+  const { hasHealthConsent, CONSENT_REQUIRED_CODE } = await import("@/lib/health-consent");
+  if (!(await hasHealthConsent(user.id))) {
+    return NextResponse.json(
+      { error: "Avem nevoie de acordul tau ca sa pastram ce notezi despre starea ta.", code: CONSENT_REQUIRED_CODE },
+      { status: 403 }
+    );
+  }
+
   const { mood, body_zones, intensity, note } = await req.json();
   if (!mood) return NextResponse.json({ error: "mood required" }, { status: 400 });
 
