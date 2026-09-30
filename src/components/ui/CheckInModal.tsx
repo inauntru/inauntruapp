@@ -114,8 +114,17 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
       } catch { /* ignore */ }
       return;
     }
+    await salveazaCheckIn();
+  };
+
+  /**
+   * Trimite check-in-ul. Daca serverul il refuza pentru ca lipseste acordul,
+   * deschide fereastra de acord si retine sa retrimita dupa ce e dat — altfel
+   * omul ar vedea ecranul de final fara ca raspunsurile lui sa fie pastrate.
+   */
+  const salveazaCheckIn = async () => {
     try {
-      await fetch("/api/checkin", {
+      const r = await fetch("/api/checkin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -125,8 +134,15 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
           note: note || null,
         }),
       });
+      if (r.status === 403) {
+        const d = await r.json().catch(() => null);
+        if (d && d.code === "health_consent_required") {
+          setRetrimiteDupaAcord(true);
+          setCereAcord(true);
+        }
+      }
     } catch {
-      // Silently ignore — completion screen already shown
+      // Ecranul de final e deja afisat; o eroare de retea nu are ce mesaj sa primeasca aici
     }
   };
 
@@ -137,6 +153,7 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
   // fereastra chiar se deschide, ca sa nu facem cereri degeaba pe fiecare pagina.
   // Vizitatorii nu au nevoie de acord: raspunsurile lor raman in browser.
   const [cereAcord, setCereAcord] = useState(false);
+  const [retrimiteDupaAcord, setRetrimiteDupaAcord] = useState(false);
   useEffect(() => {
     if (!isOpen || !user) { setCereAcord(false); return; }
     let viu = true;
@@ -189,8 +206,17 @@ export default function CheckInModal({ isOpen, onClose, canSkip = true, onComple
     <>
     <HealthConsentModal
       open={isOpen && cereAcord}
-      onGranted={() => setCereAcord(false)}
-      onDismiss={() => { setCereAcord(false); onClose(); }}
+      onGranted={() => {
+        setCereAcord(false);
+        if (retrimiteDupaAcord) { setRetrimiteDupaAcord(false); salveazaCheckIn(); }
+      }}
+      onDismiss={() => {
+        setCereAcord(false);
+        // Daca acordul a fost cerut la final, ramanem pe ecranul de final;
+        // daca a fost cerut la intrare, nu are rost sa tinem fereastra deschisa.
+        if (retrimiteDupaAcord) setRetrimiteDupaAcord(false);
+        else onClose();
+      }}
     />
     <AnimatePresence>
       {isOpen && (

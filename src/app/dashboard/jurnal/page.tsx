@@ -147,11 +147,23 @@ export default function JurnalPage() {
     setSaving(true);
     const method = editing ? "PUT" : "POST";
     const url = editing ? `/api/journal/${editing.id}` : "/api/journal";
-    await fetch(url, {
+    const raspuns = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: form.title || null, content: form.content, mood: form.mood || null }),
     });
+
+    // Serverul refuza scrierea fara acord. Fara verificarea asta am fi aratat
+    // "salvat" desi insemnarea nu ajungea nicaieri.
+    if (raspuns.status === 403) {
+      const d = await raspuns.json().catch(() => null);
+      if (d && d.code === "health_consent_required") {
+        setSaving(false);
+        setDupaAcord(() => handleSave);
+        setCereAcord(true);
+        return;
+      }
+    }
     const res = await fetch("/api/journal");
     const data = await res.json();
     setEntries(data.entries ?? []);
