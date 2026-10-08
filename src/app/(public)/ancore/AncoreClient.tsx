@@ -436,7 +436,7 @@ export default function AncoreClient({ siteContent }: Props) {
                   <div className="flex items-end sm:items-center">
                     <button onClick={() => { setActiveEx(recommendations[0]); setIsPrimaryEx(true); }}
                       className="btn btn-primary gap-2 w-full sm:w-auto">
-                      {tr("Încearcă")} <ArrowRight size={14} weight="bold" />
+                      {t("cta_button", "Încearcă")} <ArrowRight size={14} weight="bold" />
                     </button>
                   </div>
                 </div>

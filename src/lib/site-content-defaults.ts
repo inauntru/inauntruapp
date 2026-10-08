@@ -1,0 +1,121 @@
+// Generat de scripts/genereaza-texte-implicite.js — nu edita de mână.
+// Textele implicite ale paginilor publice, folosite în Admin → Texte site ca sugestie
+// gri în fiecare câmp. Rulează scriptul din nou dacă schimbi textele din pagini.
+
+export const TEXTE_IMPLICITE: Record<string, Record<string, string>> = {
+  "homepage": {
+    "prob_card1_title": "Tensiune Musculară",
+    "prob_card1_desc": "Gât, umeri și maxilar mereu încordate fără un motiv aparent.",
+    "prob_card2_title": "Insomnie Alertă",
+    "prob_card2_desc": "Ești obosit, dar corpul tău refuză să intre în starea de repaus.",
+    "prob_card3_title": "Deconectare",
+    "prob_card3_desc": "Simți că trăiești de la gât în sus, ignorând semnalele corpului.",
+    "prob_card4_title": "Burnout Emoțional",
+    "prob_card4_desc": "Reacții disproporționate la stresori mici de zi cu zi.",
+    "step1_title": "Evaluare Inițială",
+    "step1_desc": "Identificăm unde este blocată energia în corpul tău printr-un chestionar de autodescoperire ghidat.",
+    "step2_title": "Practică Zilnică",
+    "step2_desc": "Primești un program personalizat de 10–20 minute cu exerciții de respirație, mișcare și conștientizare.",
+    "step3_title": "Monitorizare Progres",
+    "step3_desc": "Urmărești cum se schimbă starea ta de bine prin jurnalul de senzații și check-in-uri zilnice.",
+    "feat1_title": "Biblioteca",
+    "feat1_desc": "70+ sesiuni audio și video de la facilitatori certificați, disponibile oricând.",
+    "feat2_title": "Sesiuni LIVE",
+    "feat2_desc": "Cercuri de vindecare și workshop-uri interactive săptămânale cu facilitatorii noștri.",
+    "feat3_title": "Check-in Zilnic",
+    "feat3_desc": "Sistem inteligent care îți recomandă practica potrivită stării tale de azi.",
+    "feat4_title": "Monitorizarea progresului",
+    "feat4_desc": "Notează cum te simți și urmărește-ți evoluția pas cu pas.",
+    "hero_badge": "Aici gândurile se așază 🌿",
+    "hero_title": "Întoarce-te la tine.",
+    "hero_subtitle": "Resetare rapidă în mai puțin de 2 minute. Metode simple pentru momentele când te simți blocat și ai nevoie de un nou început.",
+    "hero_social_proof": "Alătură-te celor 1.500+ membri",
+    "intent_title": "De ce ai nevoie în acest moment?",
+    "problem_label": "Corpul tău îți vorbește",
+    "problem_title": "Te simți copleșit de gânduri? Recuperează-ți timpul pierdut în analiză și revino la ce contează pentru tine.",
+    "problem_body": "Multe dintre problemele noastre moderne nu sunt \"doar in capul nostru\". Ele sunt stocate in corp ca tensiune cronica, respiratie superficiala si oboseala persistenta.",
+    "howto_title": "Călătoria ta spre interior",
+    "platform_title": "Tot ce ai nevoie într-un singur loc",
+    "platform_subtitle": "Acces instant de pe orice dispozitiv la resurse premium de vindecare somatică.",
+    "testimonials_title": "Povești de transformare",
+    "facilitators_label": "Ghizi experți",
+    "facilitators_title": "Ghidat de experți în somatizare",
+    "facilitators_subtitle": "O echipă de terapeuți, practicieni somatic și specialiști certificați, formați în România și internațional.",
+    "guarantee_title": "Testează gratuit timp de 14 zile.",
+    "guarantee_subtitle": "Primești acces la toate metodele noastre de recalibrare.",
+    "cta_title": "Alege să te simți mai bine acum.",
+    "cta_subtitle": "Începe să te simți mai bine imediat. Anulezi oricând, fără bătăi de cap."
+  },
+  "preturi": {
+    "label": "Alege claritatea.",
+    "title": "Planuri pentru echilibru zilnic.",
+    "subtitle": "Redescoperă-ți starea de bine. Alege varianta care ți se potrivește.",
+    "savings_badge": "Economisești 35%"
+  },
+  "despre_noi": {
+    "tl1_year": "2026",
+    "tl1_location": "România",
+    "tl1_desc": "Lansare platformă cu 70+ practici, sesiuni live și facilitatori certificați. Primii 5.000 utilizatori.",
+    "tl2_year": "2027",
+    "tl2_location": "Europa de Est",
+    "tl2_desc": "Expansiune în Bulgaria, Ungaria și Moldova. Conținut în 4 limbi, 20+ facilitatori internaționali.",
+    "tl3_year": "2028+",
+    "tl3_location": "Global",
+    "tl3_desc": "Ecosistem complet de somatic wellness: formare facilitatori, certificare, parteneriate clinice.",
+    "val1_title": "Compasiune",
+    "val1_desc": "Fiecare persoană merită acces la practici de bunăstare, indiferent de context sau resurse.",
+    "val2_title": "Fundamentare",
+    "val2_desc": "Toate practicile sunt bazate pe cercetări validate în neuroștiință și psihoterapie somatică.",
+    "val3_title": "Accesibilitate",
+    "val3_desc": "Credem că vindecarea este un drept, nu un privilegiu rezervat celor cu resurse financiare mari.",
+    "val4_title": "Autenticitate",
+    "val4_desc": "Facilitatorii noștri sunt practicieni reali cu experiență clinică verificată, nu actori sau influenceri.",
+    "label": "Despre noi",
+    "title": "Cultivăm echilibrul prin știința somatizării și căldura comunității.",
+    "body": "WithIn s-a născut din convingerea că fiecare persoană din România merită acces la practici de reglare somatică de calitate — disponibile oricând, oriunde.",
+    "hero_image": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80",
+    "hero_image_alt": "Sabina, co-fondator WithIn",
+    "founder_image": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80",
+    "founder_image_alt": "Sabina, co-fondator WithIn",
+    "founder_quote": "Am construit WithIn pentru că eu însămi am căutat ani de zile un loc sigur să mă vindec.",
+    "founder_quote_author": "Sabina, Co-Founder",
+    "founder_label": "Povestea fondatorului",
+    "founder_title": "De ce am creat WithIn",
+    "founder_body1": "În 2022, după un burnout sever, am început să înțeleg că corpul meu purta povești pe care mintea refuza să le proceseze. Am descoperit terapia somatică și a schimbat tot.",
+    "founder_body2": "Dar accesul era limitat: sesiuni individuale costisitoare, resurse în engleză, facilitatori fără experiență cu specificul cultural românesc. Am știut atunci că trebuie să existe o alternativă.",
+    "founder_body3": "WithIn este răspunsul nostru: o platformă care aduce știința somatică în viața cotidiană a românilor, cu practici accesibile, facilitatori locali certificați și un sistem inteligent de personalizare.",
+    "cta_title": "Vino alături de noi",
+    "cta_body": "Fie că ești utilizator, facilitator sau partener corporativ — există un loc pentru tine în WithIn.",
+    "cta_btn1_link": "/register",
+    "cta_btn1": "Creează cont gratuit",
+    "cta_btn2_link": "/facilitatori",
+    "cta_btn2": "Explorează facilitatorii"
+  },
+  "practici": {
+    "label": "Bibliotecă practici",
+    "title": "70+ practici somatice",
+    "subtitle": "Respirație, mișcare, corp și voce — fiecare practică ghidată de experți somatic din România.",
+    "search_placeholder": "De ce ai nevoie acum?",
+    "empty_title": "Nicio practică găsită",
+    "empty_desc": "Încearcă să ajustezi filtrele sau căutarea."
+  },
+  "inspiratie": {
+    "label": "Resurse & Educație",
+    "title": "Centrul de Educație Somatică",
+    "subtitle": "Știință somatică, practici ghidate și perspective de la facilitatorii noștri."
+  },
+  "sesiuni_live": {
+    "title": "Urmează în curând"
+  },
+  "facilitatori": {
+    "label": "Ghizi experți",
+    "title": "Echipa de facilitatori",
+    "subtitle": "Psihoterapeuți, practicieni somatic și specialiști certificați, formați în România și internațional."
+  },
+  "ancore": {
+    "label": "Exerciții de reglare",
+    "title": "Ancore",
+    "subtitle": "Trei întrebări scurte. Ancora potrivită pentru tine acum.",
+    "cta_button": "Încearcă"
+  }
+};

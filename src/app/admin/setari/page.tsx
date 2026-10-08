@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import ImageUploadField from "@/components/ui/ImageUploadField";
+import { TEXTE_IMPLICITE } from "@/lib/site-content-defaults";
+import { PRICING_PLANS, TESTIMONIALS, FAQ_ITEMS, INTENT_CARDS } from "@/lib/mockData";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import {
   Check, Warning, Plus, Trash, Eye, EyeSlash, Upload,
@@ -476,12 +478,29 @@ function AdminsTab() {
 
 // ─── SITE TEXT EDITOR ─────────────────────────────────────────────────────────
 
-type FieldType = "input" | "textarea" | "image";
-interface Field { key: string; label: string; type: FieldType; hint?: string; }
+type FieldType = "input" | "textarea" | "image" | "number";
+interface Field {
+  key: string;
+  label: string;
+  type: FieldType;
+  hint?: string;
+  /** Ce scrie acum pe site. Apare gri in camp, ca sa se vada ce se inlocuieste. */
+  placeholder?: string;
+}
 interface Section { title: string; fields: Field[]; }
 interface PageSchema { id: string; label: string; sections: Section[]; }
 
-const f = (key: string, label: string, type: FieldType = "input", hint?: string): Field => ({ key, label, type, hint });
+const f = (key: string, label: string, type: FieldType = "input", hint?: string, placeholder?: string): Field =>
+  ({ key, label, type, hint, placeholder });
+
+
+/** Intrebarile despre facturare asa cum apar acum pe pagina Preturi. */
+const BILLING_FAQ = [
+  { q: "Pot anula oricând abonamentul?", a: "Da, poți anula oricând din setările contului tău." },
+  { q: "Ce metode de plată acceptați?", a: "Acceptăm card Visa, Mastercard și transfer bancar." },
+  { q: "Există perioadă de probă gratuită?", a: "Planul Gratuit este disponibil fără limită de timp." },
+  { q: "Pot schimba planul ulterior?", a: "Da, poți face upgrade sau downgrade oricând." },
+];
 
 const SITE_SCHEMA: PageSchema[] = [
   {
@@ -500,12 +519,8 @@ const SITE_SCHEMA: PageSchema[] = [
         title: "De ce ai nevoie — titlu + 6 carduri",
         fields: [
           f("intent_title", "Titlu sectiune"),
-          f("intent1_title", "Card 1"),
-          f("intent2_title", "Card 2"),
-          f("intent3_title", "Card 3"),
-          f("intent4_title", "Card 4"),
-          f("intent5_title", "Card 5"),
-          f("intent6_title", "Card 6"),
+          ...INTENT_CARDS.slice(0, 6).map((card, k) =>
+            f(`intent${k + 1}_title`, `Card ${k + 1}`, "input", undefined, card.title)),
         ],
       },
       {
@@ -563,22 +578,16 @@ const SITE_SCHEMA: PageSchema[] = [
         ],
       },
       {
-        title: "Recenzii — 6 bucati (sterge citatul ca sa ascunzi o recenzie)",
-        fields: [
-          f("t1_name", "Recenzia 1 — nume"), f("t1_city", "Recenzia 1 — oras"),
-          f("t1_stars", "Recenzia 1 — stele (1-5)", "input", "scrie un numar de la 1 la 5"),
-          f("t1_quote", "Recenzia 1 — text", "textarea"),
-          f("t2_name", "Recenzia 2 — nume"), f("t2_city", "Recenzia 2 — oras"),
-          f("t2_stars", "Recenzia 2 — stele (1-5)"), f("t2_quote", "Recenzia 2 — text", "textarea"),
-          f("t3_name", "Recenzia 3 — nume"), f("t3_city", "Recenzia 3 — oras"),
-          f("t3_stars", "Recenzia 3 — stele (1-5)"), f("t3_quote", "Recenzia 3 — text", "textarea"),
-          f("t4_name", "Recenzia 4 — nume"), f("t4_city", "Recenzia 4 — oras"),
-          f("t4_stars", "Recenzia 4 — stele (1-5)"), f("t4_quote", "Recenzia 4 — text", "textarea"),
-          f("t5_name", "Recenzia 5 — nume"), f("t5_city", "Recenzia 5 — oras"),
-          f("t5_stars", "Recenzia 5 — stele (1-5)"), f("t5_quote", "Recenzia 5 — text", "textarea"),
-          f("t6_name", "Recenzia 6 — nume"), f("t6_city", "Recenzia 6 — oras"),
-          f("t6_stars", "Recenzia 6 — stele (1-5)"), f("t6_quote", "Recenzia 6 — text", "textarea"),
-        ],
+        title: "Recenzii — sterge textul unei recenzii ca sa o ascunzi de pe site",
+        fields: TESTIMONIALS.slice(0, 6).flatMap((rec, i) => {
+          const n = i + 1;
+          return [
+            f(`t${n}_name`, `Recenzia ${n} — nume`, "input", undefined, rec.name),
+            f(`t${n}_city`, `Recenzia ${n} — oras`, "input", undefined, rec.city),
+            f(`t${n}_stars`, `Recenzia ${n} — stele (1-5)`, "input", undefined, String(rec.stars)),
+            f(`t${n}_quote`, `Recenzia ${n} — text`, "textarea", undefined, rec.quote),
+          ];
+        }),
       },
       {
         title: "Facilitatori",
@@ -605,14 +614,10 @@ const SITE_SCHEMA: PageSchema[] = [
       {
         title: "Intrebari frecvente — 8 intrebari",
         fields: [
-          f("faq1_q", "Intrebare 1"), f("faq1_a", "Raspuns 1", "textarea"),
-          f("faq2_q", "Intrebare 2"), f("faq2_a", "Raspuns 2", "textarea"),
-          f("faq3_q", "Intrebare 3"), f("faq3_a", "Raspuns 3", "textarea"),
-          f("faq4_q", "Intrebare 4"), f("faq4_a", "Raspuns 4", "textarea"),
-          f("faq5_q", "Intrebare 5"), f("faq5_a", "Raspuns 5", "textarea"),
-          f("faq6_q", "Intrebare 6"), f("faq6_a", "Raspuns 6", "textarea"),
-          f("faq7_q", "Intrebare 7"), f("faq7_a", "Raspuns 7", "textarea"),
-          f("faq8_q", "Intrebare 8"), f("faq8_a", "Raspuns 8", "textarea"),
+          ...Array.from({ length: 8 }, (_, k) => [
+            f(`faq${k + 1}_q`, `Intrebare ${k + 1}`, "input", undefined, FAQ_ITEMS[k]?.q),
+            f(`faq${k + 1}_a`, `Raspuns ${k + 1}`, "textarea", undefined, FAQ_ITEMS[k]?.a),
+          ]).flat()
         ],
       },
     ],
@@ -632,51 +637,52 @@ const SITE_SCHEMA: PageSchema[] = [
       {
         title: "Plan 1 — Gratuit",
         fields: [
-          f("p1_name", "Nume plan"),
-          f("p1_desc", "Descriere scurta"),
-          f("p1_price", "Pret lunar (RON)", "input", "doar numarul, fara RON"),
-          f("p1_price_annual", "Pret lunar la plata anuala (RON)", "input", "doar numarul"),
-          f("p1_cta", "Text buton"),
-          f("p1_feat1", "Inclus 1"), f("p1_feat2", "Inclus 2"), f("p1_feat3", "Inclus 3"),
-          f("p1_feat4", "Inclus 4"), f("p1_feat5", "Inclus 5"),
-          f("p1_miss1", "Neinclus 1"), f("p1_miss2", "Neinclus 2"),
-          f("p1_miss3", "Neinclus 3"), f("p1_miss4", "Neinclus 4"),
+          f("p1_name", "Nume plan", "input", undefined, PRICING_PLANS[0].name),
+          f("p1_desc", "Descriere scurta", "input", undefined, PRICING_PLANS[0].description),
+          f("p1_price", "Pret lunar", "number", undefined, String(PRICING_PLANS[0].price)),
+          f("p1_price_annual", "Pret lunar la plata anuala", "number", undefined, String(PRICING_PLANS[0].priceAnnual)),
+          f("p1_cta", "Text buton", "input", undefined, PRICING_PLANS[0].cta),
+          ...Array.from({ length: Math.min(8, PRICING_PLANS[0].features.length + 1) }, (_, k) =>
+            f(`p1_feat${k + 1}`, `Inclus ${k + 1}`, "input", undefined, PRICING_PLANS[0].features[k])),
+          ...Array.from({ length: Math.min(4, PRICING_PLANS[0].notIncluded.length + 1) }, (_, k) =>
+            f(`p1_miss${k + 1}`, `Neinclus ${k + 1}`, "input", undefined, PRICING_PLANS[0].notIncluded[k]))
         ],
       },
       {
         title: "Plan 2 — Standard (cel mai popular)",
         fields: [
-          f("p2_name", "Nume plan"),
-          f("p2_desc", "Descriere scurta"),
-          f("p2_price", "Pret lunar (RON)", "input", "doar numarul, fara RON"),
-          f("p2_price_annual", "Pret lunar la plata anuala (RON)", "input", "doar numarul"),
-          f("p2_cta", "Text buton"),
-          f("p2_feat1", "Inclus 1"), f("p2_feat2", "Inclus 2"), f("p2_feat3", "Inclus 3"),
-          f("p2_feat4", "Inclus 4"), f("p2_feat5", "Inclus 5"), f("p2_feat6", "Inclus 6"),
-          f("p2_feat7", "Inclus 7"),
-          f("p2_miss1", "Neinclus 1"), f("p2_miss2", "Neinclus 2"),
+          f("p2_name", "Nume plan", "input", undefined, PRICING_PLANS[1].name),
+          f("p2_desc", "Descriere scurta", "input", undefined, PRICING_PLANS[1].description),
+          f("p2_price", "Pret lunar", "number", undefined, String(PRICING_PLANS[1].price)),
+          f("p2_price_annual", "Pret lunar la plata anuala", "number", undefined, String(PRICING_PLANS[1].priceAnnual)),
+          f("p2_cta", "Text buton", "input", undefined, PRICING_PLANS[1].cta),
+          ...Array.from({ length: Math.min(8, PRICING_PLANS[1].features.length + 1) }, (_, k) =>
+            f(`p2_feat${k + 1}`, `Inclus ${k + 1}`, "input", undefined, PRICING_PLANS[1].features[k])),
+          ...Array.from({ length: Math.min(4, PRICING_PLANS[1].notIncluded.length + 1) }, (_, k) =>
+            f(`p2_miss${k + 1}`, `Neinclus ${k + 1}`, "input", undefined, PRICING_PLANS[1].notIncluded[k]))
         ],
       },
       {
         title: "Plan 3 — Premium",
         fields: [
-          f("p3_name", "Nume plan"),
-          f("p3_desc", "Descriere scurta"),
-          f("p3_price", "Pret lunar (RON)", "input", "doar numarul, fara RON"),
-          f("p3_price_annual", "Pret lunar la plata anuala (RON)", "input", "doar numarul"),
-          f("p3_cta", "Text buton"),
-          f("p3_feat1", "Inclus 1"), f("p3_feat2", "Inclus 2"), f("p3_feat3", "Inclus 3"),
-          f("p3_feat4", "Inclus 4"), f("p3_feat5", "Inclus 5"), f("p3_feat6", "Inclus 6"),
-          f("p3_feat7", "Inclus 7"),
+          f("p3_name", "Nume plan", "input", undefined, PRICING_PLANS[2].name),
+          f("p3_desc", "Descriere scurta", "input", undefined, PRICING_PLANS[2].description),
+          f("p3_price", "Pret lunar", "number", undefined, String(PRICING_PLANS[2].price)),
+          f("p3_price_annual", "Pret lunar la plata anuala", "number", undefined, String(PRICING_PLANS[2].priceAnnual)),
+          f("p3_cta", "Text buton", "input", undefined, PRICING_PLANS[2].cta),
+          ...Array.from({ length: Math.min(8, PRICING_PLANS[2].features.length + 1) }, (_, k) =>
+            f(`p3_feat${k + 1}`, `Inclus ${k + 1}`, "input", undefined, PRICING_PLANS[2].features[k])),
+          ...Array.from({ length: Math.min(4, PRICING_PLANS[2].notIncluded.length + 1) }, (_, k) =>
+            f(`p3_miss${k + 1}`, `Neinclus ${k + 1}`, "input", undefined, PRICING_PLANS[2].notIncluded[k]))
         ],
       },
       {
         title: "FAQ Facturare — 4 intrebari",
         fields: [
-          f("bfaq1_q", "Intrebare 1"), f("bfaq1_a", "Raspuns 1", "textarea"),
-          f("bfaq2_q", "Intrebare 2"), f("bfaq2_a", "Raspuns 2", "textarea"),
-          f("bfaq3_q", "Intrebare 3"), f("bfaq3_a", "Raspuns 3", "textarea"),
-          f("bfaq4_q", "Intrebare 4"), f("bfaq4_a", "Raspuns 4", "textarea"),
+          ...BILLING_FAQ.map((item, k) => [
+            f(`bfaq${k + 1}_q`, `Intrebare ${k + 1}`, "input", undefined, item.q),
+            f(`bfaq${k + 1}_a`, `Raspuns ${k + 1}`, "textarea", undefined, item.a),
+          ]).flat(),
         ],
       },
     ],
@@ -774,8 +780,6 @@ const SITE_SCHEMA: PageSchema[] = [
         title: "Header pagina",
         fields: [
           f("title", "Titlu pagina"),
-          f("subtitle", "Subtitlu", "textarea"),
-          f("empty_state", "Text cand nu sunt sesiuni disponibile"),
         ],
       },
     ],
@@ -809,162 +813,20 @@ const SITE_SCHEMA: PageSchema[] = [
   },
 ];
 
-const DEFAULT_SITE_CONTENT: Record<string, Record<string, string>> = {
-  homepage: {
-    hero_badge: "Aici gandurile se aseaza",
-    hero_title: "Intoarce-te la tine.",
-    hero_subtitle: "Resetare rapida in mai putin de 2 minute. Metode simple pentru momentele cand te simti blocat si ai nevoie de un nou inceput.",
-    hero_social_proof: "Alatura-te celor 1.500+ membri",
-    intent_title: "De ce ai nevoie in acest moment?",
-    intent1_title: "Pauza de reincarcare",
-    intent2_title: "Somn odihnitor",
-    intent3_title: "Eliberare de presiune si agitatie",
-    intent4_title: "Prezenta si claritate mentala",
-    intent5_title: "Recalibrare si echilibru interior",
-    intent6_title: "Explorare si crestere",
-    problem_label: "Corpul tau iti vorbeste",
-    problem_title: "Te simti coplesit de ganduri? Recupereaza-ti timpul pierdut in analiza si revino la ce conteaza pentru tine.",
-    problem_body: "Multe dintre problemele noastre moderne nu sunt doar in capul nostru. Ele sunt stocate in corp ca tensiune cronica, respiratie superficiala si oboseala persistenta.",
-    prob_card1_title: "Tensiune Musculara",
-    prob_card1_desc: "Gat, umeri si maxilar mereu incordate fara un motiv aparent.",
-    prob_card2_title: "Insomnie Alerta",
-    prob_card2_desc: "Esti obosit, dar corpul tau refuza sa intre in starea de repaus.",
-    prob_card3_title: "Deconectare",
-    prob_card3_desc: "Simti ca traiesti de la gat in sus, ignorand semnalele corpului.",
-    prob_card4_title: "Burnout Emotional",
-    prob_card4_desc: "Reactii disproportionate la stresori mici de zi cu zi.",
-    howto_title: "Calatoria ta spre interior",
-    step1_title: "Evaluare Initiala",
-    step1_desc: "Identificam unde este blocata energia in corpul tau printr-un chestionar de autodescoperire ghidat.",
-    step2_title: "Practica Zilnica",
-    step2_desc: "Primesti un program personalizat de 10-20 minute cu exercitii de respiratie, miscare si constientizare.",
-    step3_title: "Monitorizare Progres",
-    step3_desc: "Urmaresti cum se schimba starea ta de bine prin jurnalul de senzatii si check-in-uri zilnice.",
-    platform_title: "Tot ce ai nevoie intr-un singur loc",
-    platform_subtitle: "Acces instant de pe orice dispozitiv la resurse premium de vindecare somatica.",
-    feat1_title: "Biblioteca",
-    feat1_desc: "70+ sesiuni audio si video de la facilitatori certificati, disponibile oricand.",
-    feat2_title: "Sesiuni LIVE",
-    feat2_desc: "Cercuri de vindecare si workshop-uri interactive saptamanale cu facilitatorii nostri.",
-    feat3_title: "Check-in Zilnic",
-    feat3_desc: "Sistem inteligent care iti recomanda practica potrivita starii tale de azi.",
-    feat4_title: "Monitorizarea progresului",
-    feat4_desc: "Noteaza cum te simti si urmareste-ti evolutia pas cu pas.",
-    testimonials_title: "Povesti de transformare",
-    facilitators_label: "Ghizi experti",
-    facilitators_title: "Ghidat de experti in somatizare",
-    facilitators_subtitle: "O echipa de terapeuti, practicieni somatic si specialisti certificati, formati in Romania si international.",
-    guarantee_title: "Testeaza gratuit timp de 14 zile.",
-    guarantee_subtitle: "Primesti acces la toate metodele noastre de recalibrare.",
-    cta_title: "Alege sa te simti mai bine acum.",
-    cta_subtitle: "Incepe sa te simti mai bine imediat. Anulezi oricand, fara batai de cap.",
-    faq1_q: "Ce este terapia somatica si cu ce difera de meditatie?",
-    faq1_a: "Terapia somatica se concentreaza pe senzatiile corporale si cum acestea poarta amprenta experientelor noastre emotionale si traumatice. Spre deosebire de meditatie (care lucreaza cu mintea), terapia somatica lucreaza direct cu corpul ca intrare in sistemul nervos.",
-    faq2_q: "Am nevoie de experienta anterioara?",
-    faq2_a: "Nu. Platforma este conceputa pentru toate nivelurile, de la absolute beginner la practicieni cu experienta. Fiecare sesiune indica nivelul recomandat.",
-    faq3_q: "Cat timp dureaza o practica?",
-    faq3_a: "Practicile variaza de la 5 minute (tehnici rapide de ancorare) la 30+ minute (sesiuni profunde de corp). Majoritatea utilizatorilor practica 10-20 de minute pe zi.",
-    faq4_q: "Poate inlocui WithIn terapia clasica?",
-    faq4_a: "WithIn este un instrument de suport, nu un substitut pentru psihoterapie. Daca ai nevoie de suport terapeutic individual, te incurajam sa lucrezi si cu un terapeut calificat.",
-    faq5_q: "Cum functioneaza perioada gratuita de 14 zile?",
-    faq5_a: "Primele 14 zile sunt complet gratuite si iti ofera acces la planul Premium pentru a testa experienta. Nu ai nevoie de card pentru a incepe.",
-    faq6_q: "Pot descarca practicile pentru utilizare offline?",
-    faq6_a: "Descarcarea offline este disponibila pentru abonantii Premium+. Planurile Gratuit si Premium necesita conexiune internet.",
-    faq7_q: "Sesiunile live sunt inregistrate?",
-    faq7_a: "Da, toate sesiunile live sunt inregistrate si disponibile in biblioteca de replay in termen de 24 de ore.",
-    faq8_q: "Exista optiuni corporate / B2B?",
-    faq8_a: "Da! Oferim pachete corporate pentru companii care doresc sa investeasca in bunastarea angajatilor. Contactati-ne la business@withinapp.ro pentru un demo.",
-  },
-  preturi: {
-    label: "Alege claritatea.",
-    title: "Planuri pentru echilibru zilnic.",
-    subtitle: "Redescopera-ti starea de bine. Alege varianta care ti se potriveste. E mai simplu decat crezi sa te simti din nou tu.",
-    savings_badge: "Economisesti 35%",
-    p1_name: "Gratuit", p1_desc: "Recalibrare rapida",
-    p1_feat1: "5 practici gratuite pe luna", p1_feat2: "1 sesiune live pe luna",
-    p1_feat3: "Check-in zilnic", p1_feat4: "Acces la blog si resurse", p1_feat5: "Monitorizarea progresului",
-    p1_miss1: "Biblioteca completa (70+ practici)", p1_miss2: "Sesiuni live nelimitate",
-    p1_miss3: "Progres personalizat", p1_miss4: "Suport dedicat",
-    p2_name: "Standard", p2_desc: "Claritate si echilibru",
-    p2_feat1: "Acces nelimitat la toate practicile", p2_feat2: "Sesiuni live nelimitate",
-    p2_feat3: "Check-in zilnic + harta corpului", p2_feat4: "Progres personalizat",
-    p2_feat5: "Monitorizarea progresului", p2_feat6: "Recomandari bazate pe check-in",
-    p2_feat7: "Suport email 48h",
-    p2_miss1: "Sesiuni 1:1 cu facilitatorul", p2_miss2: "Program corporativ",
-    p3_name: "Premium", p3_desc: "Transformare profunda",
-    p3_feat1: "Tot ce include Premium", p3_feat2: "1 sesiune 1:1 pe luna cu facilitatorul",
-    p3_feat3: "Program personalizat de 30 zile", p3_feat4: "Acces anticipat la continut nou",
-    p3_feat5: "Grup privat de suport", p3_feat6: "Suport prioritar 24h",
-    p3_feat7: "Download practici offline",
-    bfaq1_q: "Pot anula oricand abonamentul?", bfaq1_a: "Da, poti anula oricand din setarile contului tau. Nu exista penalitati sau taxe de anulare.",
-    bfaq2_q: "Ce metode de plata acceptati?", bfaq2_a: "Acceptam card Visa, Mastercard si plata prin transfer bancar pentru planurile anuale.",
-    bfaq3_q: "Exista perioada de proba gratuita?", bfaq3_a: "Planul Gratuit este disponibil fara limita de timp. Nu cerem card de credit.",
-    bfaq4_q: "Pot schimba planul ulterior?", bfaq4_a: "Da, poti face upgrade sau downgrade oricand. Diferenta se calculeaza proportional.",
-  },
-  despre_noi: {
-    label: "Despre noi",
-    title: "Cultivam echilibrul prin stiinta somatizarii si caldura comunitatii.",
-    body: "WithIn s-a nascut din convingerea ca fiecare persoana din Romania merita acces la practici de reglare somatica de calitate - disponibile oricand, oriunde.",
-    founder_label: "Povestea fondatorului",
-    founder_title: "De ce am creat WithIn",
-    founder_body1: "",
-    founder_body2: "",
-    founder_body3: "",
-    founder_quote: "Am construit WithIn pentru ca eu insami am cautat ani de zile un loc sigur sa ma vindec.",
-    founder_quote_author: "Sabina, Co-Founder",
-    val1_title: "Compasiune", val1_desc: "Fiecare persoana merita acces la practici de bunastare, indiferent de context sau resurse.",
-    val2_title: "Fundamentare", val2_desc: "Toate practicile sunt bazate pe cercetari validate in neurostiinta si psihoterapie somatica.",
-    val3_title: "Accesibilitate", val3_desc: "Credem ca vindecarea este un drept, nu un privilegiu rezervat celor cu resurse financiare mari.",
-    val4_title: "Autenticitate", val4_desc: "Facilitatorii nostri sunt practicieni reali cu experienta clinica verificata, nu actori sau influenceri.",
-    tl1_year: "2026", tl1_location: "Romania", tl1_desc: "Lansare platforma cu 70+ practici, sesiuni live si facilitatori certificati. Primii 5.000 utilizatori.",
-    tl2_year: "2027", tl2_location: "Europa de Est", tl2_desc: "Expansiune in Bulgaria, Ungaria si Moldova. Continut in 4 limbi, 20+ facilitatori internationali.",
-    tl3_year: "2028+", tl3_location: "Global", tl3_desc: "Ecosistem complet de somatic wellness: formare facilitatori, certificare, parteneriate clinice.",
-  },
-  practici: {
-    label: "Biblioteca practici",
-    title: "70+ practici somatice",
-    subtitle: "Respiratie, miscare, corp si voce — fiecare practica ghidata de experti somatic din Romania.",
-    search_placeholder: "De ce ai nevoie acum?",
-    empty_title: "Nicio practica gasita",
-    empty_desc: "Incearca sa modifici filtrele sau cauta altceva.",
-  },
-  inspiratie: {
-    label: "Resurse & Educatie",
-    title: "Centrul de Educatie Somatica",
-    subtitle: "Stiinta somatica, practici ghidate si perspective de la facilitatorii nostri.",
-  },
-  sesiuni_live: {
-    title: "Sesiuni Live",
-    subtitle: "Conecteaza-te in timp real cu facilitatorii nostri certificati.",
-    empty_state: "Nu exista sesiuni programate momentan.",
-  },
-  facilitatori: {
-    label: "Echipa noastra",
-    title: "Facilitatorii nostri",
-    subtitle: "Profesionisti in terapie somatica, gata sa te ghideze spre echilibru interior.",
-  },
-  ancore: {
-    label: "Exercitii de reglare",
-    title: "Ancore",
-    subtitle: "Trei intrebari scurte. Ancora potrivita pentru tine acum.",
-    cta_button: "Descopera ancora ta",
-  },
-  somn: {
-    label: "Somn",
-    title: "Lasă ziua să se încheie.",
-    subtitle: "Sunete, muzică și practici blânde pentru serile în care corpul s-a oprit, dar mintea încă nu.",
-    cta1: "Începe seara",
-    cta2: "Explorează sunetele",
-    note: "Recomandăm căști pentru anumite experiențe audio.",
-    band_title: "Somnul face parte din echilibru.",
-    band_sub: "Ai grijă de ziua ta. Noi avem grijă de serile tale.",
-    band_cta: "Explorează WithIn",
-  },
-};
+/*
+ * Aici era o lista de texte implicite scrise de mana, cu care se umplea formularul.
+ * Doua probleme: textele erau fara diacritice, iar la fiecare salvare ajungeau in
+ * baza de date ca si cum ar fi fost scrise de om, inlocuind textele corecte din pagini.
+ *
+ * Acum formularul porneste gol, iar ce scrie pe site se vede ca sugestie gri in fiecare
+ * camp (TEXTE_IMPLICITE, cules automat din pagini de scripts/genereaza-texte-implicite.js).
+ * Asa, in baza de date ajunge doar ce schimbi tu.
+ */
 
 function SiteTextTabEditor() {
   const [activePage, setActivePage] = useState("homepage");
-  const [content, setContent] = useState<Record<string, Record<string, string>>>(DEFAULT_SITE_CONTENT);
+  // Porneste gol: in baza de date ajunge doar ce schimbi, nu si textele implicite
+  const [content, setContent] = useState<Record<string, Record<string, string>>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deploying, setDeploying] = useState(false);
@@ -1062,7 +924,11 @@ function SiteTextTabEditor() {
               {section.title}
             </h3>
             <div className="space-y-4">
-              {section.fields.map((field) => (
+              {section.fields.map((field) => {
+                // Sugestia vine din textul scris explicit in schema sau, daca nu exista,
+                // din textul implicit cules automat din pagina (site-content-defaults).
+                const sugestie = field.placeholder ?? TEXTE_IMPLICITE[activePage]?.[field.key];
+                return (
                 <div key={field.key}>
                   <label className="font-body text-label-sm text-on-surface mb-1 block">
                     {field.label}
@@ -1070,7 +936,21 @@ function SiteTextTabEditor() {
                   {field.hint && (
                     <p className="font-body text-label-xs text-secondary-text mb-1.5">{field.hint}</p>
                   )}
-                  {field.type === "image" ? (
+                  {field.type === "number" ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        step={1}
+                        inputMode="numeric"
+                        value={pageContent[field.key] ?? ""}
+                        onChange={(e) => handleChange(activePage, field.key, e.target.value)}
+                        placeholder={sugestie}
+                        className="input w-36"
+                      />
+                      <span className="font-body text-label-sm text-secondary-text">RON / luna</span>
+                    </div>
+                  ) : field.type === "image" ? (
                     <ImageUploadField
                       value={pageContent[field.key] ?? ""}
                       onChange={(url) => handleChange(activePage, field.key, url)}
@@ -1079,6 +959,7 @@ function SiteTextTabEditor() {
                     <textarea
                       value={pageContent[field.key] ?? ""}
                       onChange={(e) => handleChange(activePage, field.key, e.target.value)}
+                      placeholder={sugestie}
                       className="input w-full min-h-[80px] resize-y"
                       rows={3}
                     />
@@ -1087,11 +968,13 @@ function SiteTextTabEditor() {
                       type="text"
                       value={pageContent[field.key] ?? ""}
                       onChange={(e) => handleChange(activePage, field.key, e.target.value)}
+                      placeholder={sugestie}
                       className="input w-full"
                     />
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}
