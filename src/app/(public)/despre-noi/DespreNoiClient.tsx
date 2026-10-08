@@ -40,7 +40,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
             </AnimateIn>
             <AnimateIn from="scale">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden relative shadow-card-hover">
-                <Image src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80" alt={tr("Sabina, co-fondator WithIn")} fill className="object-cover object-top" priority />
+                <Image src={t("hero_image", "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80")} alt={t("hero_image_alt", "Sabina, co-fondator WithIn")} fill className="object-cover object-top" priority />
                 <div className="absolute inset-0 bg-deep-green/10" />
               </div>
             </AnimateIn>
@@ -53,7 +53,7 @@ export default function DespreNoiClient({ siteContent }: Props) {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <AnimateIn from="scale">
               <div className="aspect-square rounded-card overflow-hidden relative">
-                <Image src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80" alt={tr("Sabina, co-fondator WithIn")} fill className="object-cover" />
+                <Image src={t("founder_image", "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80")} alt={t("founder_image_alt", "Sabina, co-fondator WithIn")} fill className="object-cover" />
                 <div className="absolute inset-0 bg-deep-green/15" />
                 <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur rounded-xl p-4 shadow-card">
                   <p className="font-heading text-forest-green text-body-sm italic">&ldquo;{t("founder_quote", "Am construit WithIn pentru că eu însămi am căutat ani de zile un loc sigur să mă vindec.")}&rdquo;</p>
@@ -120,11 +120,11 @@ export default function DespreNoiClient({ siteContent }: Props) {
       <section className="py-16 bg-bg-main text-center">
         <AnimateIn from="bottom">
           <div className="max-w-xl mx-auto px-4">
-            <h2 className="font-heading text-h2 text-deep-green mb-4">{tr("Vino alături de noi")}</h2>
-            <p className="font-body text-body-lg text-secondary-text mb-8">{tr("Fie că ești utilizator, facilitator sau partener corporativ — există un loc pentru tine în WithIn.")}</p>
+            <h2 className="font-heading text-h2 text-deep-green mb-4">{t("cta_title", "Vino alături de noi")}</h2>
+            <p className="font-body text-body-lg text-secondary-text mb-8">{t("cta_body", "Fie că ești utilizator, facilitator sau partener corporativ — există un loc pentru tine în WithIn.")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register" className="btn btn-primary">{tr("Creează cont gratuit")} <ArrowRight size={16} weight="bold" /></Link>
-              <Link href="/facilitatori" className="btn btn-ghost">{tr("Explorează facilitatorii")}</Link>
+              <Link href={t("cta_btn1_link", "/register")} className="btn btn-primary">{t("cta_btn1", "Creează cont gratuit")} <ArrowRight size={16} weight="bold" /></Link>
+              <Link href={t("cta_btn2_link", "/facilitatori")} className="btn btn-ghost">{t("cta_btn2", "Explorează facilitatorii")}</Link>
             </div>
           </div>
         </AnimateIn>

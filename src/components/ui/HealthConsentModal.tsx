@@ -117,23 +117,26 @@ export default function HealthConsentModal({ open, onGranted, onDismiss }: Props
                   <ShieldCheck size={22} weight="duotone" className="text-forest-green" />
                 </div>
 
-                <h2 id="titlu-acord" className="font-heading text-h4 text-deep-green mb-3">
+                <h2 id="titlu-acord" className="font-heading text-h4 text-deep-green mb-1.5">
                   Înainte să notezi ceva despre tine
                 </h2>
 
-                <p className="font-body text-body-sm text-secondary-text mb-3">
-                  Ce alegi la check-in — starea, zonele din corp, intensitatea — și ce scrii în
-                  jurnal spun ceva despre starea ta de sănătate. Legea le protejează mai strict
-                  decât restul datelor și ne cere să îți cerem acordul separat, nu odată cu
-                  termenii de la înregistrare.
+                <p className="font-body font-semibold text-body-md text-deep-green mb-3">
+                  Ce împărtășești aici rămâne al tău.
+                </p>
+
+                <p className="font-body text-body-sm text-secondary-text mb-4">
+                  Check-in-urile și ceea ce alegi să notezi în jurnal ne ajută să facem experiența
+                  WithIn mai potrivită pentru tine. Pentru a le putea păstra și folosi în acest
+                  scop, avem nevoie de acordul tău.
                 </p>
 
                 <div className="rounded-xl bg-light-green/50 border border-sage-border p-4 mb-4">
-                  <ul className="font-body text-body-sm text-deep-green space-y-2 list-disc pl-4 marker:text-forest-green">
-                    <li>Le folosim ca să îți arătăm evoluția în timp și să îți recomandăm practici potrivite.</li>
-                    <li>Nu le citim, nu le publicăm, nu le dăm nimănui și nu le folosim pentru reclame.</li>
-                    <li>Îți poți retrage acordul oricând din Contul meu, iar la cerere ștergem tot.</li>
-                    <li>Poți folosi platforma și fără să dai acest acord — practicile rămân deschise.</li>
+                  <ul className="font-body text-body-sm text-deep-green space-y-2.5 list-disc pl-4 marker:text-forest-green">
+                    <li>Le folosim pentru a-ți arăta cum te-ai simțit în timp și pentru a-ți recomanda practici potrivite pentru tine.</li>
+                    <li>Ce notezi aici rămâne privat. Nu publicăm și nu folosim aceste informații pentru reclame.</li>
+                    <li><strong className="font-semibold">Tu ai controlul.</strong> Îți poți retrage acordul oricând din <strong className="font-semibold">Contul meu</strong> și poți cere ștergerea datelor tale.</li>
+                    <li>Poți continua să folosești WithIn și fără acest acord. Practicile rămân disponibile pentru tine.</li>
                   </ul>
                 </div>
 
@@ -149,8 +152,8 @@ export default function HealthConsentModal({ open, onGranted, onDismiss }: Props
                     className="mt-0.5 w-4 h-4 accent-forest-green flex-shrink-0"
                   />
                   <span className="font-body text-body-sm text-on-surface">
-                    Sunt de acord ca WithIn să păstreze și să folosească ce notez despre starea
-                    mea, în scopurile de mai sus.
+                    Sunt de acord ca WithIn să păstreze și să folosească ceea ce aleg să notez
+                    despre starea mea, pentru a-mi oferi o experiență mai potrivită pentru mine.
                   </span>
                 </label>
 

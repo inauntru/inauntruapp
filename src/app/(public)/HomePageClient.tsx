@@ -16,7 +16,9 @@ import {
   ArtCarte, ArtOameni, ArtJurnal, ArtScut,
 } from "@/components/ui/ArtIcons";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { TESTIMONIALS, PRICING_PLANS, FAQ_ITEMS, INTENT_CARDS } from "@/lib/mockData";
+import { FAQ_ITEMS, INTENT_CARDS } from "@/lib/mockData";
+import { resolveTestimonials, initiale } from "@/lib/testimonials-content";
+import { resolvePlans } from "@/lib/pricing-content";
 import { FACILITATORS_DATA } from "@/lib/facilitators";
 
 
@@ -26,11 +28,17 @@ const INTENT_ICONS: Record<string, React.ElementType> = {
   Sun: ArtSoare, Heartbeat: ArtInima, Sparkle: ArtStea,
 };
 
-interface Props { siteContent: Record<string, string>; }
+interface Props {
+  siteContent: Record<string, string>;
+  /** Textele paginii Preturi — sectiunea de preturi de aici trebuie sa arate la fel ca pagina dedicata. */
+  pricingContent?: Record<string, string>;
+}
 
-export default function HomePageClient({ siteContent }: Props) {
+export default function HomePageClient({ siteContent, pricingContent = {} }: Props) {
   const { tr } = useLanguage();
   const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
+  const plans = resolvePlans(pricingContent);
+  const testimoniale = resolveTestimonials(siteContent);
 
   const [selectedIntent, setSelectedIntent] = useState<string | null>(null);
   const [billingAnnual, setBillingAnnual] = useState(false);
@@ -288,7 +296,7 @@ export default function HomePageClient({ siteContent }: Props) {
             </h2>
           </AnimateIn>
           <StaggerChildren once={false} className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6 items-stretch" childClassName="h-full" staggerDelay={0.08}>
-            {TESTIMONIALS.map((t_) => (
+            {testimoniale.map((t_) => (
               <div key={t_.id} className="p-8 bg-surface-container-low rounded-2xl border border-sage-border card-lift flex flex-col h-full">
                 <div className="flex items-center gap-0.5 mb-5">
                   {Array.from({ length: t_.stars }).map((_, i) => <Star key={i} size={16} weight="fill" className="text-[#F59E0B]" />)}
@@ -296,7 +304,7 @@ export default function HomePageClient({ siteContent }: Props) {
                 <p className="font-body text-body-lg text-secondary-text italic mb-6 leading-relaxed flex-1">&ldquo;{tr(t_.quote)}&rdquo;</p>
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-full bg-indigo-light flex items-center justify-center font-bold text-indigo font-body flex-shrink-0">
-                    {t_.name.split(" ").map((n: string) => n[0]).join("")}
+                    {initiale(t_.name)}
                   </div>
                   <div>
                     <p className="font-body font-semibold text-body-sm text-deep-green">{t_.name}</p>
@@ -307,7 +315,7 @@ export default function HomePageClient({ siteContent }: Props) {
             ))}
           </StaggerChildren>
           <div className="md:hidden flex gap-4 overflow-x-auto no-scrollbar pb-4">
-            {TESTIMONIALS.map((t_) => (
+            {testimoniale.map((t_) => (
               <div key={t_.id} className="min-w-[280px] bg-surface-container-low rounded-2xl border border-sage-border p-5 flex-shrink-0">
                 <div className="flex items-center gap-0.5 mb-3">
                   {Array.from({ length: t_.stars }).map((_, i) => <Star key={i} size={14} weight="fill" className="text-[#F59E0B]" />)}
@@ -370,7 +378,7 @@ export default function HomePageClient({ siteContent }: Props) {
             </div>
           </AnimateIn>
           <StaggerChildren once={false} className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={0.12}>
-            {PRICING_PLANS.map((plan) => (
+            {plans.map((plan) => (
               <div key={plan.id} className={`relative rounded-2xl border p-5 sm:p-8 flex flex-col transition-all duration-200 ${plan.isPopular ? "bg-forest-green border-forest-green text-white shadow-[0_20px_60px_rgba(61,122,92,0.25)] md:scale-105" : "bg-white border-sage-border shadow-card hover:shadow-card-hover"}`}>
                 {plan.isPopular && (
                   <div className="absolute -top-4 right-6">

@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
+import ImageUploadField from "@/components/ui/ImageUploadField";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import {
   Check, Warning, Plus, Trash, Eye, EyeSlash, Upload,
@@ -475,7 +476,7 @@ function AdminsTab() {
 
 // ─── SITE TEXT EDITOR ─────────────────────────────────────────────────────────
 
-type FieldType = "input" | "textarea";
+type FieldType = "input" | "textarea" | "image";
 interface Field { key: string; label: string; type: FieldType; hint?: string; }
 interface Section { title: string; fields: Field[]; }
 interface PageSchema { id: string; label: string; sections: Section[]; }
@@ -562,6 +563,24 @@ const SITE_SCHEMA: PageSchema[] = [
         ],
       },
       {
+        title: "Recenzii — 6 bucati (sterge citatul ca sa ascunzi o recenzie)",
+        fields: [
+          f("t1_name", "Recenzia 1 — nume"), f("t1_city", "Recenzia 1 — oras"),
+          f("t1_stars", "Recenzia 1 — stele (1-5)", "input", "scrie un numar de la 1 la 5"),
+          f("t1_quote", "Recenzia 1 — text", "textarea"),
+          f("t2_name", "Recenzia 2 — nume"), f("t2_city", "Recenzia 2 — oras"),
+          f("t2_stars", "Recenzia 2 — stele (1-5)"), f("t2_quote", "Recenzia 2 — text", "textarea"),
+          f("t3_name", "Recenzia 3 — nume"), f("t3_city", "Recenzia 3 — oras"),
+          f("t3_stars", "Recenzia 3 — stele (1-5)"), f("t3_quote", "Recenzia 3 — text", "textarea"),
+          f("t4_name", "Recenzia 4 — nume"), f("t4_city", "Recenzia 4 — oras"),
+          f("t4_stars", "Recenzia 4 — stele (1-5)"), f("t4_quote", "Recenzia 4 — text", "textarea"),
+          f("t5_name", "Recenzia 5 — nume"), f("t5_city", "Recenzia 5 — oras"),
+          f("t5_stars", "Recenzia 5 — stele (1-5)"), f("t5_quote", "Recenzia 5 — text", "textarea"),
+          f("t6_name", "Recenzia 6 — nume"), f("t6_city", "Recenzia 6 — oras"),
+          f("t6_stars", "Recenzia 6 — stele (1-5)"), f("t6_quote", "Recenzia 6 — text", "textarea"),
+        ],
+      },
+      {
         title: "Facilitatori",
         fields: [
           f("facilitators_label", "Label mic (deasupra titlului)"),
@@ -615,6 +634,9 @@ const SITE_SCHEMA: PageSchema[] = [
         fields: [
           f("p1_name", "Nume plan"),
           f("p1_desc", "Descriere scurta"),
+          f("p1_price", "Pret lunar (RON)", "input", "doar numarul, fara RON"),
+          f("p1_price_annual", "Pret lunar la plata anuala (RON)", "input", "doar numarul"),
+          f("p1_cta", "Text buton"),
           f("p1_feat1", "Inclus 1"), f("p1_feat2", "Inclus 2"), f("p1_feat3", "Inclus 3"),
           f("p1_feat4", "Inclus 4"), f("p1_feat5", "Inclus 5"),
           f("p1_miss1", "Neinclus 1"), f("p1_miss2", "Neinclus 2"),
@@ -626,6 +648,9 @@ const SITE_SCHEMA: PageSchema[] = [
         fields: [
           f("p2_name", "Nume plan"),
           f("p2_desc", "Descriere scurta"),
+          f("p2_price", "Pret lunar (RON)", "input", "doar numarul, fara RON"),
+          f("p2_price_annual", "Pret lunar la plata anuala (RON)", "input", "doar numarul"),
+          f("p2_cta", "Text buton"),
           f("p2_feat1", "Inclus 1"), f("p2_feat2", "Inclus 2"), f("p2_feat3", "Inclus 3"),
           f("p2_feat4", "Inclus 4"), f("p2_feat5", "Inclus 5"), f("p2_feat6", "Inclus 6"),
           f("p2_feat7", "Inclus 7"),
@@ -637,6 +662,9 @@ const SITE_SCHEMA: PageSchema[] = [
         fields: [
           f("p3_name", "Nume plan"),
           f("p3_desc", "Descriere scurta"),
+          f("p3_price", "Pret lunar (RON)", "input", "doar numarul, fara RON"),
+          f("p3_price_annual", "Pret lunar la plata anuala (RON)", "input", "doar numarul"),
+          f("p3_cta", "Text buton"),
           f("p3_feat1", "Inclus 1"), f("p3_feat2", "Inclus 2"), f("p3_feat3", "Inclus 3"),
           f("p3_feat4", "Inclus 4"), f("p3_feat5", "Inclus 5"), f("p3_feat6", "Inclus 6"),
           f("p3_feat7", "Inclus 7"),
@@ -662,6 +690,8 @@ const SITE_SCHEMA: PageSchema[] = [
           f("label", "Label mic (deasupra titlului)"),
           f("title", "Titlu principal"),
           f("body", "Paragraf sub titlu", "textarea"),
+          f("hero_image", "Poza din dreapta titlului", "image"),
+          f("hero_image_alt", "Descrierea pozei", "input", "pentru cititoarele de ecran si pentru Google"),
         ],
       },
       {
@@ -674,6 +704,8 @@ const SITE_SCHEMA: PageSchema[] = [
           f("founder_body3", "Paragraf 3", "textarea"),
           f("founder_quote", "Citat (in card)", "textarea"),
           f("founder_quote_author", "Autor citat"),
+          f("founder_image", "Poza sectiunii", "image"),
+          f("founder_image_alt", "Descrierea pozei", "input", "pentru cititoarele de ecran si pentru Google"),
         ],
       },
       {
@@ -691,6 +723,17 @@ const SITE_SCHEMA: PageSchema[] = [
           f("tl1_year", "Etapa 1 — an"), f("tl1_location", "Etapa 1 — locatie"), f("tl1_desc", "Etapa 1 — descriere", "textarea"),
           f("tl2_year", "Etapa 2 — an"), f("tl2_location", "Etapa 2 — locatie"), f("tl2_desc", "Etapa 2 — descriere", "textarea"),
           f("tl3_year", "Etapa 3 — an"), f("tl3_location", "Etapa 3 — locatie"), f("tl3_desc", "Etapa 3 — descriere", "textarea"),
+        ],
+      },
+      {
+        title: "Vino alaturi de noi — sectiunea de la final",
+        fields: [
+          f("cta_title", "Titlu"),
+          f("cta_body", "Text sub titlu", "textarea"),
+          f("cta_btn1", "Buton 1 — text"),
+          f("cta_btn1_link", "Buton 1 — unde duce", "input", "ex: /register"),
+          f("cta_btn2", "Buton 2 — text"),
+          f("cta_btn2_link", "Buton 2 — unde duce", "input", "ex: /facilitatori"),
         ],
       },
     ],
@@ -1027,7 +1070,12 @@ function SiteTextTabEditor() {
                   {field.hint && (
                     <p className="font-body text-label-xs text-secondary-text mb-1.5">{field.hint}</p>
                   )}
-                  {field.type === "textarea" ? (
+                  {field.type === "image" ? (
+                    <ImageUploadField
+                      value={pageContent[field.key] ?? ""}
+                      onChange={(url) => handleChange(activePage, field.key, url)}
+                    />
+                  ) : field.type === "textarea" ? (
                     <textarea
                       value={pageContent[field.key] ?? ""}
                       onChange={(e) => handleChange(activePage, field.key, e.target.value)}

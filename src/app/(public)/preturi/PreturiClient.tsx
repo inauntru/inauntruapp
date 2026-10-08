@@ -7,7 +7,7 @@ import { Check, X, ArrowRight, CaretDown } from "@phosphor-icons/react";
 import AnimateIn, { StaggerChildren } from "@/components/ui/AnimateIn";
 import { ArtScut } from "@/components/ui/ArtIcons";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { PRICING_PLANS } from "@/lib/mockData";
+import { resolvePlans } from "@/lib/pricing-content";
 
 interface Props { siteContent: Record<string, string>; }
 
@@ -15,6 +15,8 @@ export default function PreturiClient({ siteContent }: Props) {
   const { tr } = useLanguage();
   const t = (key: string, fallback: string) => tr(siteContent[key] || fallback);
   const [billingAnnual, setBillingAnnual] = useState(false);
+  // Planurile vin din Admin → Texte site → Preturi; mockData ramane doar ca varianta de rezerva
+  const plans = resolvePlans(siteContent);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const billingFaq = Array.from({ length: 4 }, (_, i) => ({
@@ -44,7 +46,7 @@ export default function PreturiClient({ siteContent }: Props) {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <StaggerChildren className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={0.12}>
-          {PRICING_PLANS.map((plan) => (
+          {plans.map((plan) => (
             <div key={plan.id} className={`relative rounded-card border p-5 sm:p-8 flex flex-col transition-all duration-200 ${plan.isPopular ? "bg-forest-green border-forest-green text-white shadow-button md:scale-105" : "card card-lift bg-white"}`}>
               {plan.isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">

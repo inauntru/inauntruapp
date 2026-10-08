@@ -48,11 +48,15 @@ const jsonLd = {
 };
 
 export default async function HomePage() {
-  const content = await getSiteContent("homepage");
+  // Preturile se editeaza intr-un singur loc (fila Preturi), dar se afiseaza si aici
+  const [content, pricing] = await Promise.all([
+    getSiteContent("homepage"),
+    getSiteContent("preturi"),
+  ]);
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <HomePageClient siteContent={content} />
+      <HomePageClient siteContent={content} pricingContent={pricing} />
     </>
   );
 }
